@@ -2,662 +2,798 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"> <!-- Mengatur encoding agar karakter tampil dengan benar -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Membuat tampilan menyesuaikan ukuran layar -->
-    <title>BreadSaver - Selamatkan Roti</title> <!-- Judul pada tab browser -->
+    <meta charset="UTF-8">
+
+    {{-- Mengatur lebar halaman mengikuti perangkat.
+         Dipakai agar tampilan tidak terlalu lebar di HP.
+         Tanpa viewport, browser HP bisa menampilkan versi desktop
+         yang diperkecil sehingga teks sulit dibaca. --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BreadSaver - Selamatkan Roti</title>
 
     <style>
-        /* Reset CSS agar setiap browser memulai dengan jarak yang konsisten */
-        * {
-            margin: 0; /* Menghapus jarak luar bawaan */
-            padding: 0; /* Menghapus jarak dalam bawaan */
-            box-sizing: border-box; /* Padding dan border ikut dihitung dalam ukuran elemen */
-        }
-
-        /* Variabel warna agar warna desain mudah diubah dari satu tempat */
+        /* CSS Variables: menyimpan warna yang sering dipakai.
+           Keuntungan: kalau warna utama berubah, cukup ubah di sini.
+           Dibanding menulis kode warna berulang, cara ini lebih mudah dirawat. */
         :root {
-            --navy: #23365f; /* Warna utama biru navy */
-            --pink: #ff8fb1; /* Warna pink utama */
-            --pink-light: #fff0f5; /* Pink muda untuk latar */
-            --background: #f8f9fc; /* Warna latar halaman */
-            --text: #26324b; /* Warna teks utama */
-            --muted: #8991a4; /* Warna teks sekunder */
-            --white: #ffffff; /* Warna putih */
+            --navy: #23365f;
+            --pink: #ff8fb1;
+            --pink-light: #fff0f5;
+            --background: #f8f9fc;
+            --text: #26324b;
+            --muted: #8991a4;
+            --white: #ffffff;
+            --border: #e7eaf2;
         }
 
-        /* Mengatur tampilan dasar seluruh halaman */
+        /* Reset CSS:
+           Menghilangkan margin dan padding bawaan browser.
+           box-sizing: border-box membuat padding dan border masuk
+           dalam perhitungan ukuran elemen.
+           Ini lebih mudah daripada menghitung lebar elemen secara manual. */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Pengaturan dasar seluruh halaman.
+           Arial dipilih karena sederhana dan tersedia di banyak perangkat.
+           Alternatif font lain bisa dipakai, tetapi hasil tampilannya
+           dapat berbeda tergantung font yang tersedia. */
         body {
-            font-family: Arial, sans-serif; /* Jenis huruf halaman */
-            background: var(--background); /* Menggunakan warna latar dari variabel */
-            color: var(--text); /* Mengatur warna teks utama */
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
         }
 
-        /* Menghapus garis bawah pada tautan */
+        /* Menghapus garis bawah tautan dan mengikuti warna teks induknya.
+           Cocok untuk tautan navigasi yang tampil seperti menu,
+           bukan seperti tautan artikel biasa. */
         a {
+            color: inherit;
             text-decoration: none;
         }
 
-        /* Membuat layout utama: sidebar di kiri dan konten di kanan */
-        .layout {
-            display: flex; /* Menyusun sidebar dan konten secara horizontal */
-            min-height: 100vh; /* Tinggi minimal mengikuti tinggi layar */
-        }
-
-        /* Mengatur panel navigasi di sebelah kiri */
+        /* Sidebar dibuat fixed agar menu tetap berada di sisi kiri
+           ketika halaman utama digulir.
+           Kekurangannya: sidebar mengambil ruang layar dan perlu
+           penyesuaian khusus pada perangkat kecil. */
         .sidebar {
-            width: 240px; /* Menetapkan lebar sidebar */
-            background: var(--navy); /* Memberikan latar navy */
-            color: white; /* Warna teks sidebar */
-            padding: 25px 18px; /* Jarak dalam atas-bawah dan kiri-kanan */
-            flex-shrink: 0; /* Mencegah sidebar mengecil */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            padding: 28px 22px;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 1000;
         }
 
-        /* Mengatur posisi logo di dalam sidebar */
+        /* Flexbox memusatkan logo secara horizontal dan vertikal.
+           margin-bottom memberi jarak antara logo dan menu.
+           Lebih fleksibel daripada mengatur posisi dengan margin kiri manual. */
         .logo-container {
-            text-align: center; /* Memusatkan logo */
-            margin-bottom: 35px; /* Memberi jarak di bawah logo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 56px;
         }
 
-        /* Mengatur ukuran gambar logo PNG */
+        /* max-width mencegah logo melewati ukuran wadah.
+           height: auto mempertahankan rasio gambar agar tidak gepeng.
+           object-fit: contain memastikan seluruh logo tetap terlihat. */
         .logo {
-            display: block; /* Membuat gambar menjadi elemen blok */
-            width: 100%; /* Memakai lebar wadah yang tersedia */
-            max-width: 195px; /* Membatasi ukuran maksimum logo */
-            height: auto; /* Menjaga proporsi gambar */
-            margin: auto; /* Memusatkan gambar */
+            width: 180px;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
         }
 
-        /* Mengatur judul kelompok menu sidebar */
-        .nav-title {
-            color: #aab5d0; /* Warna teks judul menu */
-            font-size: 11px; /* Ukuran tulisan kecil */
-            margin: 22px 10px 12px; /* Jarak atas, samping, dan bawah */
-            text-transform: uppercase; /* Mengubah tulisan menjadi huruf kapital */
-            letter-spacing: 1px; /* Memberi jarak antarhuruf */
+        /* Judul kelompok menu dibedakan menggunakan ukuran dan warna.
+           Letter-spacing menambah jarak antarkarakter agar label
+           terlihat seperti penanda bagian navigasi. */
+        .menu-title {
+            color: #c4cce0;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin: 0 10px 18px;
         }
 
-        /* Mengatur bentuk dan posisi setiap tautan navigasi */
-        .nav-link {
-            display: flex; /* Menyejajarkan ikon dan teks */
-            align-items: center; /* Memusatkan ikon dan teks secara vertikal */
-            gap: 12px; /* Jarak antara ikon dan teks */
-            color: #e2e7f2; /* Warna teks menu */
-            padding: 13px 12px; /* Ruang di dalam tombol menu */
-            border-radius: 10px; /* Membulatkan sudut tombol */
-            margin-bottom: 7px; /* Jarak antar-menu */
-            font-size: 14px; /* Ukuran teks menu */
-            transition: 0.2s; /* Menghaluskan perubahan tampilan */
+        /* Flexbox menyusun menu dari atas ke bawah.
+           gap mengatur jarak antarmenu tanpa perlu margin pada setiap item. */
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        /* Memberikan efek ketika pointer berada di atas menu */
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1); /* Latar putih transparan */
+        /* Setiap menu menggunakan flex agar ikon dan teks sejajar.
+           min-height menjaga area klik tetap cukup tinggi.
+           border-radius membuat sudut menu membulat.
+           transition membuat perubahan warna tidak terjadi secara mendadak. */
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 58px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 15px;
+            transition: background-color 0.2s, color 0.2s;
         }
 
-        /* Menandai menu yang sedang aktif */
-        .nav-link.active {
-            background: var(--pink); /* Latar pink untuk menu aktif */
-            color: var(--navy); /* Teks menu aktif berwarna navy */
-            font-weight: bold; /* Menebalkan tulisan menu aktif */
+        /* Hover hanya mengubah tampilan ketika kursor berada di menu.
+           Efek ini membantu pengguna desktop mengetahui elemen yang aktif. */
+        .menu-link:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        /* Mengatur ukuran ikon PNG pada menu */
-        .nav-icon {
-            width: 27px; /* Lebar ikon */
-            height: 27px; /* Tinggi ikon */
-            object-fit: contain; /* Menjaga gambar utuh tanpa terpotong */
-            flex-shrink: 0; /* Mencegah ikon mengecil */
+        /* Class active menandai halaman yang sedang dibuka.
+           Pada kode ini, Beranda selalu aktif.
+           Jika ingin lebih dinamis, class active dapat ditentukan
+           berdasarkan route Laravel yang sedang diakses. */
+        .menu-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: bold;
         }
 
-        /* Mengatur area konten utama di sebelah sidebar */
+        /* Ukuran ikon diseragamkan agar posisi teks konsisten.
+           flex-shrink: 0 mencegah ikon mengecil ketika ruang terbatas. */
+        .menu-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        /* margin-top: auto mendorong bagian login/logout ke bawah
+           karena sidebar menggunakan flex-direction: column.
+           Cara ini lebih fleksibel daripada memberi posisi top tetap. */
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 28px;
+        }
+
+        /* Konten utama digeser sejauh lebar sidebar agar tidak tertutup.
+           min-height memastikan area konten minimal setinggi layar.
+           Padding memberi ruang antara isi halaman dan tepi layar. */
         .main {
-            flex: 1; /* Mengisi sisa ruang halaman */
-            min-width: 0; /* Mencegah konten memaksa layout melebar */
-            padding: 32px; /* Jarak konten dari tepi */
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 32px;
         }
 
-        /* Mengatur bagian judul halaman dan tombol login */
+        /* Header menggunakan flex untuk memisahkan kelompok informasi.
+           justify-content: space-between berguna jika nanti ditambahkan
+           tombol profil atau notifikasi di sebelah kanan. */
         .topbar {
-            display: flex; /* Menyusun teks dan tombol dalam satu baris */
-            justify-content: space-between; /* Memisahkan teks dan tombol */
-            align-items: center; /* Menyejajarkan keduanya secara vertikal */
-            gap: 15px; /* Jarak minimal antarelemen */
-            margin-bottom: 28px; /* Jarak ke bagian berikutnya */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
         }
 
-        /* Mengatur judul sambutan */
-        .topbar h1 {
-            font-size: 27px; /* Ukuran judul */
-            margin-bottom: 8px; /* Jarak judul ke deskripsi */
+        /* Judul utama diberi ukuran besar agar hierarki informasi jelas. */
+        .welcome-title {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 10px;
         }
 
-        /* Mengatur deskripsi di bawah judul sambutan */
-        .topbar p {
-            color: var(--muted); /* Warna teks sekunder */
-            font-size: 14px; /* Ukuran deskripsi */
-            line-height: 1.6; /* Jarak antarbaris */
+        /* Teks pendukung dibuat lebih lembut agar tidak mengalahkan judul.
+           line-height meningkatkan keterbacaan teks yang lebih panjang. */
+        .welcome-subtitle {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Mengatur tampilan tombol login */
-        .login-btn {
-            display: inline-block; /* Memungkinkan padding diterapkan dengan baik */
-            background: var(--navy); /* Latar tombol navy */
-            color: white; /* Teks tombol putih */
-            padding: 12px 20px; /* Ruang dalam tombol */
-            border-radius: 9px; /* Membulatkan sudut tombol */
-            font-size: 14px; /* Ukuran tulisan */
-            font-weight: bold; /* Menebalkan tulisan */
-            white-space: nowrap; /* Mencegah teks tombol turun baris */
-        }
-
-        /* Membuat kotak informasi tentang BreadSaver */
-        .welcome {
-            background: white; /* Latar kotak putih */
-            padding: 24px; /* Jarak dalam kotak */
-            border-radius: 16px; /* Membulatkan sudut kotak */
-            margin-bottom: 25px; /* Jarak ke banner */
-            border: 1px solid #edf0f6; /* Garis tepi tipis */
-        }
-
-        /* Mengatur judul kotak informasi */
-        .welcome h2 {
-            font-size: 21px; /* Ukuran judul */
-            margin-bottom: 10px; /* Jarak ke paragraf */
-        }
-
-        /* Mengatur paragraf kotak informasi */
-        .welcome p {
-            color: var(--muted); /* Warna teks sekunder */
-            line-height: 1.7; /* Jarak antarbaris */
-            font-size: 14px; /* Ukuran teks */
-        }
-
-        /* Mengatur wadah banner promosi */
+        /* Banner mengambil lebar wadah dan memiliki jarak ke bagian produk.
+           Tinggi gambar tidak dipaksakan supaya rasio aslinya tetap terjaga. */
         .banner {
-            margin-bottom: 35px; /* Jarak banner ke daftar produk */
-            border-radius: 16px; /* Membulatkan sudut banner */
-            overflow: hidden; /* Memotong bagian gambar yang keluar dari sudut wadah */
-            background: var(--pink-light); /* Warna latar jika gambar transparan */
+            width: 100%;
+            margin-bottom: 32px;
         }
 
-        /* Membuat gambar banner memenuhi lebar wadah */
-        .banner-image {
-            display: block; /* Menghilangkan ruang kosong bawaan gambar inline */
-            width: 100%; /* Gambar memenuhi lebar banner */
-            height: auto; /* Mempertahankan rasio gambar */
+        .banner img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            object-fit: cover;
         }
 
-        /* Mengatur judul bagian daftar produk */
-        .section-header {
-            display: flex; /* Menyusun judul dan jumlah produk dalam satu baris */
-            justify-content: space-between; /* Memisahkan judul dan jumlah produk */
-            align-items: center; /* Menyejajarkan elemen secara vertikal */
-            gap: 15px; /* Jarak antarelemen */
-            margin-bottom: 20px; /* Jarak ke kartu produk */
+        /* Flexbox memisahkan judul bagian dan jumlah produk.
+           gap menjaga jarak ketika kedua elemen berdekatan. */
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
         }
 
-        .section-header h2 {
-            font-size: 22px; /* Ukuran judul daftar produk */
+        .section-title {
+            font-size: 24px;
+            color: var(--navy);
+            margin-bottom: 8px;
         }
 
-        .section-header p {
-            color: var(--muted); /* Warna deskripsi */
-            font-size: 13px; /* Ukuran deskripsi */
-            line-height: 1.6; /* Jarak antarbaris */
-            margin-top: 7px; /* Jarak dari judul */
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--muted);
         }
 
-        /* Membuat label jumlah produk */
+        /* Label jumlah produk dibuat seperti kapsul.
+           Nilainya berasal dari koleksi Laravel, bukan angka statis. */
         .product-count {
-            background: var(--pink-light); /* Latar pink muda */
-            color: #d64d7b; /* Warna teks pink tua */
-            padding: 9px 13px; /* Ruang dalam label */
-            border-radius: 20px; /* Membuat bentuk kapsul */
-            font-size: 12px; /* Ukuran teks label */
-            white-space: nowrap; /* Mencegah label turun baris */
+            padding: 10px 16px;
+            border-radius: 30px;
+            background: var(--pink-light);
+            color: #ed6590;
+            font-size: 13px;
+            white-space: nowrap;
         }
 
-        /* Menyusun kartu produk dalam tiga kolom */
-        .products {
-            display: grid; /* Menggunakan CSS Grid */
-            grid-template-columns: repeat(3, minmax(0, 1fr)); /* Tiga kolom dengan lebar seimbang */
-            gap: 20px; /* Jarak horizontal dan vertikal antarkartu */
+        /* CSS Grid mengatur kartu dalam kolom yang menyesuaikan lebar layar.
+           repeat(auto-fill, minmax(220px, 1fr)) berarti kolom berukuran
+           minimal 220px dan ruang tersisa dibagi secara fleksibel.
+           Ini lebih adaptif daripada menentukan empat kolom secara tetap. */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 22px;
         }
 
-        /* Mengatur tampilan setiap kartu produk */
+        /* Kartu menyembunyikan bagian gambar yang keluar dari sudut kartu.
+           Border membedakan kartu dari latar halaman.
+           Transition menghaluskan efek hover. */
         .product-card {
-            background: white; /* Latar kartu putih */
-            border: 1px solid #edf0f6; /* Garis tepi kartu */
-            border-radius: 15px; /* Membulatkan sudut kartu */
-            padding: 18px; /* Ruang dalam kartu */
-            transition: transform 0.2s, box-shadow 0.2s; /* Menghaluskan animasi kartu */
+            overflow: hidden;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: box-shadow 0.2s, transform 0.2s;
         }
 
-        /* Memberikan efek ketika pointer berada di atas kartu */
+        /* translateY mengangkat kartu sedikit saat kursor diarahkan.
+           Box-shadow menambah kedalaman visual.
+           Efek ini hanya dekoratif dan tidak mengubah data produk. */
         .product-card:hover {
-            transform: translateY(-4px); /* Mengangkat kartu sedikit ke atas */
-            box-shadow: 0 8px 25px rgba(35, 54, 95, 0.08); /* Menambahkan bayangan halus */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(35, 54, 95, 0.08);
         }
 
-        /* Mengatur kotak tempat gambar roti */
+        /* Wadah gambar memiliki tinggi seragam agar kartu terlihat rapi.
+           Flexbox memusatkan gambar yang ukurannya berbeda-beda. */
+        .product-image-container {
+            height: 190px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        /* Gambar dibatasi ukuran maksimalnya tanpa dipaksa memenuhi wadah.
+           contain lebih cocok daripada cover untuk gambar produk
+           karena seluruh bentuk produk tetap terlihat. */
         .product-image {
-            height: 160px; /* Tinggi wadah gambar */
-            background: var(--pink-light); /* Latar pink muda */
-            border-radius: 12px; /* Membulatkan sudut wadah */
-            display: flex; /* Memudahkan posisi gambar */
-            justify-content: center; /* Memusatkan gambar secara horizontal */
-            align-items: center; /* Memusatkan gambar secara vertikal */
-            margin-bottom: 17px; /* Jarak ke informasi produk */
-            overflow: hidden; /* Menahan gambar agar tidak keluar wadah */
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
-        /* Menjaga gambar roti tetap utuh di dalam kotak */
-        .bread-image {
-            width: 90%; /* Lebar gambar relatif terhadap wadah */
-            height: 90%; /* Tinggi gambar relatif terhadap wadah */
-            object-fit: contain; /* Mempertahankan proporsi gambar */
-        }
-
-        /* Mengatur label persentase diskon */
-        .discount-label {
-            display: inline-block; /* Membuat label mengikuti ukuran teks */
-            background: #ffe4ec; /* Latar label pink pucat */
-            color: #d64d7b; /* Warna tulisan diskon */
-            font-size: 11px; /* Ukuran tulisan */
-            font-weight: bold; /* Menebalkan tulisan */
-            padding: 6px 10px; /* Ruang dalam label */
-            border-radius: 20px; /* Membentuk label kapsul */
-            margin-bottom: 12px; /* Jarak ke nama produk */
-        }
-
-        /* Mengatur nama produk */
-        .product-card h3 {
-            font-size: 17px; /* Ukuran nama produk */
-            margin-bottom: 12px; /* Jarak ke harga */
-            overflow-wrap: anywhere; /* Memungkinkan nama panjang turun baris */
-        }
-
-        /* Mengatur harga sebelum diskon */
-        .price-old {
-            color: var(--muted); /* Warna harga lama dibuat lebih redup */
-            font-size: 13px; /* Ukuran harga lama */
-            text-decoration: line-through; /* Memberikan garis coret */
-            margin-bottom: 5px; /* Jarak ke harga diskon */
-        }
-
-        /* Mengatur harga setelah diskon */
-        .price-new {
-            color: var(--navy); /* Warna harga diskon navy */
-            font-size: 20px; /* Ukuran harga diskon */
-            font-weight: bold; /* Menegaskan harga yang dibayar */
-            margin-bottom: 15px; /* Jarak ke informasi stok */
-        }
-
-        /* Mengatur informasi stok dan kedaluwarsa */
+        /* Padding memberi ruang antara isi kartu dan batas kartu. */
         .product-info {
-            color: var(--muted); /* Warna informasi sekunder */
-            font-size: 12px; /* Ukuran teks informasi */
-            line-height: 1.9; /* Jarak antarbaris */
-            margin-bottom: 15px; /* Jarak ke tombol pembelian */
+            padding: 18px;
         }
 
-        /* Mengatur tombol login pada setiap kartu produk */
-        .buy-btn {
-            display: block; /* Membuat tombol memenuhi lebar kartu */
-            text-align: center; /* Memusatkan teks tombol */
-            padding: 12px; /* Ruang dalam tombol */
-            border-radius: 9px; /* Membulatkan sudut tombol */
-            background: var(--navy); /* Latar tombol navy */
-            color: white; /* Warna teks putih */
-            font-size: 13px; /* Ukuran teks */
-            font-weight: bold; /* Menebalkan teks */
-            transition: 0.2s; /* Menghaluskan perubahan warna */
+        /* overflow-wrap mencegah nama produk panjang merusak lebar kartu. */
+        .product-name {
+            color: var(--navy);
+            font-size: 17px;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
         }
 
-        /* Mengubah warna tombol saat pointer berada di atasnya */
-        .buy-btn:hover,
-        .login-btn:hover {
-            background: #344b7d; /* Navy yang sedikit lebih terang */
+        /* Harga asli dan diskon bisa berada pada baris yang sama.
+           flex-wrap memungkinkan harga pindah baris ketika ruang sempit. */
+        .price-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
-        /* Mengatur tampilan ketika database belum memiliki produk */
+        /* Harga asli dicoret untuk membedakannya dari harga diskon.
+           Harga asli hanya ditampilkan jika nilainya lebih tinggi. */
+        .price-original {
+            color: var(--muted);
+            font-size: 13px;
+            text-decoration: line-through;
+        }
+
+        .price-discount {
+            color: #ed6590;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Detail produk disusun vertikal agar stok dan tanggal
+           kedaluwarsa mudah dibaca. */
+        .product-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        /* Tombol menggunakan display:block dan width:100%
+           agar memenuhi lebar area informasi produk.
+           cursor:pointer menunjukkan bahwa elemen dapat diklik. */
+        .buy-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-align: center;
+            background: var(--pink);
+            color: var(--navy);
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        .buy-button:hover {
+            background: #ff7da5;
+        }
+
+        /* Empty state ditampilkan saat belum ada produk.
+           Flexbox memusatkan gambar dan pesan supaya ruang kosong
+           tidak terlihat seperti halaman yang rusak. */
         .empty-state {
-            background: white; /* Latar putih */
-            padding: 35px 20px; /* Ruang dalam kotak */
-            border: 1px solid #edf0f6; /* Garis tepi */
-            border-radius: 15px; /* Sudut membulat */
-            text-align: center; /* Memusatkan isi */
-            grid-column: 1 / -1; /* Memakai seluruh kolom grid */
+            width: 100%;
+            min-height: 295px;
+            padding: 35px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
         }
 
-        /* Mengatur gambar roti pada kondisi daftar kosong */
-        .empty-image {
-            display: block; /* Membuat gambar menjadi blok */
-            width: 130px; /* Lebar gambar */
-            height: 130px; /* Tinggi gambar */
-            object-fit: contain; /* Menjaga gambar tidak terpotong */
-            margin: 0 auto 15px; /* Memusatkan gambar dan memberi jarak bawah */
+        .empty-state img {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            margin-bottom: 20px;
         }
 
         .empty-state h3 {
-            margin-bottom: 10px; /* Jarak judul ke deskripsi */
+            font-size: 20px;
+            color: var(--navy);
+            margin-bottom: 12px;
         }
 
         .empty-state p {
-            color: var(--muted); /* Warna deskripsi */
-            font-size: 14px; /* Ukuran deskripsi */
-            line-height: 1.7; /* Jarak antarbaris */
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
         }
 
-        /* Mengatur bagian footer di bawah konten */
-        footer {
-            margin-top: 40px; /* Jarak dari konten di atas */
-            padding-top: 20px; /* Jarak teks dari garis atas */
-            border-top: 1px solid #e7eaf1; /* Garis pemisah footer */
-            color: var(--muted); /* Warna teks footer */
-            font-size: 12px; /* Ukuran tulisan footer */
-            text-align: center; /* Memusatkan teks */
+        /* Footer dipisahkan menggunakan garis atas dan jarak.
+           date('Y') pada Blade menghasilkan tahun saat halaman dirender. */
+        .footer {
+            margin-top: 44px;
+            padding: 24px 0;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
         }
 
-        /* Penyesuaian layout untuk layar dengan lebar maksimal 1100px */
-        @media (max-width: 1100px) {
-            .products {
-                grid-template-columns: repeat(2, minmax(0, 1fr)); /* Mengubah produk menjadi dua kolom */
-            }
-
-            .main {
-                padding: 25px; /* Mengurangi ruang konten */
-            }
-        }
-
-        /* Penyesuaian tampilan untuk tablet dan HP */
-        @media (max-width: 700px) {
-            .layout {
-                flex-direction: column; /* Menyusun sidebar di atas konten */
-            }
-
+        /* RESPONSIVE TABLET
+           Aturan ini aktif pada layar maksimal 900px.
+           Sidebar diperkecil supaya konten utama tetap mendapat ruang.
+           Media query lebih tepat daripada membuat halaman terpisah
+           khusus untuk setiap ukuran layar. */
+        @media (max-width: 900px) {
             .sidebar {
-                width: 100%; /* Sidebar memenuhi lebar layar */
-                padding: 18px; /* Mengurangi ruang dalam sidebar */
+                width: 210px;
+                padding: 24px 16px;
+            }
+
+            /* margin-left harus sama dengan lebar sidebar.
+               Jika tidak, konten bisa tertutup atau memiliki jarak berlebih. */
+            .main {
+                margin-left: 210px;
+                padding: 24px;
             }
 
             .logo {
-                max-width: 170px; /* Mengecilkan logo di layar kecil */
+                width: 160px;
             }
 
-            .logo-container {
-                margin-bottom: 20px; /* Mengurangi jarak bawah logo */
-            }
-
-            .nav-title {
-                margin-top: 15px; /* Mengurangi jarak atas judul menu */
-            }
-
-            .main {
-                padding: 20px 15px; /* Mengurangi padding konten */
-            }
-
-            .topbar h1 {
-                font-size: 21px; /* Mengecilkan judul halaman */
-            }
-
-            .topbar p {
-                font-size: 12px; /* Mengecilkan deskripsi */
-            }
-
-            .welcome {
-                padding: 20px; /* Mengurangi ruang kotak informasi */
-            }
-
-            .welcome h2 {
-                font-size: 19px; /* Mengecilkan judul informasi */
-            }
-
-            .products {
-                grid-template-columns: 1fr; /* Menampilkan satu produk per baris */
-            }
-
-            .product-image {
-                height: 190px; /* Menambah tinggi gambar pada kartu HP */
-            }
-
-            .section-header h2 {
-                font-size: 19px; /* Mengecilkan judul daftar produk */
+            .welcome-title {
+                font-size: 26px;
             }
         }
 
-        /* Penyesuaian tambahan untuk layar yang sangat kecil */
-        @media (max-width: 400px) {
-            .topbar {
-                align-items: flex-start; /* Menyejajarkan elemen dari bagian atas */
+        /* RESPONSIVE HP
+           Pada layar maksimal 600px, sidebar berubah menjadi ikon saja.
+           Cara ini menghemat ruang dibanding mempertahankan menu teks.
+           Konsekuensinya, ikon perlu cukup jelas karena label disembunyikan. */
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 76px;
+                padding: 22px 10px;
+                align-items: center;
             }
 
-            .login-btn {
-                padding: 10px 13px; /* Mengecilkan tombol login */
-                font-size: 12px; /* Mengecilkan teks tombol */
+            .logo-container {
+                margin-bottom: 35px;
             }
 
-            .banner {
-                border-radius: 10px; /* Mengurangi pembulatan banner */
+            .logo {
+                width: 55px;
+            }
+
+            .menu-title {
+                display: none;
+            }
+
+            .menu {
+                width: 100%;
+                align-items: center;
+            }
+
+            .menu-link {
+                width: 54px;
+                min-height: 54px;
+                justify-content: center;
+                padding: 10px;
+            }
+
+            /* Hanya teks di dalam menu yang disembunyikan.
+               Ikon tetap ditampilkan sebagai navigasi ringkas. */
+            .menu-link span {
+                display: none;
+            }
+
+            .menu-icon {
+                width: 27px;
+                height: 27px;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            /* Margin konten mengikuti lebar sidebar versi HP. */
+            .main {
+                margin-left: 76px;
+                padding: 20px 14px;
+            }
+
+            .welcome-title {
+                font-size: 23px;
+            }
+
+            .welcome-subtitle {
+                font-size: 13px;
+            }
+
+            /* Judul dan jumlah produk tidak dipaksa sejajar
+               ketika ruang horizontal pada HP terbatas. */
+            .section-heading {
+                align-items: flex-start;
+            }
+
+            .section-title {
+                font-size: 20px;
+            }
+
+            /* Satu kartu per baris membuat kartu tetap mudah dibaca.
+               Jika dipaksa dua kolom, gambar dan informasi bisa terlalu sempit. */
+            .product-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
-
 <body>
-    <!-- Layout utama yang membungkus sidebar dan konten -->
-    <div class="layout">
 
-        <!-- Sidebar berisi logo dan menu navigasi -->
-        <aside class="sidebar">
+    {{-- SIDEBAR: navigasi utama BreadSaver.
+         <aside> dipakai karena menu ini merupakan bagian pendamping
+         konten utama, sedangkan konten utama berada di dalam <main>. --}}
+    <aside class="sidebar">
 
-            <!-- Logo mengarah kembali ke halaman beranda -->
-            <div class="logo-container">
-                <a href="/">
-                    <img
-                        src="{{ asset('images/logo.png') }}" 
-                        alt="BreadSaver" 
-                        class="logo"
-                    >
-                </a>
-            </div>
+        <div class="logo-container">
+            {{-- url('/') menghasilkan URL halaman utama Laravel.
+                 asset() menghasilkan URL file statis di folder public.
+                 Keduanya berbeda: url untuk alamat halaman,
+                 asset untuk gambar, CSS, atau file publik. --}}
+            <a href="{{ url('/') }}">
+                <img src="{{ asset('images/logo.png') }}"
+                     alt="BreadSaver" class="logo">
+            </a>
+        </div>
 
-            <!-- Kelompok menu utama -->
-            <p class="nav-title">Menu Utama</p>
+        <p class="menu-title">MENU UTAMA</p>
 
-            <!-- Tautan menuju halaman beranda -->
-            <a href="/" class="nav-link active">
-                <img
-                    src="{{ asset('images/icon-home.png') }}"
-                    alt=""
-                    class="nav-icon"
-                >
+        <nav class="menu">
+            {{-- url('/') digunakan untuk menuju halaman utama.
+                 Class active menandai menu Beranda sebagai aktif. --}}
+            <a href="{{ url('/') }}" class="menu-link active">
+                <img src="{{ asset('images/icon-home.png') }}"
+                     alt="" class="menu-icon">
                 <span>Beranda</span>
             </a>
 
-            <!-- Tautan menuju bagian daftar produk pada halaman ini -->
-            <a href="#produk" class="nav-link">
-                <img
-                    src="{{ asset('images/icon-product.png') }}"
-                    alt=""
-                    class="nav-icon"
-                >
-                <span>Produk Roti</span>
+            {{-- route('katalog') memakai nama route Laravel.
+                 Named route lebih mudah dirawat daripada menulis URL
+                 secara manual karena URL dapat berubah tanpa harus
+                 mengganti semua tautan yang menggunakannya. --}}
+            <a href="{{ route('katalog') }}" class="menu-link">
+                <img src="{{ asset('images/icon-product.png') }}"
+                     alt="" class="menu-icon">
+                <span>Katalog Produk</span>
             </a>
 
-            <!-- Tautan menuju halaman login Laravel -->
-            <a href="{{ route('login') }}" class="nav-link">
-                <img
-                    src="{{ asset('images/icon-login.png') }}"
-                    alt=""
-                    class="nav-icon"
-                >
-                <span>Login</span>
+            {{-- url('/pesanan') memakai alamat langsung.
+                 Alternatifnya adalah route('pesanan') jika route tersebut
+                 sudah diberi nama di file routes/web.php. --}}
+            <a href="{{ url('/pesanan') }}" class="menu-link">
+                <img src="{{ asset('images/icon-orders.png') }}"
+                     alt="" class="menu-icon">
+                <span>Pesanan</span>
             </a>
 
-            <!-- Kelompok menu informasi -->
-            <p class="nav-title">Tentang Kami</p>
-
-            <!-- Tautan menuju kotak informasi BreadSaver -->
-            <a href="#tentang" class="nav-link">
-                <img
-                    src="{{ asset('images/icon-product.png') }}"
-                    alt=""
-                    class="nav-icon"
-                >
-                <span>Tentang BreadSaver</span>
+            <a href="{{ url('/keranjang') }}" class="menu-link">
+                <img src="{{ asset('images/icon-keranjang.png') }}"
+                     alt="" class="menu-icon">
+                <span>Keranjang</span>
             </a>
+        </nav>
 
-        </aside>
+        <div class="sidebar-bottom">
 
-        <!-- Area konten utama website -->
-        <main class="main">
-
-            <!-- Bagian sambutan dan tombol login -->
-            <header class="topbar">
-                <div>
-                    <h1>Selamat Datang!</h1>
-                    <p>Temukan roti favoritmu dengan harga lebih hemat.</p>
-                </div>
-
-                <!-- route('login') mengambil URL dari route bernama login -->
-                <a href="{{ route('login') }}" class="login-btn">
-                    Login
+            {{-- @guest hanya menampilkan elemen untuk pengunjung
+                 yang belum login.
+                 Ini adalah directive Blade yang menggunakan status
+                 autentikasi Laravel, bukan pengecekan manual JavaScript. --}}
+            @guest
+                <a href="{{ route('login') }}" class="menu-link">
+                    <img src="{{ asset('images/icon-login.png') }}"
+                         alt="" class="menu-icon">
+                    <span>Login</span>
                 </a>
-            </header>
+            @endguest
 
-            <!-- Informasi singkat mengenai tujuan BreadSaver -->
-            <section class="welcome" id="tentang">
-                <h2>Selamatkan Roti, Kurangi Food Waste</h2>
-                <p>
-                    BreadSaver membantu kamu mendapatkan roti dengan harga
-                    diskon sekaligus mengurangi pemborosan makanan.
-                    Temukan pilihan roti yang tersedia hari ini!
+            {{-- @auth hanya menampilkan bagian ini ketika pengguna login.
+                 Form POST dipakai untuk logout karena logout mengubah
+                 status autentikasi dan tidak sebaiknya dilakukan
+                 melalui tautan GET biasa. --}}
+            @auth
+                <form action="{{ route('logout') }}" method="POST">
+
+                    {{-- @csrf menyertakan token perlindungan CSRF Laravel.
+                         Token membantu mencegah permintaan palsu dari situs lain.
+                         Jangan dihapus hanya demi menghemat satu baris. --}}
+                    @csrf
+
+                    <button type="submit" class="menu-link"
+                            style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left;">
+                        <img src="{{ asset('images/icon-login.png') }}"
+                             alt="" class="menu-icon">
+                        <span>Logout</span>
+                    </button>
+                </form>
+            @endauth
+
+        </div>
+    </aside>
+
+    {{-- MAIN: isi utama halaman, terpisah dari sidebar. --}}
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1 class="welcome-title">Selamat Datang!</h1>
+                <p class="welcome-subtitle">
+                    Temukan roti favoritmu dengan harga lebih hemat.
                 </p>
-            </section>
+            </div>
+        </header>
 
-            <!-- Banner promosi menggunakan gambar PNG yang sudah dibuat -->
-            <section class="banner">
-                <img
-                    src="{{ asset('images/bread-banner.png') }}"
-                    alt="Flash Sale Roti BreadSaver"
-                    class="banner-image"
-                >
-            </section>
+        {{-- asset() digunakan agar banner diambil dari folder public/images.
+             Pastikan file bread-banner.png benar-benar tersedia di sana. --}}
+        <section class="banner">
+            <img src="{{ asset('images/bread-banner.png') }}"
+                 alt="Banner BreadSaver">
+        </section>
 
-            <!-- Bagian daftar produk dari database -->
-            <section id="produk">
-
-                <!-- Judul bagian dan jumlah produk yang tersedia -->
-                <div class="section-header">
-                    <div>
-                        <h2>Roti Diskon Hari Ini</h2>
-                        <p>Pilihan roti yang tersedia untuk kamu.</p>
-                    </div>
-
-                    <!-- count() menghitung jumlah produk dalam koleksi -->
-                    <span class="product-count">
-                        {{ $produks->count() }} Produk
-                    </span>
+        <section class="products-section">
+            <div class="section-heading">
+                <div>
+                    <h2 class="section-title">Roti Diskon Hari Ini</h2>
+                    <p class="section-subtitle">
+                        Pilihan roti yang tersedia untuk kamu.
+                    </p>
                 </div>
 
-                <!-- Wadah grid untuk seluruh kartu produk -->
-                <div class="products">
+                {{-- isset() memeriksa apakah variabel tersedia.
+                     count() menghitung jumlah item koleksi.
+                     Operator ternary ?: memilih hasil berdasarkan kondisi.
+                     Jika $produks tidak tersedia, jumlah yang ditampilkan 0.
+                     Namun, controller tetap sebaiknya selalu mengirim
+                     variabel produks agar struktur data konsisten. --}}
+                <span class="product-count">
+                    {{ isset($produks) ? $produks->count() : 0 }} Produk
+                </span>
+            </div>
 
-                    {{-- Mengulang produk; jika koleksi kosong, bagian @empty akan ditampilkan --}}
-                    @forelse ($produks as $produk)
+            {{-- @if menentukan tampilan berdasarkan kondisi.
+                 Pemeriksaan isset mencegah akses variabel yang belum tersedia.
+                 count() > 0 memastikan kartu hanya dibuat jika ada produk. --}}
+            @if(isset($produks) && $produks->count() > 0)
 
-                        <!-- Satu kartu untuk satu produk -->
+                <div class="product-grid">
+
+                    {{-- @foreach mengulang setiap produk dari koleksi.
+                         Dibanding menulis kartu satu per satu, perulangan
+                         membuat halaman otomatis mengikuti isi database. --}}
+                    @foreach($produks as $produk)
+
+                        @php
+                            /*
+                             * Mengubah nilai harga menjadi float agar operasi
+                             * perbandingan harga dilakukan sebagai angka.
+                             *
+                             * ?? adalah null coalescing operator.
+                             * Jika atribut tidak tersedia atau bernilai null,
+                             * nilai pengganti setelah ?? akan digunakan.
+                             *
+                             * Harga diskon memakai harga asli sebagai default.
+                             * Ini mencegah harga menjadi 0 hanya karena harga
+                             * diskon belum diisi, tetapi aturan bisnis yang
+                             * sebenarnya tetap perlu ditentukan di backend.
+                             *
+                             * Stok diubah menjadi integer karena jumlah barang
+                             * biasanya dihitung dalam bilangan bulat.
+                             */
+                            $hargaAsli = (float) ($produk->harga_asli ?? 0);
+                            $hargaDiskon = (float) ($produk->harga_diskon ?? $hargaAsli);
+                            $stok = (int) ($produk->stok ?? 0);
+                        @endphp
+
                         <article class="product-card">
 
-                            <!-- Ilustrasi PNG untuk gambar produk -->
-                            <div class="product-image">
+                            <div class="product-image-container">
+                                {{-- Saat ini semua produk menggunakan gambar
+                                     bread.png yang sama.
+                                     Jika setiap produk memiliki gambar sendiri,
+                                     gunakan atribut gambar dari database.
+                                     alt berisi nama produk untuk aksesibilitas. --}}
                                 <img
                                     src="{{ asset('images/bread.png') }}"
-                                    alt="Roti {{ $produk->nama_produk }}"
-                                    class="bread-image"
+                                    alt="{{ $produk->nama_produk }}"
+                                    class="product-image"
                                 >
                             </div>
 
-                            {{-- Menghitung persentase diskon dan mencegah pembagian dengan nol --}}
-                            @php
-                                $diskon = $produk->harga_asli > 0
-                                    ? round(
-                                        (($produk->harga_asli - $produk->harga_diskon)
-                                        / $produk->harga_asli) * 100
-                                    )
-                                    : 0;
-                            @endphp
-
-                            <!-- Label persentase diskon -->
-                            <span class="discount-label">
-                                Hemat {{ max(0, $diskon) }}%
-                            </span>
-
-                            <!-- Nama produk diambil dari database -->
-                            <h3>{{ $produk->nama_produk }}</h3>
-
-                            <!-- Harga sebelum diskon dengan format rupiah -->
-                            <p class="price-old">
-                                Rp {{ number_format($produk->harga_asli, 0, ',', '.') }}
-                            </p>
-
-                            <!-- Harga setelah diskon dengan format rupiah -->
-                            <p class="price-new">
-                                Rp {{ number_format($produk->harga_diskon, 0, ',', '.') }}
-                            </p>
-
-                            <!-- Informasi stok dan tanggal kedaluwarsa -->
                             <div class="product-info">
-                                Stok: {{ $produk->stok }}<br>
 
-                                Kedaluwarsa:
-                                {{ $produk->expired_at
-                                    ? \Carbon\Carbon::parse($produk->expired_at)->format('d-m-Y')
-                                    : '-' }}
+                                {{-- Blade {{ }} melakukan escaping output HTML
+                                     untuk membantu mencegah XSS.
+                                     Lebih aman daripada mencetak input pengguna
+                                     menggunakan {!! !!} tanpa sanitasi. --}}
+                                <h3 class="product-name">
+                                    {{ $produk->nama_produk }}
+                                </h3>
+
+                                <div class="price-row">
+
+                                    {{-- Harga asli hanya ditampilkan jika
+                                         lebih besar daripada harga diskon.
+                                         Perbandingan ini menghindari coretan
+                                         harga ketika tidak ada potongan. --}}
+                                    @if($hargaAsli > $hargaDiskon)
+                                        <span class="price-original">
+                                            Rp{{ number_format($hargaAsli, 0, ',', '.') }}
+                                        </span>
+                                    @endif
+
+                                    {{-- number_format memformat angka menjadi
+                                         format Rupiah tanpa angka desimal.
+                                         Parameter: jumlah desimal, pemisah
+                                         desimal, dan pemisah ribuan. --}}
+                                    <span class="price-discount">
+                                        Rp{{ number_format($hargaDiskon, 0, ',', '.') }}
+                                    </span>
+                                </div>
+
+                                <div class="product-detail">
+
+                                    {{-- Stok sudah disimpan dalam variabel
+                                         integer agar mudah digunakan kembali. --}}
+                                    <span>Stok: {{ $stok }}</span>
+
+                                    {{-- empty() memeriksa apakah nilai kosong.
+                                         Tanggal hanya ditampilkan jika tersedia.
+                                         Carbon::parse mengubah nilai tanggal
+                                         menjadi objek tanggal yang bisa diformat.
+                                         format('d-m-Y') menghasilkan hari-bulan-tahun.
+                                         Jika data tanggal tidak valid, parse()
+                                         dapat menimbulkan error sehingga validasi
+                                         tanggal sebaiknya dilakukan di backend. --}}
+                                    @if(!empty($produk->expired_at))
+                                        <span>
+                                            Kedaluwarsa:
+                                            {{ \Carbon\Carbon::parse($produk->expired_at)->format('d-m-Y') }}
+                                        </span>
+                                    @endif
+
+                                </div>
+
+                                {{-- Tombol ini mengarahkan pengguna ke login.
+                                     Ini bukan proses pembelian sebenarnya.
+                                     Untuk pembelian setelah login, tautan dapat
+                                     diganti dengan route detail produk atau
+                                     endpoint tambah ke keranjang yang sesuai. --}}
+                                <a href="{{ route('login') }}" class="buy-button">
+                                    Login untuk Membeli
+                                </a>
+
                             </div>
-
-                            <!-- Pengguna diarahkan ke login sebelum melanjutkan pembelian -->
-                            <a href="{{ route('login') }}" class="buy-btn">
-                                Login untuk Membeli
-                            </a>
-
                         </article>
 
-                    {{-- Ditampilkan jika database tidak memiliki produk --}}
-                    @empty
-
-                        <div class="empty-state">
-
-                            <!-- Gambar pengganti saat produk belum tersedia -->
-                            <img
-                                src="{{ asset('images/bread.png') }}"
-                                alt="Roti"
-                                class="empty-image"
-                            >
-
-                            <h3>Belum Ada Roti Tersedia</h3>
-
-                            <p>
-                                Saat ini belum ada produk roti yang dijual.
-                                Silakan cek kembali nanti.
-                            </p>
-
-                        </div>
-
-                    {{-- Menutup blok pengulangan Blade --}}
-                    @endforelse
-
+                    @endforeach
                 </div>
-            </section>
 
-            <!-- Footer menampilkan tahun saat ini dan slogan website -->
-            <footer>
-                © {{ date('Y') }} BreadSaver.
-                Selamatkan Roti, Kurangi Food Waste.
-            </footer>
+            @else
 
-        </main>
-    </div>
+                {{-- Empty state muncul ketika koleksi kosong atau tidak tersedia.
+                     Memberi pesan yang jelas lebih baik daripada membiarkan
+                     bagian produk kosong tanpa penjelasan. --}}
+                <div class="empty-state">
+                    <img src="{{ asset('images/bread.png') }}" alt="Roti">
+                    <h3>Belum Ada Roti Tersedia</h3>
+                    <p>
+                        Saat ini belum ada produk roti yang dijual.
+                        Silakan cek kembali nanti.
+                    </p>
+                </div>
+
+            @endif
+        </section>
+
+        <footer class="footer">
+            {{-- date('Y') mengambil tahun saat halaman dirender.
+                 Jadi tahun tidak perlu diganti secara manual setiap tahun. --}}
+            © {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.
+        </footer>
+
+    </main>
+
 </body>
 </html>
