@@ -162,6 +162,10 @@
             padding-top: 28px;
         }
 
+        .sidebar-bottom .menu-link {
+            margin-bottom: 8px;
+        }
+
         /* Konten utama digeser sejauh lebar sidebar agar tidak tertutup.
            min-height memastikan area konten minimal setinggi layar.
            Padding memberi ruang antara isi halaman dan tepi layar. */
