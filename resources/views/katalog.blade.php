@@ -430,7 +430,7 @@
         </a>
 
         <!-- Menu Pesanan menggunakan ikon PNG yang telah disiapkan. -->
-        <a href="#pesanan" class="nav-link">
+        <a href="{{ route('pesanan') }}" class="nav-link">
             <img
                 src="{{ asset('images/icon-orders.png') }}"
                 alt=""
@@ -440,7 +440,7 @@
         </a>
 
         <!-- Menu Keranjang menggunakan ikon PNG yang telah disiapkan. -->
-        <a href="#keranjang" class="nav-link">
+        <a href="{{ route('keranjang') }}" class="nav-link">
             <img
                 src="{{ asset('images/icon-keranjang.png') }}"
                 alt=""
