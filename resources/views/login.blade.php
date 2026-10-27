@@ -346,17 +346,7 @@
                 Masuk untuk menemukan roti favorit dengan harga hemat.
             </p>
 
-            <!--
-            POST mengirim data melalui request body, bukan URL.
-            route('login') menggunakan nama route Laravel agar alamat
-            tidak perlu ditulis manual.
-
-            Route POST harus terhubung ke proses autentikasi
-            di controller Laravel.
-            -->
-            <form method="POST" action="{{ route('login') }}">
-
-                <!-- Token CSRF untuk perlindungan form Laravel. -->
+            <form action="{{ route('login') }}" method="POST">
                 @csrf
 
                 <!-- Menampilkan pesan validasi jika terdapat error. -->
@@ -368,44 +358,18 @@
                     </div>
                 @endif
 
-                <!-- Input alamat email pengguna. -->
+                <!-- Input email dan password -->
                 <div class="form-group">
                     <label for="email">Alamat email</label>
-
-                    <!-- type=email membantu browser memeriksa format email. -->
-                    <!-- old() mempertahankan email jika validasi gagal. -->
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="nama@email.com"
-                        value="{{ old('email') }}"
-                        autocomplete="username"
-                        required
-                        autofocus
-                    >
+                    <input type="email" id="email" name="email" placeholder="Alamat email" value="{{ old('email') }}" required autofocus>
                 </div>
 
-                <!-- Input password pengguna. -->
                 <div class="form-group">
                     <label for="password">Password</label>
-
-                    <!-- type=password menyamarkan karakter di layar. -->
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan password"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
-
-                <!-- Mengirim data form ke server. -->
-                <button type="submit" class="login-button">
-                    Masuk
-                </button>
-
+                
+                <button type="submit" class="login-button">Masuk</button>
             </form>
 
             <!-- Tautan untuk kembali ke halaman utama. -->
