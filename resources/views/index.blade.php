@@ -201,6 +201,25 @@
             line-height: 1.6;
         }
 
+        /* Tombol Daftar di kanan atas untuk pengunjung yang belum login. */
+        .register-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 22px;
+            border-radius: 9px;
+            background: var(--pink);
+            color: var(--navy);
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .register-button:hover {
+            background: #ff7da5;
+        }
+
         /* Banner mengambil lebar wadah dan memiliki jarak ke bagian produk.
            Tinggi gambar tidak dipaksakan supaya rasio aslinya tetap terjaga. */
         .banner {
@@ -277,24 +296,21 @@
             box-shadow: 0 8px 24px rgba(35, 54, 95, 0.08);
         }
 
-        /* Wadah gambar memiliki tinggi seragam agar kartu terlihat rapi.
-           Flexbox memusatkan gambar yang ukurannya berbeda-beda. */
+        /* Area foto produk dibuat penuh agar gambar terlihat jelas. */
         .product-image-container {
+            width: 100%;
             height: 190px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background: #ffffff;
+            overflow: hidden;
+            background: var(--pink-light);
         }
 
-        /* Gambar dibatasi ukuran maksimalnya tanpa dipaksa memenuhi wadah.
-           contain lebih cocok daripada cover untuk gambar produk
-           karena seluruh bentuk produk tetap terlihat. */
+        /* Foto memenuhi seluruh area gambar tanpa menyisakan ruang kosong. */
         .product-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
 
         /* Padding memberi ruang antara isi kartu dan batas kartu. */
@@ -627,6 +643,12 @@
                     Temukan roti favoritmu dengan harga lebih hemat.
                 </p>
             </div>
+
+            @guest
+                <a href="{{ url('/register') }}" class="register-button">
+                    Register
+                </a>
+            @endguest
         </header>
 
         {{-- asset() digunakan agar banner diambil dari folder public/images.
@@ -688,20 +710,46 @@
                             $hargaAsli = (float) ($produk->harga_asli ?? 0);
                             $hargaDiskon = (float) ($produk->harga_diskon ?? $hargaAsli);
                             $stok = (int) ($produk->stok ?? 0);
+
+                            // Memilih foto produk berdasarkan nama seperti di halaman katalog.
+                            $namaProduk = strtolower($produk->nama_produk);
+
+                            if (
+                                \Illuminate\Support\Str::contains(
+                                    $namaProduk,
+                                    ['croissant', 'pastry']
+                                )
+                            ) {
+                                $gambarProduk = 'images/croissant.png';
+                            } elseif (
+                                \Illuminate\Support\Str::contains(
+                                    $namaProduk,
+                                    ['tawar', 'sandwich']
+                                )
+                            ) {
+                                $gambarProduk = 'images/roti-tawar.png';
+                            } elseif (
+                                \Illuminate\Support\Str::contains(
+                                    $namaProduk,
+                                    ['cokelat', 'coklat', 'chocolate']
+                                )
+                            ) {
+                                $gambarProduk = 'images/roti-cokelat.png';
+                            } else {
+                                $gambarProduk = 'images/bread.png';
+                            }
                         @endphp
 
                         <article class="product-card">
 
                             <div class="product-image-container">
-                                {{-- Saat ini semua produk menggunakan gambar
-                                     bread.png yang sama.
-                                     Jika setiap produk memiliki gambar sendiri,
-                                     gunakan atribut gambar dari database.
-                                     alt berisi nama produk untuk aksesibilitas. --}}
+                                {{-- Foto dipilih berdasarkan nama produk.
+                                     Jika foto khusus tidak ditemukan, gunakan bread.png. --}}
                                 <img
-                                    src="{{ asset('images/bread.png') }}"
+                                    src="{{ asset($gambarProduk) }}"
                                     alt="{{ $produk->nama_produk }}"
                                     class="product-image"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/bread.png') }}';"
                                 >
                             </div>
 
