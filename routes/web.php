@@ -125,3 +125,10 @@ Route::middleware(['auth'])->group(function () {
         return view('admin.laporan');
     })->name('admin.laporan');
 });
+
+// 3. Rute Register
+    Route::get('/register', [AuthController::class, 'showRegister'])
+        ->name('register');
+
+    Route::post('/register', [AuthController::class, 'register'])
+        ->name('register.store');
