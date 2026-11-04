@@ -56,8 +56,11 @@
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px; }
         .product-card { overflow: hidden; background: var(--white); border: 1px solid var(--border); border-radius: 16px; transition: 0.2s; }
         .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(35, 54, 95, 0.08); }
-        .product-image-container { height: 190px; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        
+        /* Wadah Gambar Produk agar pas dan tidak gepeng */
+        .product-image-container { height: 190px; display: flex; justify-content: center; align-items: center; padding: 20px; background: var(--pink-light); }
         .product-image { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
         .product-info { padding: 18px; }
         .product-name { color: var(--navy); font-size: 17px; margin-bottom: 12px; }
         .price-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
@@ -100,7 +103,7 @@
             </a>
 
             <!-- Keranjang Khusus Pembeli -->
-            <a href="{{ route('pembeli.keranjang') }}" class="menu-link">
+            <a href="{{ route('pembeli.keranjang') }}" class="menu-link {{ request()->routeIs('pembeli.keranjang') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="menu-icon" alt=""><span>Keranjang</span>
             </a>
         </nav>
@@ -150,10 +153,23 @@
                             $hargaAsli = (float)($produk->harga_asli ?? 0);
                             $hargaDiskon = (float)($produk->harga_diskon ?? $hargaAsli);
                             $stok = (int)($produk->stok ?? 0);
+
+                            // Logika pemilihan gambar otomatis berdasarkan nama produk
+                            $namaProduk = strtolower($produk->nama_produk);
+                            if (\Illuminate\Support\Str::contains($namaProduk, ['cokelat', 'coklat', 'chocolate'])) {
+                                $gambarProduk = 'images/roti-cokelat.png';
+                            } elseif (\Illuminate\Support\Str::contains($namaProduk, ['croissant', 'pastry'])) {
+                                $gambarProduk = 'images/croissant.png';
+                            } elseif (\Illuminate\Support\Str::contains($namaProduk, ['tawar', 'sandwich'])) {
+                                $gambarProduk = 'images/roti-tawar.png';
+                            } else {
+                                $gambarProduk = 'images/bread.png';
+                            }
                         @endphp
+                        
                         <article class="product-card">
                             <div class="product-image-container">
-                                <img src="{{ asset('images/bread.png') }}" alt="{{ $produk->nama_produk }}" class="product-image">
+                                <img src="{{ asset($gambarProduk) }}" alt="{{ $produk->nama_produk }}" class="product-image">
                             </div>
                             <div class="product-info">
                                 <h3 class="product-name">{{ $produk->nama_produk }}</h3>
@@ -170,9 +186,12 @@
                                     @endif
                                 </div>
 
-                                <!-- REVISI: Tombol aksi berubah otomatis berdasarkan status login user -->
+                                <!-- Tombol aksi berdasarkan status login user -->
                                 @auth
-                                    <a href="#" class="buy-button">Beli Sekarang</a>
+                                    <form action="{{ route('keranjang.tambah', $produk->id_produk) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="buy-button">Beli Sekarang</button>
+                                    </form>
                                 @else
                                     <a href="{{ route('login') }}" class="buy-button">Login untuk Membeli</a>
                                 @endauth

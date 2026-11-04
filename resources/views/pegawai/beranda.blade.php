@@ -53,8 +53,11 @@
         </header>
 
         <section class="summary-grid">
-            <article class="summary-card"><p class="summary-label">Produk Tersedia</p><p class="summary-number">{{ $totalProduk ?? 12 }}</p></article>
-            <article class="summary-card"><p class="summary-label">Pesanan Perlu Diproses</p><p class="summary-number">{{ $pesananBaru ?? 2 }}</p></article>
+            <!-- DIUBAH: Menyesuaikan dengan variabel dari PegawaiController ($produktersedia) -->
+            <article class="summary-card"><p class="summary-label">Produk Tersedia</p><p class="summary-number">{{ $produktersedia ?? 0 }}</p></article>
+            
+            <!-- DIUBAH: Menyesuaikan dengan variabel dari PegawaiController ($pesananPerluDiproses) -->
+            <article class="summary-card"><p class="summary-label">Pesanan Perlu Diproses</p><p class="summary-number">{{ $pesananPerluDiproses ?? 0 }}</p></article>
         </section>
 
         <footer class="main-footer">© {{ date('Y') }} BreadSaver. Staff Panel.</footer>

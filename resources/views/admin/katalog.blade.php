@@ -15,7 +15,7 @@
         .logo-container { display: flex; justify-content: center; margin-bottom: 56px; }
         .logo { width: 180px; object-fit: contain; }
         .nav-title { color: #c4cce0; font-size: 12px; letter-spacing: 1px; margin: 0 10px 18px; text-transform: uppercase; }
-        .nav-link { display: flex; align-items: center; gap: 14px; min-height: 58px; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; color: var(--white); font-size: 15px; }
+        .nav-link { display: flex; align-items: center; gap: 14px; min-height: 58px; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; color: var(--white); font-size: 15px; text-decoration: none; }
         .nav-link:hover { background: rgba(255, 255, 255, 0.1); }
         .nav-link.active { background: var(--pink); color: var(--navy); font-weight: bold; }
         .nav-icon { width: 28px; height: 28px; object-fit: contain; }
@@ -24,7 +24,7 @@
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
         .page-header h1 { font-size: 27px; margin-bottom: 6px; }
         .page-header p { color: var(--muted); font-size: 14px; }
-        .btn-add { background: var(--pink); color: var(--navy); padding: 10px 18px; border-radius: 9px; font-weight: bold; font-size: 13px; border: none; cursor: pointer; }
+        .btn-add { background: var(--pink); color: var(--navy); padding: 10px 18px; border-radius: 9px; font-weight: bold; font-size: 13px; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
         .table-card { background: var(--white); border: 1px solid #edf0f6; border-radius: 15px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; white-space: nowrap; }
         th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid #edf0f6; font-size: 13px; }
@@ -37,11 +37,11 @@
         <div class="logo-container"><a href="{{ route('admin.beranda') }}"><img src="{{ asset('images/logo.png') }}" class="logo"></a></div>
         <p class="nav-title">Admin Panel</p>
         <a href="{{ route('admin.beranda') }}" class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
-    <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
-</a>
-<a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
-    <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog</span>
-</a>
+            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
+        </a>
+        <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog</span>
+        </a>
         <a href="{{ route('admin.kelola_akun') }}" class="nav-link"><img src="{{ asset('images/icon-orders.png') }}" class="nav-icon"><span>Kelola Akun</span></a>
         <a href="{{ route('admin.laporan') }}" class="nav-link"><img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon"><span>Laporan</span></a>
         <div class="sidebar-bottom">
@@ -58,7 +58,8 @@
                 <h1>Kelola Katalog Produk</h1>
                 <p>Tambah, ubah, atau hapus daftar roti diskon.</p>
             </div>
-            <a href="#" class="btn-add">+ Tambah Produk</a>
+            <!-- DIUBAH: Mengarah ke rute tambah produk admin -->
+            <a href="{{ route('admin.katalog.tambah') }}" class="btn-add">+ Tambah Produk</a>
         </header>
 
         <section class="table-card">
@@ -79,7 +80,8 @@
                             <td>Rp {{ number_format($produk->harga_asli, 0, ',', '.') }}</td>
                             <td style="color: #ed6590; font-weight: bold;">Rp {{ number_format($produk->harga_diskon, 0, ',', '.') }}</td>
                             <td>{{ $produk->stok }}</td>
-                            <td><a href="#" style="color: var(--navy); font-weight: bold;">Edit</a></td>
+                            <!-- DIUBAH: Mengarah ke rute edit produk dengan membawa id_produk -->
+                            <td><a href="{{ route('admin.katalog.edit', $produk->id_produk) }}" style="color: var(--navy); font-weight: bold; text-decoration: none;">Edit</a></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--muted);">Belum ada data produk.</td></tr>

@@ -119,12 +119,13 @@
                         <tbody>
                             @foreach ($keranjangs as $item)
                                 @php 
-                                    $harga = $item->produk->harga_diskon ?? $item->produk->harga_asli ?? 0;
+                                    // DIPERBAIKI: Mengambil langsung dari properti $item (hasil Query Builder)
+                                    $harga = $item->harga_diskon > 0 ? $item->harga_diskon : $item->harga_asli;
                                     $subtotal = $harga * $item->jumlah;
                                     $totalSemua += $subtotal;
                                 @endphp
                                 <tr>
-                                    <td style="font-weight: bold; color: var(--navy);">{{ $item->produk->nama_produk ?? 'Produk' }}</td>
+                                    <td style="font-weight: bold; color: var(--navy);">{{ $item->nama_produk ?? 'Produk' }}</td>
                                     <td>Rp {{ number_format($harga, 0, ',', '.') }}</td>
                                     <td>
                                         <div class="qty-box">
