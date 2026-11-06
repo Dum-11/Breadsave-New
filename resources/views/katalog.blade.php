@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Katalog Produk - BreadSaver</title>
+    <title>Kelola Katalog - Admin BreadSaver</title>
+
     <style>
         :root {
             --navy: #23365f;
@@ -14,6 +15,7 @@
             --text: #26324b;
             --muted: #8991a4;
             --white: #ffffff;
+            --border: #e7eaf1;
         }
 
         * {
@@ -22,19 +24,30 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            min-height: 100%;
             font-family: Arial, sans-serif;
             background: var(--background);
             color: var(--text);
         }
 
+        body {
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* SIDEBAR */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 240px;
+            width: 230px;
             height: 100vh;
-            padding: 28px 22px;
+            padding: 28px 20px;
             background: var(--navy);
             color: var(--white);
             display: flex;
@@ -45,11 +58,13 @@
         .logo-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 56px;
+            margin-bottom: 50px;
         }
 
         .logo {
-            width: 180px;
+            width: 170px;
+            max-width: 100%;
+            height: auto;
             object-fit: contain;
         }
 
@@ -64,14 +79,14 @@
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 14px;
-            min-height: 58px;
-            padding: 12px 14px;
+            gap: 12px;
+            min-height: 52px;
+            padding: 12px;
             border-radius: 12px;
             margin-bottom: 8px;
             color: var(--white);
-            font-size: 15px;
-            text-decoration: none;
+            font-size: 14px;
+            width: 100%;
         }
 
         .nav-link:hover {
@@ -85,28 +100,37 @@
         }
 
         .nav-icon {
-            width: 28px;
-            height: 28px;
+            width: 25px;
+            height: 25px;
             object-fit: contain;
+            flex-shrink: 0;
         }
 
         .sidebar-bottom {
             margin-top: auto;
         }
 
+        /* KONTEN UTAMA */
         .main {
-            margin-left: 240px;
+            width: calc(100% - 230px);
             min-height: 100vh;
-            padding: 32px;
+            margin-left: 230px;
+            padding: 30px;
         }
 
         .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
             margin-bottom: 28px;
         }
 
         .page-header h1 {
-            font-size: 27px;
-            margin-bottom: 8px;
+            font-size: 26px;
+            margin-bottom: 7px;
+            color: var(--navy);
         }
 
         .page-header p {
@@ -114,362 +138,396 @@
             font-size: 14px;
         }
 
-        .catalog-tools {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 24px;
-        }
-
-        .search-input {
-            width: 100%;
-            max-width: 420px;
-            height: 43px;
-            padding: 0 14px;
-            border: 1px solid #e1e5ee;
+        .btn-add {
+            display: inline-block;
+            background: var(--pink);
+            color: var(--navy);
+            padding: 12px 18px;
             border-radius: 9px;
-            outline: none;
+            font-weight: bold;
             font-size: 13px;
-        }
-
-        .search-input:focus {
-            border-color: var(--navy);
-        }
-
-        .product-count {
-            background: var(--pink-light);
-            color: #d64d7b;
-            padding: 9px 13px;
-            border-radius: 20px;
-            font-size: 12px;
             white-space: nowrap;
         }
 
-        .products {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 20px;
+        .btn-add:hover {
+            opacity: 0.85;
         }
 
-        .product-card {
-            background: white;
+        /* NOTIFIKASI */
+        .alert-success {
+            padding: 13px 16px;
+            background: #e8f8ed;
+            color: #237a3b;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* TABEL */
+        .table-card {
+            width: 100%;
+            background: var(--white);
             border: 1px solid #edf0f6;
             border-radius: 15px;
-            padding: 18px;
-        }
-
-        /* Area gambar produk */
-        .product-image {
-            width: 100%;
-            height: 180px;
-            background: var(--pink-light);
-            border-radius: 12px;
-            margin-bottom: 17px;
             overflow: hidden;
         }
 
-        /* Gambar memenuhi seluruh area produk */
-        .bread-image {
+        table {
             width: 100%;
-            height: 100%;
-            padding: 0;
-            object-fit: cover;
-            object-position: center;
-            display: block;
+            table-layout: fixed;
+            border-collapse: collapse;
         }
 
-        .discount-label {
-            display: inline-block;
-            background: #ffe4ec;
-            color: #d64d7b;
+        th, td {
+            padding: 14px 10px;
+            text-align: left;
+            border-bottom: 1px solid #edf0f6;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #fafbfe;
+            color: var(--muted);
             font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        th:nth-child(1) { width: 12%; }
+        th:nth-child(2) { width: 23%; }
+        th:nth-child(3) { width: 17%; }
+        th:nth-child(4) { width: 17%; }
+        th:nth-child(5) { width: 10%; }
+        th:nth-child(6) { width: 21%; }
+
+        .product-name {
             font-weight: bold;
-            padding: 6px 10px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-        }
-
-        .product-card h2 {
-            font-size: 17px;
-            margin-bottom: 12px;
-        }
-
-        .price-old {
-            color: var(--muted);
-            font-size: 13px;
-            text-decoration: line-through;
-            margin-bottom: 5px;
-        }
-
-        .price-new {
             color: var(--navy);
-            font-size: 20px;
+        }
+
+        .discount-price {
+            color: #ed6590;
             font-weight: bold;
-            margin-bottom: 15px;
         }
 
-        .product-info {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.9;
-            margin-bottom: 15px;
-        }
-
-        .buy-btn {
+        .product-image {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 10px;
             display: block;
-            text-align: center;
-            padding: 12px;
-            border-radius: 9px;
-            background: var(--navy);
-            color: white;
-            font-size: 13px;
+        }
+
+        .no-image {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .btn-edit {
+            display: inline-block;
+            padding: 8px 13px;
+            background: var(--pink-light);
+            color: var(--navy);
+            border-radius: 7px;
+            font-size: 12px;
             font-weight: bold;
-            text-decoration: none;
         }
 
-        .buy-btn:hover {
-            background: #344b7d;
+        .btn-edit:hover {
+            background: var(--pink);
         }
 
+        .empty-data {
+            text-align: center;
+            padding: 35px;
+            color: var(--muted);
+        }
+
+        /* FOOTER */
         .main-footer {
-            margin-top: 40px;
+            margin-top: 35px;
             padding-top: 20px;
-            border-top: 1px solid #e7eaf1;
+            border-top: 1px solid var(--border);
             color: var(--muted);
             font-size: 12px;
             text-align: center;
         }
 
-        [hidden] {
-            display: none !important;
-        }
-
-        @media (max-width: 1000px) {
-            .products {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 650px) {
+        /* TABLET */
+        @media screen and (max-width: 900px) {
             .sidebar {
                 width: 190px;
-                padding: 22px 14px;
+                padding: 25px 14px;
             }
 
             .main {
+                width: calc(100% - 190px);
                 margin-left: 190px;
+                padding: 22px;
+            }
+
+            .page-header h1 {
+                font-size: 22px;
+            }
+
+            th, td {
+                padding: 10px 6px;
+                font-size: 11px;
+            }
+
+            .product-image {
+                width: 52px;
+                height: 52px;
+            }
+        }
+
+        /* HANDPHONE */
+        @media screen and (max-width: 650px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 15px;
+            }
+
+            .logo-container {
+                margin-bottom: 20px;
+            }
+
+            .logo {
+                width: 140px;
+            }
+
+            .nav-title {
+                margin-bottom: 10px;
+            }
+
+            .nav-link {
+                display: inline-flex;
+                width: auto;
+                min-height: 42px;
+                padding: 9px;
+                font-size: 12px;
+                gap: 7px;
+            }
+
+            .nav-icon {
+                width: 20px;
+                height: 20px;
+            }
+
+            .sidebar-bottom {
+                margin-top: 8px;
+            }
+
+            .main {
+                width: 100%;
+                margin-left: 0;
                 padding: 20px 14px;
             }
 
-            .products {
-                grid-template-columns: 1fr;
+            .page-header {
+                align-items: flex-start;
             }
 
-            .catalog-tools {
-                align-items: stretch;
-                flex-direction: column;
+            .page-header h1 {
+                font-size: 21px;
             }
 
-            .search-input {
-                max-width: none;
+            .page-header p {
+                font-size: 12px;
+            }
+
+            .btn-add {
+                padding: 10px 13px;
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+                font-size: 9px;
+            }
+
+            th {
+                font-size: 8px;
+            }
+
+            .product-image {
+                width: 40px;
+                height: 40px;
+            }
+
+            .btn-edit {
+                padding: 6px 7px;
+                font-size: 9px;
             }
         }
     </style>
 </head>
+
 <body>
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
+
         <div class="logo-container">
-            <a href="{{ url('/') }}">
-                <img src="{{ asset('images/logo.png') }}" class="logo" alt="BreadSaver">
+            <a href="{{ route('admin.beranda') }}">
+                <img src="{{ asset('images/logo.png') }}"
+                     class="logo"
+                     alt="Logo BreadSaver">
             </a>
         </div>
 
-        <p class="nav-title">Menu Utama</p>
+        <p class="nav-title">Admin Panel</p>
 
-        <a href="{{ url('/') }}" class="nav-link">
-            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
+        <a href="{{ route('admin.beranda') }}"
+           class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-home.png') }}"
+                 class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
 
-        <a href="{{ route('katalog') }}" class="nav-link active">
-            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
-            <span>Katalog Produk</span>
+        <a href="{{ route('admin.katalog') }}"
+           class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-product.png') }}"
+                 class="nav-icon" alt="">
+            <span>Katalog</span>
         </a>
 
-        <a href="{{ route('pesanan') }}" class="nav-link">
-            <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
-            <span>Pesanan</span>
+        <a href="{{ route('admin.kelola_akun') }}" class="nav-link">
+            <img src="{{ asset('images/icon-orders.png') }}"
+                 class="nav-icon" alt="">
+            <span>Kelola Akun</span>
         </a>
 
-        <a href="{{ route('keranjang') }}" class="nav-link">
-            <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
-            <span>Keranjang</span>
+        <a href="{{ route('admin.laporan') }}" class="nav-link">
+            <img src="{{ asset('images/icon-keranjang.png') }}"
+                 class="nav-icon" alt="">
+            <span>Laporan</span>
         </a>
 
         <div class="sidebar-bottom">
-            @auth
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                        <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
-                        <span>Logout</span>
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('login') }}" class="nav-link">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
-                    <span>Login</span>
-                </a>
-            @endauth
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+
+                <button type="submit"
+                        class="nav-link"
+                        style="border:0;background:transparent;cursor:pointer;text-align:left;">
+                    <img src="{{ asset('images/icon-login.png') }}"
+                         class="nav-icon" alt="">
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
+
     </aside>
 
+    <!-- KONTEN UTAMA -->
     <main class="main">
+
         <header class="page-header">
-            <h1>Katalog Produk</h1>
-            <p>Temukan roti yang tersedia dengan harga lebih hemat.</p>
+            <div>
+                <h1>Kelola Katalog Produk</h1>
+                <p>Tambah, ubah, atau hapus daftar roti diskon.</p>
+            </div>
+
+            <a href="{{ route('admin.produk.create') }}" class="btn-add">
+                + Tambah Produk
+            </a>
         </header>
 
-        <div class="catalog-tools">
-            <input
-                type="search"
-                id="searchProduct"
-                class="search-input"
-                placeholder="Cari nama roti..."
-            >
-
-            <span class="product-count" id="productCount">
-                {{ $produks->count() }} Produk
-            </span>
-        </div>
-
-        <section class="products" id="productList">
-            @forelse ($produks as $produk)
-                @php
-                    $namaProduk = strtolower($produk->nama_produk);
-
-                    if (
-                        \Illuminate\Support\Str::contains(
-                            $namaProduk,
-                            ['croissant', 'pastry']
-                        )
-                    ) {
-                        $gambarProduk = 'images/croissant.png';
-                    } elseif (
-                        \Illuminate\Support\Str::contains(
-                            $namaProduk,
-                            ['tawar', 'sandwich']
-                        )
-                    ) {
-                        $gambarProduk = 'images/roti-tawar.png';
-                    } elseif (
-                        \Illuminate\Support\Str::contains(
-                            $namaProduk,
-                            ['cokelat', 'coklat', 'chocolate']
-                        )
-                    ) {
-                        $gambarProduk = 'images/roti-cokelat.png';
-                    } else {
-                        $gambarProduk = 'images/bread.png';
-                    }
-
-                    $diskon = $produk->harga_asli > 0
-                        ? round(
-                            (($produk->harga_asli - $produk->harga_diskon)
-                            / $produk->harga_asli) * 100
-                        )
-                        : 0;
-                @endphp
-
-                <article
-                    class="product-card"
-                    data-product-name="{{ $namaProduk }}"
-                >
-                    <div class="product-image">
-                        <img
-                            src="{{ asset($gambarProduk) }}"
-                            class="bread-image"
-                            alt="{{ $produk->nama_produk }}"
-                            onerror="this.onerror=null; this.src='{{ asset('images/bread.png') }}';"
-                        >
-                    </div>
-
-                    <span class="discount-label">
-                        Hemat {{ max(0, $diskon) }}%
-                    </span>
-
-                    <h2>{{ $produk->nama_produk }}</h2>
-
-                    <p class="price-old">
-                        Rp {{ number_format($produk->harga_asli, 0, ',', '.') }}
-                    </p>
-
-                    <p class="price-new">
-                        Rp {{ number_format($produk->harga_diskon, 0, ',', '.') }}
-                    </p>
-
-                    <div class="product-info">
-                        Stok: {{ $produk->stok }}<br>
-                        Kedaluwarsa:
-                        {{ $produk->expired_at ? \Carbon\Carbon::parse($produk->expired_at)->format('d-m-Y') : '-' }}
-                    </div>
-
-                    @auth
-                        <a href="#" class="buy-btn" style="background: var(--pink); color: var(--navy);">
-                            Beli Sekarang
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="buy-btn">
-                            Login untuk Membeli
-                        </a>
-                    @endauth
-                </article>
-            @empty
-                <div class="empty-state" style="grid-column: 1/-1; text-align: center; background: #fff; padding: 30px; border-radius: 15px;">
-                    <h2>Belum Ada Roti Tersedia</h2>
-                </div>
-            @endforelse
-
-            <div class="empty-state" id="noSearchResult" hidden style="grid-column: 1/-1; text-align: center; background: #fff; padding: 30px; border-radius: 15px;">
-                <h2>Produk Tidak Ditemukan</h2>
-                <p style="color: var(--muted);">Coba gunakan kata kunci nama roti yang berbeda.</p>
+        <!-- NOTIFIKASI -->
+        @if(session('success'))
+            <div class="alert-success">
+                {{ session('success') }}
             </div>
+        @endif
+
+        <!-- TABEL PRODUK -->
+        <section class="table-card">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Nama Produk</th>
+                        <th>Harga Asli</th>
+                        <th>Harga Diskon</th>
+                        <th>Stok</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse ($produks ?? [] as $produk)
+
+                        <tr>
+                            <!-- FOTO PRODUK -->
+                            <td>
+                                @if ($produk->foto)
+                                    <img
+                                        src="{{ asset('storage/' . $produk->foto) }}"
+                                        alt="{{ $produk->nama_produk }}"
+                                        class="product-image"
+                                    >
+                                @else
+                                    <span class="no-image">
+                                        Tidak ada foto
+                                    </span>
+                                @endif
+                            </td>
+
+                            <!-- NAMA -->
+                            <td class="product-name">
+                                {{ $produk->nama_produk }}
+                            </td>
+
+                            <!-- HARGA ASLI -->
+                            <td>
+                                Rp {{ number_format($produk->harga_asli, 0, ',', '.') }}
+                            </td>
+
+                            <!-- HARGA DISKON -->
+                            <td class="discount-price">
+                                Rp {{ number_format($produk->harga_diskon, 0, ',', '.') }}
+                            </td>
+
+                            <!-- STOK -->
+                            <td>
+                                {{ $produk->stok }}
+                            </td>
+
+                            <!-- AKSI -->
+                            <td>
+                                <a href="{{ route('admin.produk.edit', $produk->id_produk) }}"
+                                   class="btn-edit">
+                                    Edit
+                                </a>
+                            </td>
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="6" class="empty-data">
+                                Belum ada data produk.
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+            </table>
+
         </section>
 
         <footer class="main-footer">
-            © {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.
+            © {{ date('Y') }} BreadSaver. Administrator Panel.
         </footer>
+
     </main>
-
-    <script>
-        const searchInput = document.getElementById('searchProduct');
-        const productCards = document.querySelectorAll('.product-card[data-product-name]');
-        const productCount = document.getElementById('productCount');
-        const noSearchResult = document.getElementById('noSearchResult');
-
-        searchInput.addEventListener('input', function () {
-            const keyword = this.value.trim().toLowerCase();
-            let visibleCount = 0;
-
-            productCards.forEach(function (card) {
-                const productName = card.dataset.productName || '';
-                const matches = productName.includes(keyword);
-
-                card.hidden = !matches;
-
-                if (matches) {
-                    visibleCount++;
-                }
-            });
-
-            productCount.textContent = visibleCount + ' Produk';
-
-            noSearchResult.hidden =
-                productCards.length === 0 || visibleCount !== 0;
-        });
-    </script>
 
 </body>
 </html>
