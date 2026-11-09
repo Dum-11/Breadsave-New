@@ -344,25 +344,29 @@
     <!-- SIDEBAR NAVIGASI -->
     <aside class="sidebar">
         <div class="logo-container">
-            <a href="{{ url('/') }}">
+            <a href="{{ route('home') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="BreadSaver" class="logo">
             </a>
         </div>
         <p class="menu-title">MENU UTAMA</p>
         <nav class="menu">
-            <a href="{{ route('pembeli.beranda') }}" class="menu-link {{ request()->routeIs('pembeli.beranda') ? 'active' : '' }}">
+            <!-- Beranda Utama -->
+            <a href="{{ route('home') }}" class="menu-link {{ request()->is('/') || request()->routeIs('home') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-home.png') }}" class="menu-icon" alt=""><span>Beranda</span>
             </a>
 
-            <a href="{{ route('pembeli.katalog') }}" class="menu-link {{ request()->routeIs('pembeli.katalog') ? 'active' : '' }}">
+            <!-- Katalog Produk -->
+            <a href="{{ route('katalog') }}" class="menu-link {{ request()->routeIs('katalog', 'pembeli.katalog') || request()->is('katalog') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-product.png') }}" class="menu-icon" alt=""><span>Katalog Produk</span>
             </a>
 
-            <a href="{{ route('pembeli.pesanan') }}" class="menu-link {{ request()->routeIs('pembeli.pesanan') ? 'active' : '' }}">
+            <!-- Pesanan Publik -->
+            <a href="{{ route('pesanan') }}" class="menu-link {{ request()->routeIs('pesanan', 'pembeli.pesanan') || request()->is('pesanan*') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="menu-icon" alt=""><span>Pesanan</span>
             </a>
 
-            <a href="{{ route('pembeli.keranjang') }}" class="menu-link {{ request()->routeIs('pembeli.keranjang') ? 'active' : '' }}">
+            <!-- Keranjang Publik -->
+            <a href="{{ route('keranjang') }}" class="menu-link {{ request()->routeIs('keranjang', 'pembeli.keranjang') || request()->is('keranjang*') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="menu-icon" alt=""><span>Keranjang</span>
             </a>
         </nav>

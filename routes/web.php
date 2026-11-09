@@ -11,102 +11,66 @@ use App\Models\Produk;
 use App\Models\Pesanan;
 use App\Models\User;
 
-
 /*
 |--------------------------------------------------------------------------
-| HALAMAN UTAMA & PUBLIK (Tanpa Auth)
+| HALAMAN UTAMA & PUBLIK (Bisa Akses Tanpa Login)
 |--------------------------------------------------------------------------
 */
 
-// Beranda (Bisa diakses tanpa login)
-Route::get('/', [ProdukController::class, 'index'])
-    ->name('home');
-Route::get('/pembeli/beranda', [ProdukController::class, 'index'])
-    ->name('pembeli.beranda'); // Alias
+// Beranda (Publik)
+Route::get('/', [ProdukController::class, 'index'])->name('home');
+Route::get('/pembeli/beranda', [ProdukController::class, 'index'])->name('pembeli.beranda');
 
-// Katalog Umum (Bisa diakses tanpa login)
+// Katalog Produk (Publik)
 Route::get('/katalog', function () {
     $produks = Produk::latest()->get();
     return view('pembeli.katalog', compact('produks'));
 })->name('katalog');
+
 Route::get('/pembeli/katalog', function () {
     $produks = Produk::latest()->get();
     return view('pembeli.katalog', compact('produks'));
-})->name('pembeli.katalog'); // Alias
+})->name('pembeli.katalog');
 
-// Pesanan Umum (Bisa diakses tanpa login) - Sesuai kode awalmu
-Route::get('/pesanan', [PesananController::class, 'index'])
-    ->name('pesanan');
+// Pesanan Publik & Alias (Menggunakan indexPembeli agar mengecek status @auth / @else)
+Route::get('/pesanan', [PesananController::class, 'indexPembeli'])->name('pesanan');
+Route::get('/pembeli/pesanan', [PesananController::class, 'indexPembeli'])->name('pembeli.pesanan');
 
-// Keranjang Umum (Bisa diakses tanpa login) - Sesuai kode awalmu
-Route::get('/keranjang', function () {
-    return view('keranjang');
-})->name('keranjang');
+// Keranjang Publik & Alias (Menggunakan index KeranjangController agar mengecek status @auth / @else)
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
+Route::get('/pembeli/keranjang', [KeranjangController::class, 'index'])->name('pembeli.keranjang');
 
 
 /*
 |--------------------------------------------------------------------------
-| LOGIN DAN LOGOUT
+| LOGIN, LOGOUT & REGISTER
 |--------------------------------------------------------------------------
 */
 
-Route::get('/login', [AuthController::class, 'showLogin'])
-    ->name('login');
-
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');
-
-
-/*
-|--------------------------------------------------------------------------
-| REGISTER
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/register', [AuthController::class, 'showRegister'])
-    ->name('register');
-
-Route::post('/register', [AuthController::class, 'register'])
-    ->name('register.store');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.store');
 
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN PEMBELI (Memerlukan Auth)
+| HALAMAN PEMBELI (Aksi Khusus Login)
 |--------------------------------------------------------------------------
 */
 
 Route::middleware(['auth'])->group(function () {
 
-    // Pesanan Pembeli Khusus Login
-    Route::get('/pembeli/pesanan', [PesananController::class, 'indexPembeli'])
-        ->name('pembeli.pesanan');
+    // Aksi Keranjang (Hanya aksi ubah data yang butuh Login)
+    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+    Route::post('/keranjang/tambah-qty/{id}', [KeranjangController::class, 'tambahQty'])->name('keranjang.tambahQty');
+    Route::post('/keranjang/kurang-qty/{id}', [KeranjangController::class, 'kurangQty'])->name('keranjang.kurangQty');
+    Route::post('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
 
-    // Keranjang Pembeli Khusus Login
-    Route::get('/pembeli/keranjang', [KeranjangController::class, 'index'])
-        ->name('pembeli.keranjang');
-
-    // Tambah Produk ke Keranjang
-    Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])
-        ->name('keranjang.tambah');
-
-    // Tambah Jumlah Produk
-    Route::post('/keranjang/tambah-qty/{id}', [KeranjangController::class, 'tambahQty'])
-        ->name('keranjang.tambahQty');
-
-    // Kurangi Jumlah Produk
-    Route::post('/keranjang/kurang-qty/{id}', [KeranjangController::class, 'kurangQty'])
-        ->name('keranjang.kurangQty');
-
-    // Hapus Produk dari Keranjang
-    Route::post('/keranjang/hapus/{id}', [KeranjangController::class, 'hapus'])
-        ->name('keranjang.hapus');
-
-    // Checkout
-    Route::post('/pembeli/checkout', [PesananController::class, 'checkout'])
-        ->name('pembeli.checkout');
+    // Aksi Checkout Pesanan
+    Route::post('/pembeli/checkout', [PesananController::class, 'checkout'])->name('pembeli.checkout');
 
 });
 

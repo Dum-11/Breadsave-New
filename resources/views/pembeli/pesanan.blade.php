@@ -136,6 +136,48 @@
             line-height: 1.6;
         }
 
+        /* KOTAK PERINGATAN BELUM LOGIN */
+        .auth-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 50px 30px;
+            text-align: center;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .auth-card h3 {
+            color: var(--navy);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .auth-card p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .btn-login {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--pink);
+            color: var(--navy);
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-login:hover {
+            opacity: 0.85;
+        }
+
         /* RINGKASAN RINGKAS */
         .summary-grid { 
             display: grid; 
@@ -322,16 +364,16 @@
         <p class="nav-title">Menu Utama</p>
 
         <nav class="menu">
-            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda') || request()->is('/') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
             </a>
-            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog') || request()->is('katalog') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
             </a>
-            <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan') ? 'active' : '' }}">
+            <a href="{{ route('pesanan') }}" class="nav-link {{ request()->routeIs('pesanan', 'pembeli.pesanan') || request()->is('pesanan*') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
             </a>
-            <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang') ? 'active' : '' }}">
+            <a href="{{ route('keranjang') }}" class="nav-link {{ request()->routeIs('keranjang', 'pembeli.keranjang') || request()->is('keranjang*') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
             </a>
         </nav>
@@ -359,62 +401,72 @@
             <p>Pantau jumlah dan status pesanan di BreadSaver.</p>
         </header>
 
-        <section class="summary-grid">
-            <article class="summary-card"><p class="summary-label">Total Pesanan</p><p class="summary-number">{{ $totalPesanan ?? 0 }}</p></article>
-            <article class="summary-card"><p class="summary-label">Menunggu Konfirmasi</p><p class="summary-number">{{ $menungguKonfirmasi ?? 0 }}</p></article>
-            <article class="summary-card"><p class="summary-label">Sedang Diproses</p><p class="summary-number">{{ $diproses ?? 0 }}</p></article>
-            <article class="summary-card"><p class="summary-label">Pesanan Selesai</p><p class="summary-number">{{ $selesai ?? 0 }}</p></article>
-            <article class="summary-card"><p class="summary-label">Pesanan Dibatalkan</p><p class="summary-number">{{ $dibatalkan ?? 0 }}</p></article>
-        </section>
+        @auth
+            <!-- TAMPILAN JIKA USER SUDAH LOGIN -->
+            <section class="summary-grid">
+                <article class="summary-card"><p class="summary-label">Total Pesanan</p><p class="summary-number">{{ $totalPesanan ?? 0 }}</p></article>
+                <article class="summary-card"><p class="summary-label">Menunggu Konfirmasi</p><p class="summary-number">{{ $menungguKonfirmasi ?? 0 }}</p></article>
+                <article class="summary-card"><p class="summary-label">Sedang Diproses</p><p class="summary-number">{{ $diproses ?? 0 }}</p></article>
+                <article class="summary-card"><p class="summary-label">Pesanan Selesai</p><p class="summary-number">{{ $selesai ?? 0 }}</p></article>
+                <article class="summary-card"><p class="summary-label">Pesanan Dibatalkan</p><p class="summary-number">{{ $dibatalkan ?? 0 }}</p></article>
+            </section>
 
-        <section class="table-card">
-            <div class="table-header">
-                <h2>Daftar Pesanan</h2>
-                <p>Data pesanan yang tersimpan di database.</p>
-            </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nomor Pesanan</th>
-                            <th>ID Pengguna</th>
-                            <th>Tanggal Pesan</th>
-                            <th>Total Harga</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($pesanans ?? [] as $pesanan)
+            <section class="table-card">
+                <div class="table-header">
+                    <h2>Daftar Pesanan</h2>
+                    <p>Data pesanan yang tersimpan di database.</p>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
                             <tr>
-                                <td style="font-weight: bold; color: var(--navy);">#{{ $pesanan->id_pesanan ?? $pesanan->id }}</td>
-                                <td>{{ $pesanan->id_user }}</td>
-                                <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-' }}</td>
-                                <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
-                                <td>
-                                    @php
-                                        $statusClasses = [
-                                            'Menunggu Konfirmasi' => 'status-menunggu',
-                                            'Diproses' => 'status-diproses',
-                                            'Selesai' => 'status-selesai',
-                                            'Dibatalkan' => 'status-dibatalkan',
-                                        ];
-                                        $statusClass = $statusClasses[$pesanan->status] ?? 'status-menunggu';
-                                    @endphp
-                                    <span class="status {{ $statusClass }}">{{ $pesanan->status }}</span>
-                                </td>
+                                <th>Nomor Pesanan</th>
+                                <th>ID Pengguna</th>
+                                <th>Tanggal Pesan</th>
+                                <th>Total Harga</th>
+                                <th>Status</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="empty-pesanan">
-                                    <h3>Belum Ada Pesanan</h3>
-                                    <p>Data pesanan belum tersedia.</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                        </thead>
+                        <tbody>
+                            @forelse ($pesanans ?? [] as $pesanan)
+                                <tr>
+                                    <td style="font-weight: bold; color: var(--navy);">#{{ $pesanan->id_pesanan ?? $pesanan->id }}</td>
+                                    <td>{{ $pesanan->id_user }}</td>
+                                    <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-' }}</td>
+                                    <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td>
+                                        @php
+                                            $statusClasses = [
+                                                'Menunggu Konfirmasi' => 'status-menunggu',
+                                                'Diproses' => 'status-diproses',
+                                                'Selesai' => 'status-selesai',
+                                                'Dibatalkan' => 'status-dibatalkan',
+                                            ];
+                                            $statusClass = $statusClasses[$pesanan->status] ?? 'status-menunggu';
+                                        @endphp
+                                        <span class="status {{ $statusClass }}">{{ $pesanan->status }}</span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="empty-pesanan">
+                                        <h3>Belum Ada Pesanan</h3>
+                                        <p>Data pesanan belum tersedia.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        @else
+            <!-- TAMPILAN JIKA USER BELUM LOGIN (GUEST) -->
+            <section class="auth-card">
+                <h3>Anda Belum Masuk ke Akun</h3>
+                <p>Silakan masuk terlebih dahulu untuk melihat dan memantau status pesanan Anda.</p>
+                <a href="{{ route('login') }}" class="btn-login">Login Sekarang</a>
+            </section>
+        @endauth
 
         <footer class="main-footer">© {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.</footer>
     </main>
