@@ -64,14 +64,13 @@ class PesananController extends Controller
                             ->lockForUpdate()
                             ->first();
 
-                // Cek apakah produk ada, belum kedaluwarsa, dan stok mencukupi
-                if (!$produk || $produk->expired_at < now() || $produk->stok < $item->jumlah) {
+                // Cek apakah produk ada, stok mencukupi, dan (jika ada expired_at) belum kedaluwarsa
+                if (!$produk || ($produk->expired_at && $produk->expired_at < now()) || $produk->stok < $item->jumlah) {
                     $namaProduk = $produk->nama_produk ?? 'Produk';
                     return redirect()->back()->with('error', "Maaf, stok untuk produk '{$namaProduk}' tidak mencukupi, sudah habis, atau telah kedaluwarsa.");
                 }
 
                 // Hitung harga (asumsi ada kolom harga_diskon / harga_asli di tabel produks atau keranjang)
-                // Sesuaikan jika tabel keranjang Anda sudah menyimpan harga secara langsung
                 $harga = $produk->harga_diskon ?? $produk->harga_asli ?? 0;
                 $totalHarga += $harga * $item->jumlah;
             }
@@ -92,18 +91,6 @@ class PesananController extends Controller
                 DB::table('produks')
                     ->where('id_produk', $item->id_produk)
                     ->decrement('stok', $item->jumlah);
-
-                // Masukkan ke detail pesanan (Opsional, jika tabel detail_pesanans ada)
-                // Pastikan struktur tabel detail_pesanans Anda sesuai (id_pesanan, id_produk, jumlah, dll)
-                /*
-                DB::table('detail_pesanans')->insert([
-                    'id_pesanan' => $idPesanan,
-                    'id_produk' => $item->id_produk,
-                    'jumlah' => $item->jumlah,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-                */
             }
 
             // 5. Kosongkan keranjang belanja setelah berhasil checkout

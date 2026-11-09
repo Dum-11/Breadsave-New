@@ -599,7 +599,7 @@
                             // Jika kosong, gunakan gambar bawaan.
                             $gambarProduk = $produk->foto
                                 ? asset('storage/' . $produk->foto)
-                                : asset('images/bread.png');
+                                : asset('images/roti-cokelat.png');
                         @endphp
 
 

@@ -13,7 +13,6 @@ class KeranjangController extends Controller
     {
         $userId = Auth::id();
         
-        // Murni menggunakan id_produk tanpa ada pengecekan kolom id fiktif
         $keranjangs = DB::table('keranjang_items')
                         ->leftJoin('produks', 'keranjang_items.id_produk', '=', 'produks.id_produk')
                         ->where('keranjang_items.id_user', $userId)
@@ -35,7 +34,6 @@ class KeranjangController extends Controller
     {
         $userId = Auth::id();
 
-        // Cari produk murni berdasarkan id_produk
         $produk = DB::table('produks')
                     ->where('id_produk', $id)
                     ->first();
@@ -44,7 +42,6 @@ class KeranjangController extends Controller
             return redirect()->back()->with('error', 'Maaf, produk tidak ditemukan.');
         }
 
-        // Cek apakah produk yang sama sudah ada di keranjang user
         $item = DB::table('keranjang_items')
                     ->where('id_user', $userId)
                     ->where('id_produk', $id)

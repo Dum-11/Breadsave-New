@@ -6,94 +6,335 @@
     <title>Pesanan - BreadSaver</title>
     <style>
         :root {
-            --navy: #23365f; --pink: #ff8fb1; --pink-light: #fff0f5;
-            --background: #f8f9fc; --text: #26324b; --muted: #8991a4; --white: #ffffff; --border: #e7eaf1;
+            --navy: #23365f;
+            --pink: #ff8fb1;
+            --pink-light: #fff0f5;
+            --background: #f8f9fc;
+            --text: #26324b;
+            --muted: #8991a4;
+            --white: #ffffff;
+            --border: #e7eaf2;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: var(--background); color: var(--text); }
-        
-        /* Sidebar Styling */
-        .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; padding: 28px 22px; background: var(--navy); color: var(--white); display: flex; flex-direction: column; z-index: 1000; }
-        .logo-container { display: flex; justify-content: center; margin-bottom: 56px; }
-        .logo { width: 180px; object-fit: contain; }
-        .nav-title { color: #c4cce0; font-size: 12px; letter-spacing: 1px; margin: 0 10px 18px; text-transform: uppercase; }
 
-        /* PENATAAN UTAMA AGAR IKON & TEKS SEJAJAR DAN TIDAK KEMANA-MANA */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* SIDEBAR STANDAR PANEL */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            padding: 28px 22px;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 56px;
+        }
+
+        .logo {
+            width: 180px;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .nav-title {
+            color: #c4cce0;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin: 0 10px 18px;
+            text-transform: uppercase;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+        }
+
         .nav-link { 
             display: flex; 
             align-items: center; 
             gap: 14px; 
-            min-height: 50px; 
-            padding: 10px 14px; 
+            min-height: 58px; 
+            padding: 12px 14px; 
             border-radius: 12px; 
             margin-bottom: 8px; 
             color: var(--white); 
             font-size: 15px; 
-            text-decoration: none; 
+            transition: background-color 0.2s, color 0.2s;
         }
-        .nav-link:hover { background: rgba(255, 255, 255, 0.1); }
-        .nav-link.active { background: var(--pink); color: var(--navy); font-weight: bold; }
 
-        /* UKURAN TETAP IKON (Mencegah gambar membesar sendiri) */
+        .nav-link:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+        }
+
+        .nav-link.active { 
+            background: var(--pink); 
+            color: var(--navy); 
+            font-weight: bold; 
+        }
+
         .nav-icon { 
-            width: 22px; 
-            height: 22px; 
+            width: 28px; 
+            height: 28px; 
             object-fit: contain; 
             flex-shrink: 0; 
         }
 
-        .sidebar-bottom { margin-top: auto; }
+        .sidebar-bottom { 
+            margin-top: auto; 
+            padding-top: 28px;
+        }
 
-        .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
-        .page-header { margin-bottom: 28px; }
-        .page-header h1 { font-size: 27px; margin-bottom: 8px; }
-        .page-header p { color: var(--muted); font-size: 14px; }
+        /* MAIN CONTENT STANDAR PANEL */
+        .main { 
+            margin-left: 240px; 
+            min-height: 100vh; 
+            padding: 32px; 
+        }
 
-        .summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px; }
-        .summary-card { background: var(--white); border: 1px solid #edf0f6; border-radius: 13px; padding: 20px; }
-        .summary-label { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
-        .summary-number { color: var(--navy); font-size: 26px; font-weight: bold; }
+        .page-header { 
+            margin-bottom: 28px; 
+        }
 
-        .table-card { background: var(--white); border: 1px solid #edf0f6; border-radius: 15px; overflow: hidden; }
-        .table-header { padding: 22px 24px; border-bottom: 1px solid var(--border); }
-        .table-header h2 { font-size: 19px; margin-bottom: 6px; }
-        .table-header p { color: var(--muted); font-size: 13px; }
+        .page-header h1 { 
+            font-size: 30px; 
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px; 
+        }
+
+        .page-header p { 
+            color: var(--muted); 
+            font-size: 15px; 
+            line-height: 1.6;
+        }
+
+        /* RINGKASAN RINGKAS */
+        .summary-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 28px; 
+        }
+
+        .summary-card { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            padding: 20px; 
+        }
+
+        .summary-label { 
+            color: var(--muted); 
+            font-size: 13px; 
+            margin-bottom: 10px; 
+        }
+
+        .summary-number { 
+            color: var(--navy); 
+            font-size: 26px; 
+            font-weight: bold; 
+        }
+
+        /* TABEL PESANAN */
+        .table-card { 
+            background: var(--white); 
+            border: 1px solid var(--border); 
+            border-radius: 16px; 
+            overflow: hidden; 
+        }
+
+        .table-header { 
+            padding: 24px 28px; 
+            border-bottom: 1px solid var(--border); 
+        }
+
+        .table-header h2 { 
+            font-size: 20px; 
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 6px; 
+        }
+
+        .table-header p { 
+            color: var(--muted); 
+            font-size: 14px; 
+        }
         
-        .table-wrapper { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid #edf0f6; font-size: 13px; }
-        th { background: #fafbfe; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table-wrapper { 
+            width: 100%; 
+            overflow-x: auto; 
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            white-space: nowrap; 
+        }
+
+        th, td { 
+            padding: 16px 24px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border); 
+            font-size: 14px; 
+            vertical-align: middle;
+        }
+
+        th { 
+            background: #fafbfe; 
+            color: var(--muted); 
+            font-size: 12px; 
+            font-weight: bold;
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+        }
         
-        .status { display: inline-block; padding: 7px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        /* STATUS STYLING */
+        .status { 
+            display: inline-block; 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: bold; 
+        }
+
         .status-menunggu { background: #fff4d6; color: #956500; }
         .status-diproses { background: #e6efff; color: #315ba8; }
         .status-selesai { background: #e2f7e9; color: #237844; }
         .status-dibatalkan { background: #ffe6e6; color: #b53a3a; }
 
-        .main-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; text-align: center; }
+        .empty-pesanan {
+            padding: 45px 20px; 
+            text-align: center;
+        }
+
+        .empty-pesanan h3 {
+            font-size: 20px;
+            color: var(--navy);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .empty-pesanan p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* FOOTER */
+        .main-footer { 
+            margin-top: 45px; 
+            padding-top: 20px; 
+            border-top: 1px solid var(--border); 
+            color: var(--muted); 
+            font-size: 12px; 
+            text-align: center; 
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 75px;
+                padding: 20px 10px;
+                align-items: center;
+            }
+
+            .logo {
+                width: 50px;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 10px 5px;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+            }
+
+            .main {
+                margin-left: 75px;
+                padding: 20px 14px;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .table-header {
+                padding: 18px 20px;
+            }
+
+            th, td {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- SIDEBAR NAVIGASI -->
     <aside class="sidebar">
         <div class="logo-container">
-            <a href="{{ route('pembeli.beranda') }}"><img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo"></a>
+            <a href="{{ route('pembeli.beranda') }}">
+                <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
+            </a>
         </div>
         <p class="nav-title">Menu Utama</p>
-        
-        <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
-        </a>
-        <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
-        </a>
-        <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
-        </a>
-        <!-- Diperbaiki menggunakan class nav-link dan route pembeli.keranjang agar rapi -->
-        <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
-        </a>
+
+        <nav class="menu">
+            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
+            </a>
+            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
+            </a>
+            <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
+            </a>
+            <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
+            </a>
+        </nav>
 
         <div class="sidebar-bottom">
             @auth
@@ -104,11 +345,14 @@
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="nav-link"><img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Login</span></a>
+                <a href="{{ route('login') }}" class="nav-link">
+                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Login</span>
+                </a>
             @endauth
         </div>
     </aside>
 
+    <!-- KONTEN UTAMA -->
     <main class="main">
         <header class="page-header">
             <h1>Pesanan</h1>
@@ -145,7 +389,7 @@
                                 <td style="font-weight: bold; color: var(--navy);">#{{ $pesanan->id_pesanan ?? $pesanan->id }}</td>
                                 <td>{{ $pesanan->id_user }}</td>
                                 <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-' }}</td>
-                                <td style="font-weight: bold;">Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                 <td>
                                     @php
                                         $statusClasses = [
@@ -161,9 +405,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="padding: 45px 20px; text-align: center;">
+                                <td colspan="5" class="empty-pesanan">
                                     <h3>Belum Ada Pesanan</h3>
-                                    <p style="color: var(--muted); margin-top: 5px;">Data pesanan belum tersedia.</p>
+                                    <p>Data pesanan belum tersedia.</p>
                                 </td>
                             </tr>
                         @endforelse

@@ -6,41 +6,203 @@
     <title>Pesanan Masuk - Pegawai BreadSaver</title>
     <style>
         :root {
-            --navy: #23365f; --pink: #ff8fb1; --pink-light: #fff0f5;
-            --background: #f8f9fc; --text: #26324b; --muted: #8991a4; --white: #ffffff; --border: #e7eaf1;
+            --navy: #23365f;
+            --pink: #ff8fb1;
+            --pink-light: #fff0f5;
+            --background: #f8f9fc;
+            --text: #26324b;
+            --muted: #8991a4;
+            --white: #ffffff;
+            --border: #e7eaf1;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: var(--background); color: var(--text); }
-        
-        .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; padding: 28px 22px; background: var(--navy); color: var(--white); display: flex; flex-direction: column; z-index: 1000; }
-        .logo-container { display: flex; justify-content: center; margin-bottom: 56px; }
-        .logo { width: 180px; object-fit: contain; }
-        .nav-title { color: #c4cce0; font-size: 12px; letter-spacing: 1px; margin: 0 10px 18px; text-transform: uppercase; }
-        .nav-link { display: flex; align-items: center; gap: 14px; min-height: 58px; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; color: var(--white); font-size: 15px; text-decoration: none; }
-        .nav-link:hover { background: rgba(255, 255, 255, 0.1); }
-        .nav-link.active { background: var(--pink); color: var(--navy); font-weight: bold; }
-        .nav-icon { width: 28px; height: 28px; object-fit: contain; }
-        .sidebar-bottom { margin-top: auto; }
 
-        .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
-        .page-header { margin-bottom: 28px; }
-        .page-header h1 { font-size: 27px; margin-bottom: 6px; }
-        .page-header p { color: var(--muted); font-size: 14px; }
-        
-        .table-card { background: var(--white); border: 1px solid #edf0f6; border-radius: 15px; overflow: hidden; }
-        .table-header { padding: 22px 24px; border-bottom: 1px solid var(--border); }
-        .table-header h2 { font-size: 19px; margin-bottom: 6px; }
-        .table-header p { color: var(--muted); font-size: 13px; }
-        
-        .table-wrapper { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-        th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid #edf0f6; font-size: 13px; }
-        th { background: #fafbfe; color: var(--muted); font-size: 11px; text-transform: uppercase; }
-        
-        .status { display: inline-block; padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-        .status-menunggu { background: #fff4d6; color: #956500; }
-        .status-diproses { background: #e6efff; color: #315ba8; }
-        .status-selesai { background: #e2f7e9; color: #237844; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* SIDEBAR STANDAR PANEL */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            padding: 28px 22px;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 56px;
+        }
+
+        .logo {
+            width: 180px;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .nav-title {
+            color: #c4cce0;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin: 0 10px 18px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 58px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: var(--white);
+            font-size: 15px;
+            text-decoration: none;
+            border: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 28px;
+        }
+
+        /* MAIN CONTENT STANDAR PANEL */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 32px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 27px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .table-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 22px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h2 {
+            font-size: 19px;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+
+        .table-header p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        th {
+            background: #fafbfe;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-menunggu {
+            background: #fff4d6;
+            color: #956500;
+        }
+
+        .status-diproses {
+            background: #e6efff;
+            color: #315ba8;
+        }
+
+        .status-selesai {
+            background: #e2f7e9;
+            color: #237844;
+        }
 
         .btn-action {
             background: var(--pink);
@@ -53,7 +215,10 @@
             cursor: pointer;
             transition: opacity 0.2s;
         }
-        .btn-action:hover { opacity: 0.85; }
+
+        .btn-action:hover {
+            opacity: 0.85;
+        }
 
         .alert-success {
             background: #e2f7e9;
@@ -63,14 +228,69 @@
             margin-bottom: 20px;
             font-size: 13px;
         }
-        
-        .main-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12px; text-align: center; }
+
+        /* FOOTER */
+        .main-footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 75px;
+                padding: 20px 10px;
+                align-items: center;
+            }
+
+            .logo {
+                width: 50px;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 10px 5px;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+            }
+
+            .main {
+                margin-left: 75px;
+                padding: 20px 14px;
+            }
+
+            th, td {
+                padding: 10px 12px;
+                font-size: 11px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo-container">
-            <a href="{{ route('pegawai.beranda') }}"><img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo"></a>
+            <a href="{{ route('pegawai.beranda') }}">
+                <img src="{{ asset('images/logo.png') }}" class="logo" alt="BreadSaver">
+            </a>
         </div>
         <p class="nav-title">Pegawai Panel</p>
         
@@ -78,7 +298,7 @@
             <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
         </a>
         <a href="{{ route('pegawai.katalog') }}" class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog (Produk)</span>
+            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
         </a>
         <a href="{{ route('pegawai.pesanan') }}" class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan Masuk</span>
@@ -94,6 +314,7 @@
         </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main">
         <header class="page-header">
             <h1>Pesanan Masuk</h1>
@@ -129,7 +350,6 @@
                                 $pesananId = $pesanan->id_pesanan ?? $pesanan->id;
                                 $status = $pesanan->status ?? 'Menunggu Konfirmasi';
                                 
-                                // Penentuan kelas warna status
                                 $statusClass = 'status-menunggu';
                                 if($status == 'Diproses') $statusClass = 'status-diproses';
                                 if($status == 'Selesai') $statusClass = 'status-selesai';
@@ -145,7 +365,6 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <!-- Tombol Aksi Pegawai -->
                                     @if($status == 'Menunggu Konfirmasi')
                                         <form action="{{ route('pegawai.pesanan.proses', $pesananId) }}" method="POST">
                                             @csrf

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -24,15 +23,10 @@
             box-sizing: border-box;
         }
 
-        html, body {
-            width: 100%;
-            min-height: 100%;
-            font-family: Arial, sans-serif;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
             background: var(--background);
             color: var(--text);
-        }
-
-        body {
             overflow-x: hidden;
         }
 
@@ -40,29 +34,31 @@
             text-decoration: none;
         }
 
-        /* SIDEBAR */
+        /* SIDEBAR STANDAR PANEL */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 230px;
+            width: 240px;
             height: 100vh;
-            padding: 28px 20px;
+            padding: 28px 22px;
             background: var(--navy);
             color: var(--white);
             display: flex;
             flex-direction: column;
+            overflow-y: auto;
             z-index: 1000;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 50px;
+            align-items: center;
+            margin-bottom: 56px;
         }
 
         .logo {
-            width: 170px;
+            width: 180px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
@@ -79,14 +75,16 @@
         .nav-link {
             display: flex;
             align-items: center;
-            gap: 12px;
-            min-height: 52px;
-            padding: 12px;
+            gap: 14px;
+            min-height: 58px;
+            padding: 12px 14px;
             border-radius: 12px;
             margin-bottom: 8px;
             color: var(--white);
-            font-size: 14px;
-            width: 100%;
+            font-size: 15px;
+            text-decoration: none;
+            border: none;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .nav-link:hover {
@@ -100,22 +98,22 @@
         }
 
         .nav-icon {
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             object-fit: contain;
             flex-shrink: 0;
         }
 
         .sidebar-bottom {
             margin-top: auto;
+            padding-top: 28px;
         }
 
-        /* KONTEN UTAMA */
+        /* MAIN CONTENT STANDAR PANEL */
         .main {
-            width: calc(100% - 230px);
+            margin-left: 240px;
             min-height: 100vh;
-            margin-left: 230px;
-            padding: 30px;
+            padding: 32px;
         }
 
         .page-header {
@@ -124,18 +122,20 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 18px;
-            margin-bottom: 28px;
+            margin-bottom: 30px;
         }
 
         .page-header h1 {
-            font-size: 26px;
-            margin-bottom: 7px;
+            font-size: 27px;
+            font-weight: 700;
             color: var(--navy);
+            margin-bottom: 8px;
         }
 
         .page-header p {
             color: var(--muted);
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .btn-add {
@@ -147,6 +147,7 @@
             font-weight: bold;
             font-size: 13px;
             white-space: nowrap;
+            transition: opacity 0.2s;
         }
 
         .btn-add:hover {
@@ -163,25 +164,25 @@
             font-size: 14px;
         }
 
-        /* TABEL */
+        /* TABEL PRODUK */
         .table-card {
             width: 100%;
             background: var(--white);
-            border: 1px solid #edf0f6;
+            border: 1px solid var(--border);
             border-radius: 15px;
             overflow: hidden;
         }
 
         table {
             width: 100%;
-            table-layout: fixed;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         th, td {
-            padding: 14px 10px;
+            padding: 14px 12px;
             text-align: left;
-            border-bottom: 1px solid #edf0f6;
+            border-bottom: 1px solid var(--border);
             font-size: 13px;
             overflow-wrap: anywhere;
             vertical-align: middle;
@@ -192,6 +193,7 @@
             color: var(--muted);
             font-size: 11px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         th:nth-child(1) { width: 12%; }
@@ -232,6 +234,7 @@
             border-radius: 7px;
             font-size: 12px;
             font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         .btn-edit:hover {
@@ -246,7 +249,7 @@
 
         /* FOOTER */
         .main-footer {
-            margin-top: 35px;
+            margin-top: 45px;
             padding-top: 20px;
             border-top: 1px solid var(--border);
             color: var(--muted);
@@ -254,26 +257,11 @@
             text-align: center;
         }
 
-        /* TABLET */
-        @media screen and (max-width: 900px) {
-            .sidebar {
-                width: 190px;
-                padding: 25px 14px;
-            }
-
-            .main {
-                width: calc(100% - 190px);
-                margin-left: 190px;
-                padding: 22px;
-            }
-
-            .page-header h1 {
-                font-size: 22px;
-            }
-
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
             th, td {
-                padding: 10px 6px;
-                font-size: 11px;
+                padding: 10px 8px;
+                font-size: 12px;
             }
 
             .product-image {
@@ -282,75 +270,50 @@
             }
         }
 
-        /* HANDPHONE */
-        @media screen and (max-width: 650px) {
+        @media (max-width: 700px) {
             .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                padding: 15px;
-            }
-
-            .logo-container {
-                margin-bottom: 20px;
+                width: 75px;
+                padding: 20px 10px;
+                align-items: center;
             }
 
             .logo {
-                width: 140px;
+                width: 50px;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
             }
 
             .nav-title {
-                margin-bottom: 10px;
+                display: none;
             }
 
             .nav-link {
-                display: inline-flex;
-                width: auto;
-                min-height: 42px;
-                padding: 9px;
-                font-size: 12px;
-                gap: 7px;
+                justify-content: center;
+                padding: 10px 5px;
             }
 
-            .nav-icon {
-                width: 20px;
-                height: 20px;
+            .nav-link span {
+                display: none;
             }
 
             .sidebar-bottom {
-                margin-top: 8px;
+                width: 100%;
             }
 
             .main {
-                width: 100%;
-                margin-left: 0;
+                margin-left: 75px;
                 padding: 20px 14px;
-            }
-
-            .page-header {
-                align-items: flex-start;
-            }
-
-            .page-header h1 {
-                font-size: 21px;
-            }
-
-            .page-header p {
-                font-size: 12px;
-            }
-
-            .btn-add {
-                padding: 10px 13px;
-                font-size: 12px;
             }
 
             th, td {
                 padding: 8px 4px;
-                font-size: 9px;
+                font-size: 10px;
             }
 
             th {
-                font-size: 8px;
+                font-size: 9px;
             }
 
             .product-image {
@@ -373,49 +336,37 @@
 
         <div class="logo-container">
             <a href="{{ route('admin.beranda') }}">
-                <img src="{{ asset('images/logo.png') }}"
-                     class="logo"
-                     alt="Logo BreadSaver">
+                <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
             </a>
         </div>
 
         <p class="nav-title">Admin Panel</p>
 
-        <a href="{{ route('admin.beranda') }}"
-           class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-home.png') }}"
-                 class="nav-icon" alt="">
+        <a href="{{ route('admin.beranda') }}" class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
 
-        <a href="{{ route('admin.katalog') }}"
-           class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-product.png') }}"
-                 class="nav-icon" alt="">
+        <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
             <span>Katalog</span>
         </a>
 
-        <a href="{{ route('admin.kelola_akun') }}" class="nav-link">
-            <img src="{{ asset('images/icon-orders.png') }}"
-                 class="nav-icon" alt="">
+        <a href="{{ route('admin.kelola_akun') }}" class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
             <span>Kelola Akun</span>
         </a>
 
-        <a href="{{ route('admin.laporan') }}" class="nav-link">
-            <img src="{{ asset('images/icon-keranjang.png') }}"
-                 class="nav-icon" alt="">
+        <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
             <span>Laporan</span>
         </a>
 
         <div class="sidebar-bottom">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-
-                <button type="submit"
-                        class="nav-link"
-                        style="border:0;background:transparent;cursor:pointer;text-align:left;">
-                    <img src="{{ asset('images/icon-login.png') }}"
-                         class="nav-icon" alt="">
+                <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
                     <span>Logout</span>
                 </button>
             </form>
@@ -467,15 +418,9 @@
                             <!-- FOTO PRODUK -->
                             <td>
                                 @if ($produk->foto)
-                                    <img
-                                        src="{{ asset('storage/' . $produk->foto) }}"
-                                        alt="{{ $produk->nama_produk }}"
-                                        class="product-image"
-                                    >
+                                    <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama_produk }}" class="product-image">
                                 @else
-                                    <span class="no-image">
-                                        Tidak ada foto
-                                    </span>
+                                    <span class="no-image">Tidak ada foto</span>
                                 @endif
                             </td>
 
@@ -501,8 +446,7 @@
 
                             <!-- AKSI -->
                             <td>
-                                <a href="{{ route('admin.produk.edit', $produk->id_produk) }}"
-                                   class="btn-edit">
+                                <a href="{{ route('admin.produk.edit', $produk->id_produk) }}" class="btn-edit">
                                     Edit
                                 </a>
                             </td>
