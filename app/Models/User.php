@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // Tambahkan Primary Key kustom di sini
+    // Primary Key kustom database BreadSaver
     protected $primaryKey = 'id_user';
 
     /**
@@ -20,13 +20,13 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    // Ganti isi fillable dengan kolom dari database Breadsaver
     protected $fillable = [
         'nama',
         'email',
         'password',
         'role',
         'no_hp',
+        'is_active',
     ];
 
     /**
@@ -46,5 +46,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 }

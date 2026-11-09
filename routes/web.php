@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProdukController;
@@ -13,7 +14,7 @@ use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN UTAMA & PUBLIK (Bisa Akses Tanpa Login)
+| HALAMAN UTAMA & PUBLIK (Tanpa Auth / Guest Boleh Akses)
 |--------------------------------------------------------------------------
 */
 
@@ -32,11 +33,11 @@ Route::get('/pembeli/katalog', function () {
     return view('pembeli.katalog', compact('produks'));
 })->name('pembeli.katalog');
 
-// Pesanan Publik & Alias (Menggunakan indexPembeli agar mengecek status @auth / @else)
+// Pesanan Publik & Alias
 Route::get('/pesanan', [PesananController::class, 'indexPembeli'])->name('pesanan');
 Route::get('/pembeli/pesanan', [PesananController::class, 'indexPembeli'])->name('pembeli.pesanan');
 
-// Keranjang Publik & Alias (Menggunakan index KeranjangController agar mengecek status @auth / @else)
+// Keranjang Publik & Alias
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
 Route::get('/pembeli/keranjang', [KeranjangController::class, 'index'])->name('pembeli.keranjang');
 
@@ -63,7 +64,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.st
 
 Route::middleware(['auth'])->group(function () {
 
-    // Aksi Keranjang (Hanya aksi ubah data yang butuh Login)
+    // Aksi Keranjang
     Route::post('/keranjang/tambah/{id}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
     Route::post('/keranjang/tambah-qty/{id}', [KeranjangController::class, 'tambahQty'])->name('keranjang.tambahQty');
     Route::post('/keranjang/kurang-qty/{id}', [KeranjangController::class, 'kurangQty'])->name('keranjang.kurangQty');
@@ -133,6 +134,9 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('pegawai.pesanan')->with('success', 'Pesanan berhasil diselesaikan.');
     })->name('pegawai.pesanan.selesai');
 
+    // TAMBAHAN: Route Batalkan Pesanan oleh Pegawai (Memanggil method batalkanPesanan di PesananController)
+    Route::post('/pegawai/pesanan/{id}/batal', [PesananController::class, 'batalkanPesanan'])->name('pegawai.pesanan.batal');
+
 });
 
 
@@ -170,10 +174,41 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/produk/update/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
     Route::delete('/admin/produk/hapus/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
 
+    // Kelola Akun Admin
     Route::get('/admin/kelola-akun', function () {
         $users = User::all();
         return view('admin.kelola_akun', compact('users'));
     })->name('admin.kelola_akun');
+
+    // Route Ubah Role Akun
+    Route::put('/admin/kelola-akun/{id}/role', function (Request $request, $id) {
+        $user = User::findOrFail($id);
+        
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat mengubah role akun Anda sendiri.');
+        }
+
+        $request->validate(['role' => 'required|in:admin,pegawai,pembeli']);
+        $user->role = $request->role;
+        $user->save();
+
+        return redirect()->back()->with('success', "Role akun {$user->email} berhasil diubah!");
+    })->name('admin.kelola_akun.role');
+
+    // Route Toggle Status Akun (Aktif / Blokir)
+    Route::put('/admin/kelola-akun/{id}/status', function ($id) {
+        $user = User::findOrFail($id);
+
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat memblokir akun Anda sendiri.');
+        }
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $statusText = $user->is_active ? 'diaktifkan' : 'diblokir / dinonaktifkan';
+        return redirect()->back()->with('success', "Akun {$user->email} berhasil {$statusText}!");
+    })->name('admin.kelola_akun.status');
 
     Route::get('/admin/laporan', function () {
         $pesanans = Pesanan::latest()->get();

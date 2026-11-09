@@ -14,6 +14,10 @@
             --muted: #8991a4;
             --white: #ffffff;
             --border: #e7eaf1;
+            --green: #237844;
+            --yellow: #956500;
+            --blue: #315ba8;
+            --red: #b53a3a;
         }
 
         * {
@@ -171,6 +175,7 @@
             text-align: left;
             border-bottom: 1px solid var(--border);
             font-size: 13px;
+            vertical-align: middle;
         }
 
         th {
@@ -181,6 +186,7 @@
             letter-spacing: 0.5px;
         }
 
+        /* BADGE STATUS */
         .status {
             display: inline-block;
             padding: 6px 12px;
@@ -191,22 +197,26 @@
 
         .status-menunggu {
             background: #fff4d6;
-            color: #956500;
+            color: var(--yellow);
         }
 
         .status-diproses {
             background: #e6efff;
-            color: #315ba8;
+            color: var(--blue);
         }
 
         .status-selesai {
             background: #e2f7e9;
-            color: #237844;
+            color: var(--green);
         }
 
+        .status-dibatalkan {
+            background: #ffe6e6;
+            color: var(--red);
+        }
+
+        /* BUTTON STYLING */
         .btn-action {
-            background: var(--pink);
-            color: var(--navy);
             border: none;
             padding: 8px 14px;
             border-radius: 8px;
@@ -214,19 +224,46 @@
             font-weight: bold;
             cursor: pointer;
             transition: opacity 0.2s;
+            margin-right: 4px;
         }
 
         .btn-action:hover {
             opacity: 0.85;
         }
 
+        .btn-konfirmasi {
+            background: var(--pink);
+            color: var(--navy);
+        }
+
+        .btn-selesai {
+            background: var(--green);
+            color: #ffffff;
+        }
+
+        .btn-batal {
+            background: #fee2e2;
+            color: var(--red);
+        }
+
         .alert-success {
             background: #e2f7e9;
-            color: #237844;
+            color: var(--green);
             padding: 12px 18px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 13px;
+            font-weight: bold;
+        }
+
+        .alert-error {
+            background: #ffe6e6;
+            color: var(--red);
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: bold;
         }
 
         /* FOOTER */
@@ -326,6 +363,11 @@
                 {{ session('success') }}
             </div>
         @endif
+        @if(session('error'))
+            <div class="alert-error">
+                {{ session('error') }}
+            </div>
+        @endif
 
         <section class="table-card">
             <div class="table-header">
@@ -341,7 +383,7 @@
                             <th>Waktu Pesan</th>
                             <th>Total Harga</th>
                             <th>Status</th>
-                            <th>Aksi</th>
+                            <th>Aksi Pegawai</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -352,12 +394,13 @@
                                 
                                 $statusClass = 'status-menunggu';
                                 if($status == 'Diproses') $statusClass = 'status-diproses';
-                                if($status == 'Selesai') $statusClass = 'status-selesai';
+                                elseif($status == 'Selesai') $statusClass = 'status-selesai';
+                                elseif($status == 'Dibatalkan') $statusClass = 'status-dibatalkan';
                             @endphp
                             <tr>
                                 <td style="font-weight: bold; color: var(--navy);">#{{ $pesananId }}</td>
-                                <td>{{ $pesanan->id_user ?? 'Pelanggan' }}</td>
-                                <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-' }}</td>
+                                <td>{{ $pesanan->user->nama ?? $pesanan->user->name ?? 'User #'.$pesanan->id_user }}</td>
+                                <td>{{ $pesanan->created_at ? \Carbon\Carbon::parse($pesanan->created_at)->format('d-m-Y H:i') : ($pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-') }}</td>
                                 <td style="font-weight: bold;">Rp {{ number_format($pesanan->total_harga ?? 0, 0, ',', '.') }}</td>
                                 <td>
                                     <span class="status {{ $statusClass }}">
@@ -366,17 +409,31 @@
                                 </td>
                                 <td>
                                     @if($status == 'Menunggu Konfirmasi')
-                                        <form action="{{ route('pegawai.pesanan.proses', $pesananId) }}" method="POST">
+                                        <!-- Tombol Konfirmasi -->
+                                        <form action="{{ route('pegawai.pesanan.proses', $pesananId) }}" method="POST" style="display: inline;">
                                             @csrf
-                                            <button type="submit" class="btn-action">Konfirmasi & Siapkan</button>
+                                            <button type="submit" class="btn-action btn-konfirmasi">Konfirmasi & Siapkan</button>
+                                        </form>
+                                        <!-- Tombol Batalkan -->
+                                        <form action="{{ route('pegawai.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn-action btn-batal" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">Batalkan</button>
                                         </form>
                                     @elseif($status == 'Diproses')
-                                        <form action="{{ route('pegawai.pesanan.selesai', $pesananId) }}" method="POST">
+                                        <!-- Tombol Selesai -->
+                                        <form action="{{ route('pegawai.pesanan.selesai', $pesananId) }}" method="POST" style="display: inline;">
                                             @csrf
-                                            <button type="submit" class="btn-action" style="background: #237844; color: #ffffff;">Tandai Selesai</button>
+                                            <button type="submit" class="btn-action btn-selesai">Tandai Selesai</button>
                                         </form>
-                                    @else
-                                        <span style="color: #237844; font-weight: bold; font-size: 12px;">Selesai Disiapkan</span>
+                                        <!-- Tombol Batalkan -->
+                                        <form action="{{ route('pegawai.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn-action btn-batal" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">Batalkan</button>
+                                        </form>
+                                    @elseif($status == 'Selesai')
+                                        <span style="color: var(--green); font-weight: bold; font-size: 12px;">Selesai Disiapkan</span>
+                                    @elseif($status == 'Dibatalkan')
+                                        <span style="color: var(--red); font-weight: bold; font-size: 12px;">Pesanan Dibatalkan</span>
                                     @endif
                                 </td>
                             </tr>

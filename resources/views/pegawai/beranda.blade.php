@@ -8,11 +8,16 @@
         :root {
             --navy: #23365f;
             --pink: #ff8fb1;
+            --pink-light: #fff0f5;
             --background: #f8f9fc;
             --text: #26324b;
             --muted: #8991a4;
             --white: #ffffff;
             --border: #e7eaf1;
+            --green: #237844;
+            --yellow: #956500;
+            --blue: #315ba8;
+            --red: #b53a3a;
         }
 
         * {
@@ -25,6 +30,12 @@
             font-family: Arial, Helvetica, sans-serif;
             background: var(--background);
             color: var(--text);
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
         /* SIDEBAR STANDAR PANEL */
@@ -110,7 +121,7 @@
         }
 
         .page-header {
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .page-header h1 {
@@ -131,59 +142,128 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .summary-card {
-            background: var(--white);
-            border: 1px solid #edf0f6;
-            border-radius: 15px;
-            padding: 23px;
-        }
-
-        .summary-label {
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .summary-number {
-            color: var(--navy);
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        /* STATUS GRID */
-        .section-title {
-            font-size: 19px;
-            color: var(--navy);
-            margin-bottom: 18px;
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .status-card {
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 15px;
             padding: 22px;
         }
 
-        .status-card p {
+        .summary-label {
             color: var(--muted);
             font-size: 13px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+        }
+
+        .summary-number {
+            color: var(--navy);
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* STATUS GRID */
+        .section-title {
+            font-size: 19px;
+            font-weight: bold;
+            color: var(--navy);
+            margin-bottom: 16px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .status-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .status-card p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .status-card h2 {
-            color: var(--navy);
-            font-size: 27px;
+            font-size: 24px;
+            font-weight: bold;
         }
+
+        .text-warning { color: var(--yellow); }
+        .text-info { color: var(--blue); }
+        .text-success { color: var(--green); }
+        .text-danger { color: var(--red); }
+
+        /* TABEL PESANAN TERBARU */
+        .table-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #fafbfe;
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-menunggu { background: #fff4d6; color: var(--yellow); }
+        .status-diproses { background: #e6efff; color: var(--blue); }
+        .status-selesai { background: #e2f7e9; color: var(--green); }
+        .status-dibatalkan { background: #ffe6e6; color: var(--red); }
 
         /* FOOTER */
         .main-footer {
@@ -197,7 +277,7 @@
 
         /* RESPONSIVE */
         @media (max-width: 1000px) {
-            .summary-grid {
+            .summary-grid, .status-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -209,38 +289,18 @@
                 align-items: center;
             }
 
-            .logo {
-                width: 50px;
-            }
-
-            .logo-container {
-                margin-bottom: 30px;
-            }
-
-            .nav-title {
-                display: none;
-            }
-
-            .nav-link {
-                justify-content: center;
-                padding: 10px 5px;
-            }
-
-            .nav-link span {
-                display: none;
-            }
-
-            .sidebar-bottom {
-                width: 100%;
-            }
+            .logo { width: 50px; }
+            .logo-container { margin-bottom: 30px; }
+            .nav-title, .nav-link span { display: none; }
+            .nav-link { justify-content: center; padding: 10px 5px; }
+            .sidebar-bottom { width: 100%; }
 
             .main {
                 margin-left: 75px;
                 padding: 20px 14px;
             }
 
-            .summary-grid,
-            .status-grid {
+            .summary-grid, .status-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -248,9 +308,8 @@
 </head>
 <body>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR NAVIGASI PEGAWAI -->
     <aside class="sidebar">
-
         <div class="logo-container">
             <a href="{{ route('pegawai.beranda') }}">
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="BreadSaver">
@@ -283,32 +342,57 @@
                 </button>
             </form>
         </div>
-
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- KONTEN UTAMA -->
     <main class="main">
-
         <header class="page-header">
             <h1>Beranda Pegawai Toko</h1>
-            <p>
-                Selamat bekerja. Berikut informasi produk dan pesanan
-                yang tercatat dalam database BreadSaver.
-            </p>
+            <p>Selamat bekerja. Ringkasan status produk dan pesanan masuk di BreadSaver.</p>
         </header>
 
-        <!-- DATA UTAMA -->
+        <!-- KARTU RINGKASAN UTAMA -->
         <section class="summary-grid">
-
             <article class="summary-card">
-                <p class="summary-label">Total Produk</p>
-                <p class="summary-number">{{ $jumlahProduk }}</p>
+                <p class="summary-label">Total Katalog Produk</p>
+                <p class="summary-number">{{ $jumlahProduk ?? $totalProduk ?? 0 }}</p>
             </article>
 
             <article class="summary-card">
-                <p class="summary-label">Total Pesanan</p>
-                <p class="summary-number">{{ $jumlahPesanan }}</p>
+                <p class="summary-label">Pesanan Perlu Diproses</p>
+                <p class="summary-number text-warning">{{ $pesananMenunggu ?? $jumlahPesananMenunggu ?? 0 }}</p>
             </article>
 
             <article class="summary-card">
-                <p class="
+                <p class="summary-label">Total Semua Pesanan</p>
+                <p class="summary-number">{{ $jumlahPesanan ?? 0 }}</p>
+            </article>
+        </section>
+
+        <!-- KARTU STATUS PESANAN DETIL -->
+        <h2 class="section-title">Status Pesanan Hari Ini</h2>
+        <section class="status-grid">
+            <article class="status-card">
+                <p>Menunggu Konfirmasi</p>
+                <h2 class="text-warning">{{ $pesananMenunggu ?? 0 }}</h2>
+            </article>
+            <article class="status-card">
+                <p>Sedang Diproses</p>
+                <h2 class="text-info">{{ $pesananDiproses ?? 0 }}</h2>
+            </article>
+            <article class="status-card">
+                <p>Pesanan Selesai</p>
+                <h2 class="text-success">{{ $pesananSelesai ?? 0 }}</h2>
+            </article>
+            <article class="status-card">
+                <p>Pesanan Dibatalkan</p>
+                <h2 class="text-danger">{{ $pesananDibatalkan ?? 0 }}</h2>
+            </article>
+        </section>
+
+        <footer class="main-footer">
+            © {{ date('Y') }} BreadSaver. Pegawai Panel.
+        </footer>
+    </main>
+</body>
+</html>

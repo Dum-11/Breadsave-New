@@ -14,6 +14,8 @@
             --muted: #8991a4;
             --white: #ffffff;
             --border: #e7eaf1;
+            --green: #237844;
+            --red: #b53a3a;
         }
 
         * {
@@ -132,6 +134,11 @@
             line-height: 1.5;
         }
 
+        /* NOTIFIKASI ALERT */
+        .alert { padding: 14px 20px; border-radius: 10px; margin-bottom: 24px; font-size: 14px; font-weight: bold; }
+        .alert-success { background: #e2f7e9; color: var(--green); border: 1px solid #b7ebc6; }
+        .alert-error { background: #ffe6e6; color: var(--red); border: 1px solid #fecaca; }
+
         /* TABEL AKUN */
         .table-card {
             width: 100%;
@@ -157,6 +164,7 @@
             text-align: left;
             border-bottom: 1px solid var(--border);
             font-size: 13px;
+            vertical-align: middle;
         }
 
         th {
@@ -167,26 +175,23 @@
             letter-spacing: 0.5px;
         }
 
-        .role-badge {
-            background: var(--pink-light);
-            color: #ed6590;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-            display: inline-block;
-        }
+        /* STATUS & BUTTON STYLING */
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .status-active { background: #e2f7e9; color: var(--green); }
+        .status-blocked { background: #ffe6e6; color: var(--red); }
 
-        .btn-role {
-            color: var(--navy);
-            font-weight: bold;
-            text-decoration: none;
-            transition: opacity 0.2s;
+        .role-select {
+            padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 13px; color: var(--text); background: #fafbfe; cursor: pointer;
         }
-
-        .btn-role:hover {
-            opacity: 0.75;
+        .btn-action {
+            padding: 6px 12px; border: none; border-radius: 8px; font-size: 12px;
+            font-weight: bold; cursor: pointer; transition: opacity 0.2s;
         }
+        .btn-action:hover { opacity: 0.85; }
+        .btn-save { background: var(--navy); color: white; margin-left: 4px; }
+        .btn-block { background: #fee2e2; color: #991b1b; }
+        .btn-unblock { background: #e2f7e9; color: var(--green); }
 
         .empty-data {
             text-align: center;
@@ -295,6 +300,13 @@
             <p>Daftar akun yang terdaftar dalam sistem aplikasi.</p>
         </header>
 
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-error">{{ session('error') }}</div>
+        @endif
+
         <section class="table-card">
             <div class="table-wrapper">
                 <table>
@@ -303,26 +315,61 @@
                             <th>Nama Pengguna</th>
                             <th>Email</th>
                             <th>Peran (Role)</th>
-                            <th>Aksi</th>
+                            <th>Status Akun</th>
+                            <th>Aksi Bantuan</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($users ?? [] as $user)
+                            @php
+                                $userId = $user->id_user ?? $user->id;
+                                $isActive = $user->is_active ?? true;
+                            @endphp
                             <tr>
-                                <td style="font-weight: bold; color: var(--navy);">{{ $user->name }}</td>
+                                <td style="font-weight: bold; color: var(--navy);">{{ $user->nama ?? $user->name ?? 'Pengguna' }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>
-                                    <span class="role-badge">
-                                        {{ $user->role ?? 'Pembeli' }}
-                                    </span>
+                                    <!-- Form Ganti Role -->
+                                    <form action="{{ route('admin.kelola_akun.role', $userId) }}" method="POST" style="display: flex; align-items: center; gap: 6px;">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="role" class="role-select" {{ $userId === auth()->id() ? 'disabled' : '' }}>
+                                            <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="pegawai" {{ $user->role === 'pegawai' ? 'selected' : '' }}>Pegawai</option>
+                                            <option value="pembeli" {{ $user->role === 'pembeli' ? 'selected' : '' }}>Pembeli</option>
+                                        </select>
+                                        @if($userId !== auth()->id())
+                                            <button type="submit" class="btn-action btn-save">Simpan</button>
+                                        @endif
+                                    </form>
                                 </td>
                                 <td>
-                                    <a href="#" class="btn-role">Atur Role</a>
+                                    @if($isActive)
+                                        <span class="status-badge status-active">Aktif</span>
+                                    @else
+                                        <span class="status-badge status-blocked">Diblokir</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($userId !== auth()->id())
+                                        <!-- Form Toggle Status Aktif / Blokir -->
+                                        <form action="{{ route('admin.kelola_akun.status', $userId) }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('PUT')
+                                            @if($isActive)
+                                                <button type="submit" class="btn-action btn-block" onclick="return confirm('Apakah Anda yakin ingin memblokir akun {{ $user->email }}?')">Blokir Akun</button>
+                                            @else
+                                                <button type="submit" class="btn-action btn-unblock" onclick="return confirm('Aktifkan kembali akun {{ $user->email }}?')">Aktifkan Akun</button>
+                                            @endif
+                                        </form>
+                                    @else
+                                        <span style="color: var(--muted); font-size: 12px;">Akun Anda</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="empty-data">
+                                <td colspan="5" class="empty-data">
                                     Belum ada data pengguna.
                                 </td>
                             </tr>

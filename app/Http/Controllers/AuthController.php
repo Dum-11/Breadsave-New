@@ -43,12 +43,13 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        // Membuat akun baru dengan role pembeli secara otomatis
+        // Membuat akun baru dengan role pembeli secara otomatis & is_active = 1
         $user = User::create([
             'nama' => $validated['nama'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'pembeli',
+            'is_active' => true,
         ]);
 
         // Login otomatis setelah pendaftaran berhasil
@@ -63,7 +64,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Memproses autentikasi login dan pengarahan berdasarkan role.
+     * Memproses autentikasi login dan pengarahan berdasarkan role & status aktif.
      */
     public function login(Request $request)
     {
@@ -73,7 +74,15 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        // Coba lakukan autentikasi (login)
+        // 1. Cek terlebih dahulu apakah akun ada dan dalam status diblokir (is_active = 0)
+        $userCheck = User::where('email', $request->email)->first();
+        if ($userCheck && isset($userCheck->is_active) && !$userCheck->is_active) {
+            return back()->withErrors([
+                'email' => 'Akun Anda telah dinonaktifkan / diblokir oleh Admin.',
+            ])->onlyInput('email');
+        }
+
+        // 2. Coba lakukan autentikasi (login)
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 

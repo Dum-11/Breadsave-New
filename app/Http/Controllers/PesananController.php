@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class PesananController extends Controller
 {
@@ -39,16 +40,29 @@ class PesananController extends Controller
         ]);
     }
 
-    // Memproses keranjang belanja pembeli menjadi pesanan (Checkout dengan proteksi stok / Race Condition)
+    // Memproses keranjang belanja pembeli menjadi pesanan (Checkout Aman)
     public function checkout(Request $request)
     {
         $userId = Auth::id();
         
-        // Menggunakan Database Transaction agar aman dari tabrakan stok bersamaan
         return DB::transaction(function () use ($userId) {
             
-            // 1. Ambil item keranjang berdasarkan user yang sedang login
-            $items = DB::table('keranjang_items')->where('id_user', $userId)->get();
+            // 1. Deteksi nama tabel keranjang yang tersedia di database
+            $namaTabelKeranjang = null;
+            if (Schema::hasTable('keranjang_items')) {
+                $namaTabelKeranjang = 'keranjang_items';
+            } elseif (Schema::hasTable('keranjang')) {
+                $namaTabelKeranjang = 'keranjang';
+            } elseif (Schema::hasTable('keranjangs')) {
+                $namaTabelKeranjang = 'keranjangs';
+            }
+
+            if (!$namaTabelKeranjang) {
+                return redirect()->back()->with('error', 'Tabel keranjang tidak ditemukan di database.');
+            }
+
+            // 2. Ambil item keranjang berdasarkan user
+            $items = DB::table($namaTabelKeranjang)->where('id_user', $userId)->get();
 
             if ($items->isEmpty()) {
                 return redirect()->back()->with('error', 'Keranjang belanja Anda masih kosong.');
@@ -56,26 +70,23 @@ class PesananController extends Controller
 
             $totalHarga = 0;
 
-            // 2. Lakukan validasi dan penguncian stok per produk (lockForUpdate)
+            // 3. Validasi & penguncian stok per produk
             foreach ($items as $item) {
-                // Ambil data produk terbaru dari tabel 'produks' dengan lock
                 $produk = DB::table('produks')
                             ->where('id_produk', $item->id_produk)
                             ->lockForUpdate()
                             ->first();
 
-                // Cek apakah produk ada, stok mencukupi, dan (jika ada expired_at) belum kedaluwarsa
                 if (!$produk || ($produk->expired_at && $produk->expired_at < now()) || $produk->stok < $item->jumlah) {
                     $namaProduk = $produk->nama_produk ?? 'Produk';
-                    return redirect()->back()->with('error', "Maaf, stok untuk produk '{$namaProduk}' tidak mencukupi, sudah habis, atau telah kedaluwarsa.");
+                    return redirect()->back()->with('error', "Maaf, stok untuk produk '{$namaProduk}' tidak mencukupi, habis, atau telah kedaluwarsa.");
                 }
 
-                // Hitung harga (asumsi ada kolom harga_diskon / harga_asli di tabel produks atau keranjang)
                 $harga = $produk->harga_diskon ?? $produk->harga_asli ?? 0;
                 $totalHarga += $harga * $item->jumlah;
             }
 
-            // 3. Buat pesanan baru ke tabel 'pesanans'
+            // 4. Buat pesanan baru di tabel 'pesanans'
             $idPesanan = DB::table('pesanans')->insertGetId([
                 'id_user' => $userId,
                 'tanggal_pesan' => now(),
@@ -85,18 +96,47 @@ class PesananController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // 4. Kurangi stok produk secara aman dan masukkan ke detail pesanan (jika ada tabel detail_pesanans)
+            // 5. Kurangi stok produk di tabel 'produks'
             foreach ($items as $item) {
-                // Kurangi stok di tabel produks
                 DB::table('produks')
                     ->where('id_produk', $item->id_produk)
                     ->decrement('stok', $item->jumlah);
             }
 
-            // 5. Kosongkan keranjang belanja setelah berhasil checkout
-            DB::table('keranjang_items')->where('id_user', $userId)->delete();
+            // 6. Kosongkan isi keranjang belanja user
+            DB::table($namaTabelKeranjang)->where('id_user', $userId)->delete();
 
-            return redirect()->route('pembeli.pesanan')->with('success', 'Pesanan berhasil dibuat dan diteruskan ke pegawai!');
+            return redirect()->route('pembeli.pesanan')->with('success', 'Pesanan berhasil dibuat dan diteruskan ke pegawai toko!');
+        });
+    }
+
+    // Fungsi Pembatalan Pesanan oleh Pegawai Toko
+    public function batalkanPesanan($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $pesanan = DB::table('pesanans')->where('id_pesanan', $id)->first();
+
+            if (!$pesanan) {
+                $pesanan = DB::table('pesanans')->where('id', $id)->first();
+            }
+
+            if (!$pesanan) {
+                return redirect()->back()->with('error', 'Data pesanan tidak ditemukan.');
+            }
+
+            if ($pesanan->status === 'Dibatalkan') {
+                return redirect()->back()->with('error', 'Pesanan ini sudah dibatalkan sebelumnya.');
+            }
+
+            // Update status pesanan menjadi Dibatalkan
+            DB::table('pesanans')
+                ->where(isset($pesanan->id_pesanan) ? 'id_pesanan' : 'id', $id)
+                ->update([
+                    'status' => 'Dibatalkan',
+                    'updated_at' => now(),
+                ]);
+
+            return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
         });
     }
 }
