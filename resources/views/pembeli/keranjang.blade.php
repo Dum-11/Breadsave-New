@@ -166,7 +166,7 @@
             border-collapse: collapse;
         }
 
-        .cart-table th, 
+        .cart-table th,
         .cart-table td {
             padding: 16px 24px;
             text-align: left;
@@ -366,7 +366,7 @@
                 padding: 18px 20px;
             }
 
-            .cart-table th, 
+            .cart-table th,
             .cart-table td {
                 padding: 12px 14px;
                 font-size: 13px;
@@ -397,27 +397,33 @@
         <p class="nav-title">Menu Utama</p>
 
         <nav class="menu">
-            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
             </a>
-            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
             </a>
-            <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
             </a>
-            <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
             </a>
         </nav>
 
         <div class="sidebar-bottom">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Logout</span>
-                </button>
-            </form>
+            @auth
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+                        <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Logout</span>
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="nav-link">
+                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Login</span>
+                </a>
+            @endauth
         </div>
     </aside>
 
@@ -450,7 +456,7 @@
                         </thead>
                         <tbody>
                             @foreach ($keranjangs as $item)
-                                @php 
+                                @php
                                     $harga = $item->harga_diskon > 0 ? $item->harga_diskon : $item->harga_asli;
                                     $subtotal = $harga * $item->jumlah;
                                     $totalSemua += $subtotal;

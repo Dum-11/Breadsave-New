@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -29,6 +28,7 @@
             font-family: Arial, Helvetica, sans-serif;
             background: var(--background);
             color: var(--text);
+            overflow-x: hidden;
         }
 
         a {
@@ -201,10 +201,12 @@
             white-space: nowrap;
         }
 
+        /* GRID KATALOG RAPI & SERAGAM */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+            align-items: stretch;
         }
 
         .product-card {
@@ -212,12 +214,15 @@
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             transition: box-shadow 0.2s, transform 0.2s;
         }
 
         .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(35, 54, 95, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(35, 54, 95, 0.08);
         }
 
         .product-image-container {
@@ -225,6 +230,9 @@
             height: 190px;
             overflow: hidden;
             background: var(--pink-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .product-image {
@@ -235,14 +243,25 @@
             object-position: center;
         }
 
+        /* BODY KARTU DENGAN FLEX-GROW */
         .product-info {
-            padding: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .product-name {
             color: var(--navy);
-            font-size: 17px;
-            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 44px;
             overflow-wrap: anywhere;
         }
 
@@ -251,7 +270,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .price-original {
@@ -269,10 +288,28 @@
         .product-detail {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
             color: var(--muted);
             font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        /* BATASI DESKRIPSI MAX 3 BARIS */
+        .product-description {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.5;
             margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* WADAH TOMBOL DIKUNCI DI PADA DASAR KARTU */
+        .product-action {
+            margin-top: auto;
+            padding-top: 8px;
         }
 
         .buy-button {
@@ -287,6 +324,8 @@
             border: none;
             border-radius: 9px;
             cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s, background-color 0.2s;
         }
 
         .buy-button:hover {
@@ -456,7 +495,7 @@
 
             <a
                 href="{{ url('/') }}"
-                class="menu-link {{ request()->routeIs('home', 'pembeli.beranda') ? 'active' : '' }}"
+                class="menu-link {{ request()->routeIs('home', 'pembeli.beranda') || request()->is('/') ? 'active' : '' }}"
             >
                 <img
                     src="{{ asset('images/icon-home.png') }}"
@@ -592,14 +631,21 @@
 
                         @php
                             $hargaAsli = (float) $produk->harga_asli;
-                            $hargaDiskon = (float) $produk->harga_diskon;
+                            $hargaDiskon = (float) ($produk->harga_diskon ?? $hargaAsli);
                             $stok = (int) $produk->stok;
 
-                            // Foto diambil dari kolom foto database.
-                            // Jika kosong, gunakan gambar bawaan.
-                            $gambarProduk = $produk->foto
-                                ? asset('storage/' . $produk->foto)
-                                : asset('images/roti-cokelat.png');
+                            // Penanganan URL foto utuh (Database / Storage / Preset)
+                            if (!empty($produk->foto)) {
+                                if (str_starts_with($produk->foto, 'http')) {
+                                    $gambarProduk = $produk->foto;
+                                } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
+                                    $gambarProduk = asset($produk->foto);
+                                } else {
+                                    $gambarProduk = asset('storage/' . $produk->foto);
+                                }
+                            } else {
+                                $gambarProduk = asset('images/roti-cokelat.png');
+                            }
                         @endphp
 
 
@@ -621,7 +667,7 @@
                             <!-- INFORMASI PRODUK -->
                             <div class="product-info">
 
-                                <h3 class="product-name">
+                                <h3 class="product-name" title="{{ $produk->nama_produk }}">
                                     {{ $produk->nama_produk }}
                                 </h3>
 
@@ -655,63 +701,64 @@
 
                                         <span>
                                             Kedaluwarsa:
-                                            {{ $produk->expired_at->format('d-m-Y') }}
-                                        </span>
-
-                                    @endif
-
-                                    @if($produk->deskripsi)
-
-                                        <span>
-                                            {{ $produk->deskripsi }}
+                                            {{ \Carbon\Carbon::parse($produk->expired_at)->format('d-m-Y') }}
                                         </span>
 
                                     @endif
 
                                 </div>
 
+                                <!-- DESKRIPSI PRODUK (MAX 3 BARIS) -->
+                                @if($produk->deskripsi)
+                                    <p class="product-description">
+                                        {{ $produk->deskripsi }}
+                                    </p>
+                                @endif
 
-                                <!-- TOMBOL PEMBELIAN -->
-                                @if($stok > 0)
 
-                                    @auth
+                                <!-- TOMBOL PEMBELIAN DIKUNCI DI DASAR KARTU -->
+                                <div class="product-action">
+                                    @if($stok > 0)
 
-                                        <form
-                                            action="{{ route('keranjang.tambah', $produk->id_produk) }}"
-                                            method="POST"
-                                        >
-                                            @csrf
+                                        @auth
 
-                                            <button
-                                                type="submit"
+                                            <form
+                                                action="{{ route('keranjang.tambah', $produk->id_produk ?? $produk->id) }}"
+                                                method="POST"
+                                            >
+                                                @csrf
+
+                                                <button
+                                                    type="submit"
+                                                    class="buy-button"
+                                                >
+                                                    + Keranjang
+                                                </button>
+                                            </form>
+
+                                        @else
+
+                                            <a
+                                                href="{{ route('login') }}"
                                                 class="buy-button"
                                             >
-                                                Tambah ke Keranjang
-                                            </button>
-                                        </form>
+                                                Login untuk Membeli
+                                            </a>
+
+                                        @endauth
 
                                     @else
 
-                                        <a
-                                            href="{{ route('login') }}"
+                                        <button
+                                            type="button"
                                             class="buy-button"
+                                            disabled
                                         >
-                                            Login untuk Membeli
-                                        </a>
+                                            Stok Habis
+                                        </button>
 
-                                    @endauth
-
-                                @else
-
-                                    <button
-                                        type="button"
-                                        class="buy-button"
-                                        disabled
-                                    >
-                                        Stok Habis
-                                    </button>
-
-                                @endif
+                                    @endif
+                                </div>
 
                             </div>
 
@@ -755,4 +802,3 @@
 
 </body>
 </html>
-    

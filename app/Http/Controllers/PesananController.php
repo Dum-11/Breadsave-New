@@ -96,8 +96,30 @@ class PesananController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // 5. Kurangi stok produk di tabel 'produks'
+            // 5. Simpan item ke detail_pesanans (penyesuaian kolom dinamis) & kurangi stok produk
             foreach ($items as $item) {
+                if (Schema::hasTable('detail_pesanans')) {
+                    $hargaSatuan = DB::table('produks')->where('id_produk', $item->id_produk)->value('harga_diskon') ?? 0;
+
+                    $insertData = [
+                        'id_pesanan' => $idPesanan,
+                        'id_produk'  => $item->id_produk,
+                        'jumlah'     => $item->jumlah,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+
+                    // Cek kolom mana yang ada di tabel detail_pesanans
+                    if (Schema::hasColumn('detail_pesanans', 'harga')) {
+                        $insertData['harga'] = $hargaSatuan;
+                    }
+                    if (Schema::hasColumn('detail_pesanans', 'subtotal')) {
+                        $insertData['subtotal'] = $hargaSatuan * $item->jumlah;
+                    }
+
+                    DB::table('detail_pesanans')->insert($insertData);
+                }
+
                 DB::table('produks')
                     ->where('id_produk', $item->id_produk)
                     ->decrement('stok', $item->jumlah);
@@ -110,15 +132,11 @@ class PesananController extends Controller
         });
     }
 
-    // Fungsi Pembatalan Pesanan oleh Pegawai Toko
+    // Fungsi Pembatalan Pesanan oleh Pegawai Toko (Dengan Pengembalian Stok Otomatis)
     public function batalkanPesanan($id)
     {
         return DB::transaction(function () use ($id) {
             $pesanan = DB::table('pesanans')->where('id_pesanan', $id)->first();
-
-            if (!$pesanan) {
-                $pesanan = DB::table('pesanans')->where('id', $id)->first();
-            }
 
             if (!$pesanan) {
                 return redirect()->back()->with('error', 'Data pesanan tidak ditemukan.');
@@ -128,15 +146,67 @@ class PesananController extends Controller
                 return redirect()->back()->with('error', 'Pesanan ini sudah dibatalkan sebelumnya.');
             }
 
-            // Update status pesanan menjadi Dibatalkan
+            // 1. Kembalikan stok produk jika terdapat di tabel detail_pesanans
+            if (Schema::hasTable('detail_pesanans')) {
+                $detailItems = DB::table('detail_pesanans')->where('id_pesanan', $pesanan->id_pesanan)->get();
+                foreach ($detailItems as $item) {
+                    DB::table('produks')
+                        ->where('id_produk', $item->id_produk)
+                        ->increment('stok', $item->jumlah);
+                }
+            }
+
+            // 2. Update status pesanan menjadi Dibatalkan
             DB::table('pesanans')
-                ->where(isset($pesanan->id_pesanan) ? 'id_pesanan' : 'id', $id)
+                ->where('id_pesanan', $pesanan->id_pesanan)
                 ->update([
                     'status' => 'Dibatalkan',
                     'updated_at' => now(),
                 ]);
 
-            return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan.');
+            return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan dan stok produk telah dikembalikan!');
+        });
+    }
+
+    // Fungsi Pembatalan Pesanan oleh Pembeli (Hanya status 'Menunggu Konfirmasi')
+    public function batalkanPembeli($id)
+    {
+        $userId = Auth::id();
+
+        return DB::transaction(function () use ($id, $userId) {
+            // Menggunakan klausa where langsung pada 'id_pesanan'
+            $pesanan = DB::table('pesanans')
+                ->where('id_user', $userId)
+                ->where('id_pesanan', $id)
+                ->first();
+
+            if (!$pesanan) {
+                return redirect()->back()->with('error', 'Data pesanan tidak ditemukan atau bukan milik Anda.');
+            }
+
+            if ($pesanan->status !== 'Menunggu Konfirmasi') {
+                return redirect()->back()->with('error', 'Pesanan tidak dapat dibatalkan karena sedang diproses atau sudah selesai.');
+            }
+
+            // 1. Kembalikan stok produk jika ada di tabel detail_pesanans
+            if (Schema::hasTable('detail_pesanans')) {
+                $detailItems = DB::table('detail_pesanans')->where('id_pesanan', $pesanan->id_pesanan)->get();
+                foreach ($detailItems as $item) {
+                    DB::table('produks')
+                        ->where('id_produk', $item->id_produk)
+                        ->increment('stok', $item->jumlah);
+                }
+            }
+
+            // 2. Ubah status pesanan menjadi Dibatalkan
+            DB::table('pesanans')
+                ->where('id_pesanan', $pesanan->id_pesanan)
+                ->update([
+                    'status' => 'Dibatalkan',
+                    'updated_at' => now(),
+                ]);
+
+            return redirect()->back()->with('success', 'Pesanan berhasil dibatalkan dan stok telah dikembalikan.');
         });
     }
 }

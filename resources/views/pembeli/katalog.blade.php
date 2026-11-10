@@ -158,10 +158,12 @@
             white-space: nowrap;
         }
 
+        /* GRID KATALOG RAPI & SERAGAM */
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            align-items: stretch;
         }
 
         .product-card {
@@ -169,40 +171,53 @@
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
             transition: box-shadow 0.2s, transform 0.2s;
         }
 
         .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 24px rgba(35, 54, 95, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(35, 54, 95, 0.08);
         }
 
         /* WADAH GAMBAR PRODUK PRESISI */
         .product-image-container {
-            height: 190px;
+            height: 200px;
+            width: 100%;
+            overflow: hidden;
+            background: var(--pink-light);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            background: var(--pink-light);
         }
 
         .product-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
+        /* BODY KARTU DENGAN FLEX-GROW */
         .product-info {
-            padding: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .product-name {
             color: var(--navy);
-            font-size: 17px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 12px;
-            overflow-wrap: anywhere;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 44px;
         }
 
         .price-row {
@@ -210,7 +225,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .price-original {
@@ -228,10 +243,28 @@
         .product-detail {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
             color: var(--muted);
             font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        /* BATASI DESKRIPSI MAX 3 BARIS */
+        .product-description {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.5;
             margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* WADAH TOMBOL DIKUNCI DI DASAR KARTU */
+        .product-action {
+            margin-top: auto;
+            padding-top: 8px;
         }
 
         .buy-button {
@@ -244,7 +277,7 @@
             font-size: 14px;
             font-weight: bold;
             border: none;
-            border-radius: 9px;
+            border-radius: 10px;
             cursor: pointer;
             text-decoration: none;
             transition: opacity 0.2s;
@@ -291,47 +324,20 @@
                 align-items: center;
             }
 
-            .logo {
-                width: 50px;
-            }
-
-            .logo-container {
-                margin-bottom: 30px;
-            }
-
-            .menu-title {
-                display: none;
-            }
-
-            .menu-link {
-                justify-content: center;
-                padding: 10px 5px;
-            }
-
-            .menu-link span {
-                display: none;
-            }
-
-            .sidebar-bottom {
-                width: 100%;
-            }
+            .logo { width: 50px; }
+            .logo-container { margin-bottom: 30px; }
+            .menu-title, .menu-link span { display: none; }
+            .menu-link { justify-content: center; padding: 10px 5px; }
+            .sidebar-bottom { width: 100%; }
 
             .main {
                 margin-left: 75px;
                 padding: 20px 14px;
             }
 
-            .welcome-title {
-                font-size: 23px;
-            }
-
-            .welcome-subtitle {
-                font-size: 13px;
-            }
-
-            .section-title {
-                font-size: 18px;
-            }
+            .welcome-title { font-size: 23px; }
+            .welcome-subtitle { font-size: 13px; }
+            .section-title { font-size: 18px; }
 
             .product-grid {
                 grid-template-columns: 1fr;
@@ -341,32 +347,32 @@
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGASI -->
+    <!-- SIDEBAR NAVIGASI DINAMIS ROUTE -->
     <aside class="sidebar">
         <div class="logo-container">
-            <a href="{{ route('home') }}">
+            <a href="{{ route('pembeli.beranda') }}">
                 <img src="{{ asset('images/logo.png') }}" alt="BreadSaver" class="logo">
             </a>
         </div>
         <p class="menu-title">MENU UTAMA</p>
         <nav class="menu">
             <!-- Beranda Utama -->
-            <a href="{{ route('home') }}" class="menu-link {{ request()->is('/') || request()->routeIs('home') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.beranda') }}" class="menu-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-home.png') }}" class="menu-icon" alt=""><span>Beranda</span>
             </a>
 
             <!-- Katalog Produk -->
-            <a href="{{ route('katalog') }}" class="menu-link {{ request()->routeIs('katalog', 'pembeli.katalog') || request()->is('katalog') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.katalog') }}" class="menu-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-product.png') }}" class="menu-icon" alt=""><span>Katalog Produk</span>
             </a>
 
-            <!-- Pesanan Publik -->
-            <a href="{{ route('pesanan') }}" class="menu-link {{ request()->routeIs('pesanan', 'pembeli.pesanan') || request()->is('pesanan*') ? 'active' : '' }}">
+            <!-- Pesanan -->
+            <a href="{{ route('pembeli.pesanan') }}" class="menu-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="menu-icon" alt=""><span>Pesanan</span>
             </a>
 
-            <!-- Keranjang Publik -->
-            <a href="{{ route('keranjang') }}" class="menu-link {{ request()->routeIs('keranjang', 'pembeli.keranjang') || request()->is('keranjang*') ? 'active' : '' }}">
+            <!-- Keranjang -->
+            <a href="{{ route('pembeli.keranjang') }}" class="menu-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="menu-icon" alt=""><span>Keranjang</span>
             </a>
         </nav>
@@ -380,7 +386,7 @@
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="menu-link">
+                <a href="{{ route('login') }}" class="menu-link {{ request()->routeIs('login') ? 'active' : '' }}">
                     <img src="{{ asset('images/icon-login.png') }}" class="menu-icon" alt=""><span>Login</span>
                 </a>
             @endauth
@@ -408,31 +414,47 @@
                             $hargaDiskon = (float)($produk->harga_diskon ?? $hargaAsli);
                             $stok = (int)($produk->stok ?? 0);
 
-                            // Logika pemilihan gambar otomatis berdasarkan nama produk
-                            $namaProduk = strtolower($produk->nama_produk);
-                            if (\Illuminate\Support\Str::contains($namaProduk, ['cokelat', 'coklat', 'chocolate'])) {
-                                $gambarProduk = 'images/roti-cokelat.png';
-                            } elseif (\Illuminate\Support\Str::contains($namaProduk, ['croissant', 'pastry'])) {
-                                $gambarProduk = 'images/croissant.png';
-                            } elseif (\Illuminate\Support\Str::contains($namaProduk, ['tawar', 'sandwich'])) {
-                                $gambarProduk = 'images/roti-tawar.png';
+                            // Pilihan URL Foto Utuh (Storage Upload / Fallback Preset)
+                            if (!empty($produk->foto)) {
+                                if (str_starts_with($produk->foto, 'http')) {
+                                    $gambarSrc = $produk->foto;
+                                } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
+                                    $gambarSrc = asset($produk->foto);
+                                } else {
+                                    $gambarSrc = asset('storage/' . $produk->foto);
+                                }
                             } else {
-                                $gambarProduk = 'images/bread.png';
+                                $namaLow = strtolower($produk->nama_produk);
+                                if (\Illuminate\Support\Str::contains($namaLow, ['cokelat', 'coklat', 'chocolate'])) {
+                                    $gambarSrc = asset('images/roti-cokelat.png');
+                                } elseif (\Illuminate\Support\Str::contains($namaLow, ['croissant', 'pastry'])) {
+                                    $gambarSrc = asset('images/croissant.png');
+                                } elseif (\Illuminate\Support\Str::contains($namaLow, ['tawar', 'sandwich'])) {
+                                    $gambarSrc = asset('images/roti-tawar.png');
+                                } else {
+                                    $gambarSrc = asset('images/bread.png');
+                                }
                             }
                         @endphp
 
                         <article class="product-card">
                             <div class="product-image-container">
-                                <img src="{{ asset($gambarProduk) }}" alt="{{ $produk->nama_produk }}" class="product-image">
+                                <img src="{{ $gambarSrc }}"
+                                     alt="{{ $produk->nama_produk }}"
+                                     class="product-image"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';">
                             </div>
+                           
                             <div class="product-info">
-                                <h3 class="product-name">{{ $produk->nama_produk }}</h3>
+                                <h3 class="product-name" title="{{ $produk->nama_produk }}">{{ $produk->nama_produk }}</h3>
+                               
                                 <div class="price-row">
                                     @if($hargaAsli > $hargaDiskon)
-                                        <span class="price-original">Rp{{ number_format($hargaAsli, 0, ',', '.') }}</span>
+                                        <span class="price-original">Rp {{ number_format($hargaAsli, 0, ',', '.') }}</span>
                                     @endif
-                                    <span class="price-discount">Rp{{ number_format($hargaDiskon, 0, ',', '.') }}</span>
+                                    <span class="price-discount">Rp {{ number_format($hargaDiskon, 0, ',', '.') }}</span>
                                 </div>
+                               
                                 <div class="product-detail">
                                     <span>Stok: {{ $stok }}</span>
                                     @if(!empty($produk->expired_at))
@@ -440,15 +462,22 @@
                                     @endif
                                 </div>
 
-                                <!-- Tombol Aksi Tambah ke Keranjang / Beli -->
-                                @auth
-                                    <form action="{{ route('keranjang.tambah', $produk->id_produk) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="buy-button">Beli Sekarang</button>
-                                    </form>
-                                @else
-                                    <a href="{{ route('login') }}" class="buy-button">Login untuk Membeli</a>
-                                @endauth
+                                <!-- Deskripsi Roti Dibatasi Max 3 Baris Rapi -->
+                                @if(!empty($produk->deskripsi))
+                                    <p class="product-description">{{ $produk->deskripsi }}</p>
+                                @endif
+
+                                <!-- Tombol Aksi Terkunci Rapat di Bagian Bawah Kartu -->
+                                <div class="product-action">
+                                    @auth
+                                        <form action="{{ route('keranjang.tambah', $produk->id_produk ?? $produk->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="buy-button">+ Keranjang</button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('login') }}" class="buy-button">Login untuk Membeli</a>
+                                    @endauth
+                                </div>
 
                             </div>
                         </article>

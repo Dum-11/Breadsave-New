@@ -219,6 +219,7 @@
             object-fit: cover;
             border-radius: 10px;
             display: block;
+            background-color: var(--pink-light);
         }
 
         .no-image {
@@ -415,10 +416,23 @@
                     @forelse ($produks ?? [] as $produk)
 
                         <tr>
-                            <!-- FOTO PRODUK -->
+                            <!-- FOTO PRODUK (REVISI PATH & FALLBACK) -->
                             <td>
                                 @if ($produk->foto)
-                                    <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama_produk }}" class="product-image">
+                                    @php
+                                        // Menentukan URL foto secara presisi berdasarkan prefix simpanan database
+                                        if (str_starts_with($produk->foto, 'http')) {
+                                            $imageUrl = $produk->foto;
+                                        } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
+                                            $imageUrl = asset($produk->foto);
+                                        } else {
+                                            $imageUrl = asset('storage/' . $produk->foto);
+                                        }
+                                    @endphp
+                                    <img src="{{ $imageUrl }}" 
+                                         alt="{{ $produk->nama_produk }}" 
+                                         class="product-image"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';">
                                 @else
                                     <span class="no-image">Tidak ada foto</span>
                                 @endif
@@ -435,8 +449,10 @@
                             </td>
 
                             <!-- HARGA DISKON -->
-                            <td class="discount-price">
-                                Rp {{ number_format($produk->harga_diskon, 0, ',', '.') }}
+                            <td>
+                                <span class="discount-price">
+                                    Rp {{ number_format($produk->harga_diskon ?? $produk->harga_asli, 0, ',', '.') }}
+                                </span>
                             </td>
 
                             <!-- STOK -->
@@ -446,7 +462,7 @@
 
                             <!-- AKSI -->
                             <td>
-                                <a href="{{ route('admin.produk.edit', $produk->id_produk) }}" class="btn-edit">
+                                <a href="{{ route('admin.produk.edit', $produk->id_produk ?? $produk->id) }}" class="btn-edit">
                                     Edit
                                 </a>
                             </td>

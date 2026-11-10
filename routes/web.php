@@ -14,18 +14,20 @@ use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN UTAMA & PUBLIK (Tanpa Auth / Guest Boleh Akses)
+| HALAMAN UTAMA & PUBLIK (Redirect Paksa ke URL /pembeli/...)
 |--------------------------------------------------------------------------
 */
 
-// Beranda (Publik)
-Route::get('/', [ProdukController::class, 'index'])->name('home');
+// Beranda Utama -> Mengalihkan ke URL /pembeli/beranda
+Route::get('/', function () {
+    return redirect()->route('pembeli.beranda');
+})->name('home');
+
 Route::get('/pembeli/beranda', [ProdukController::class, 'index'])->name('pembeli.beranda');
 
-// Katalog Produk (Publik)
+// Katalog Produk -> Mengalihkan ke URL /pembeli/katalog
 Route::get('/katalog', function () {
-    $produks = Produk::latest()->get();
-    return view('pembeli.katalog', compact('produks'));
+    return redirect()->route('pembeli.katalog');
 })->name('katalog');
 
 Route::get('/pembeli/katalog', function () {
@@ -33,12 +35,18 @@ Route::get('/pembeli/katalog', function () {
     return view('pembeli.katalog', compact('produks'));
 })->name('pembeli.katalog');
 
-// Pesanan Publik & Alias
-Route::get('/pesanan', [PesananController::class, 'indexPembeli'])->name('pesanan');
+// Pesanan -> Mengalihkan ke URL /pembeli/pesanan
+Route::get('/pesanan', function () {
+    return redirect()->route('pembeli.pesanan');
+})->name('pesanan');
+
 Route::get('/pembeli/pesanan', [PesananController::class, 'indexPembeli'])->name('pembeli.pesanan');
 
-// Keranjang Publik & Alias
-Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
+// Keranjang -> Mengalihkan ke URL /pembeli/keranjang
+Route::get('/keranjang', function () {
+    return redirect()->route('pembeli.keranjang');
+})->name('keranjang');
+
 Route::get('/pembeli/keranjang', [KeranjangController::class, 'index'])->name('pembeli.keranjang');
 
 
@@ -58,7 +66,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.st
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN PEMBELI (Aksi Khusus Login)
+| HALAMAN PEMBELI (Aksi Khusus yang Memerlukan Auth)
 |--------------------------------------------------------------------------
 */
 
@@ -72,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Aksi Checkout Pesanan
     Route::post('/pembeli/checkout', [PesananController::class, 'checkout'])->name('pembeli.checkout');
+
+    // Aksi Batalkan Pesanan oleh Pembeli
+    Route::post('/pembeli/pesanan/{id}/batal', [PesananController::class, 'batalkanPembeli'])->name('pembeli.pesanan.batal');
 
 });
 
@@ -134,7 +145,6 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('pegawai.pesanan')->with('success', 'Pesanan berhasil diselesaikan.');
     })->name('pegawai.pesanan.selesai');
 
-    // TAMBAHAN: Route Batalkan Pesanan oleh Pegawai (Memanggil method batalkanPesanan di PesananController)
     Route::post('/pegawai/pesanan/{id}/batal', [PesananController::class, 'batalkanPesanan'])->name('pegawai.pesanan.batal');
 
 });
@@ -149,17 +159,27 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/beranda', function () {
-        $jumlahProduk = Produk::count();
-        $jumlahPesanan = Pesanan::count();
-        $jumlahAkun = User::count();
+        $totalProduk = Produk::count();
+        $totalPesanan = Pesanan::count();
+        $totalPengguna = User::count();
 
-        $totalProduk = $jumlahProduk;
-        $totalPesanan = $jumlahPesanan;
-        $totalPengguna = $jumlahAkun;
+        $totalPendapatan = Pesanan::where('status', 'Selesai')->sum('total_harga');
+        $pesananTerbaru = Pesanan::with('user')->latest()->take(5)->get();
+
+        $statusCounts = [
+            'menunggu'   => Pesanan::where('status', 'Menunggu Konfirmasi')->count(),
+            'diproses'   => Pesanan::where('status', 'Diproses')->count(),
+            'selesai'    => Pesanan::where('status', 'Selesai')->count(),
+            'dibatalkan' => Pesanan::where('status', 'Dibatalkan')->count(),
+        ];
 
         return view('admin.beranda', compact(
-            'jumlahProduk', 'jumlahPesanan', 'jumlahAkun',
-            'totalProduk', 'totalPesanan', 'totalPengguna'
+            'totalProduk',
+            'totalPesanan',
+            'totalPengguna',
+            'totalPendapatan',
+            'pesananTerbaru',
+            'statusCounts'
         ));
     })->name('admin.beranda');
 
@@ -174,13 +194,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/admin/produk/update/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
     Route::delete('/admin/produk/hapus/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
 
-    // Kelola Akun Admin
     Route::get('/admin/kelola-akun', function () {
         $users = User::all();
         return view('admin.kelola_akun', compact('users'));
     })->name('admin.kelola_akun');
 
-    // Route Ubah Role Akun
     Route::put('/admin/kelola-akun/{id}/role', function (Request $request, $id) {
         $user = User::findOrFail($id);
         
@@ -195,7 +213,6 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->back()->with('success', "Role akun {$user->email} berhasil diubah!");
     })->name('admin.kelola_akun.role');
 
-    // Route Toggle Status Akun (Aktif / Blokir)
     Route::put('/admin/kelola-akun/{id}/status', function ($id) {
         $user = User::findOrFail($id);
 

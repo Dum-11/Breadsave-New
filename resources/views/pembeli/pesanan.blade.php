@@ -14,6 +14,8 @@
             --muted: #8991a4;
             --white: #ffffff;
             --border: #e7eaf2;
+            --red: #b53a3a;
+            --green: #237844;
         }
 
         * {
@@ -77,63 +79,84 @@
             flex-direction: column;
         }
 
-        .nav-link { 
-            display: flex; 
-            align-items: center; 
-            gap: 14px; 
-            min-height: 58px; 
-            padding: 12px 14px; 
-            border-radius: 12px; 
-            margin-bottom: 8px; 
-            color: var(--white); 
-            font-size: 15px; 
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 58px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: var(--white);
+            font-size: 15px;
             transition: background-color 0.2s, color 0.2s;
         }
 
-        .nav-link:hover { 
-            background: rgba(255, 255, 255, 0.1); 
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        .nav-link.active { 
-            background: var(--pink); 
-            color: var(--navy); 
-            font-weight: bold; 
+        .nav-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: bold;
         }
 
-        .nav-icon { 
-            width: 28px; 
-            height: 28px; 
-            object-fit: contain; 
-            flex-shrink: 0; 
+        .nav-icon {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
         }
 
-        .sidebar-bottom { 
-            margin-top: auto; 
+        .sidebar-bottom {
+            margin-top: auto;
             padding-top: 28px;
         }
 
         /* MAIN CONTENT STANDAR PANEL */
-        .main { 
-            margin-left: 240px; 
-            min-height: 100vh; 
-            padding: 32px; 
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 32px;
         }
 
-        .page-header { 
-            margin-bottom: 28px; 
+        .page-header {
+            margin-bottom: 28px;
         }
 
-        .page-header h1 { 
-            font-size: 30px; 
+        .page-header h1 {
+            font-size: 30px;
             font-weight: 700;
             color: var(--navy);
-            margin-bottom: 8px; 
+            margin-bottom: 8px;
         }
 
-        .page-header p { 
-            color: var(--muted); 
-            font-size: 15px; 
+        .page-header p {
+            color: var(--muted);
+            font-size: 15px;
             line-height: 1.6;
+        }
+
+        /* ALERT STYLING */
+        .alert {
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #e2f7e9;
+            color: var(--green);
+            border: 1px solid #b7ebc6;
+        }
+
+        .alert-error {
+            background: #ffe6e6;
+            color: var(--red);
+            border: 1px solid #fecaca;
         }
 
         /* KOTAK PERINGATAN BELUM LOGIN */
@@ -179,101 +202,117 @@
         }
 
         /* RINGKASAN RINGKAS */
-        .summary-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
-            gap: 16px; 
-            margin-bottom: 28px; 
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
         }
 
-        .summary-card { 
-            background: var(--white); 
-            border: 1px solid var(--border); 
-            border-radius: 16px; 
-            padding: 20px; 
+        .summary-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
         }
 
-        .summary-label { 
-            color: var(--muted); 
-            font-size: 13px; 
-            margin-bottom: 10px; 
+        .summary-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 10px;
         }
 
-        .summary-number { 
-            color: var(--navy); 
-            font-size: 26px; 
-            font-weight: bold; 
+        .summary-number {
+            color: var(--navy);
+            font-size: 26px;
+            font-weight: bold;
         }
 
         /* TABEL PESANAN */
-        .table-card { 
-            background: var(--white); 
-            border: 1px solid var(--border); 
-            border-radius: 16px; 
-            overflow: hidden; 
+        .table-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
         }
 
-        .table-header { 
-            padding: 24px 28px; 
-            border-bottom: 1px solid var(--border); 
+        .table-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .table-header h2 { 
-            font-size: 20px; 
+        .table-header h2 {
+            font-size: 20px;
             font-weight: 700;
             color: var(--navy);
-            margin-bottom: 6px; 
+            margin-bottom: 6px;
         }
 
-        .table-header p { 
-            color: var(--muted); 
-            font-size: 14px; 
+        .table-header p {
+            color: var(--muted);
+            font-size: 14px;
         }
         
-        .table-wrapper { 
-            width: 100%; 
-            overflow-x: auto; 
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
         }
 
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            white-space: nowrap; 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
         }
 
-        th, td { 
-            padding: 16px 24px; 
-            text-align: left; 
-            border-bottom: 1px solid var(--border); 
-            font-size: 14px; 
+        th, td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
             vertical-align: middle;
         }
 
-        th { 
-            background: #fafbfe; 
-            color: var(--muted); 
-            font-size: 12px; 
+        th {
+            background: #fafbfe;
+            color: var(--muted);
+            font-size: 12px;
             font-weight: bold;
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         /* STATUS STYLING */
-        .status { 
-            display: inline-block; 
-            padding: 6px 14px; 
-            border-radius: 20px; 
-            font-size: 12px; 
-            font-weight: bold; 
+        .status {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .status-menunggu { background: #fff4d6; color: #956500; }
         .status-diproses { background: #e6efff; color: #315ba8; }
-        .status-selesai { background: #e2f7e9; color: #237844; }
-        .status-dibatalkan { background: #ffe6e6; color: #b53a3a; }
+        .status-selesai { background: #e2f7e9; color: var(--green); }
+        .status-dibatalkan { background: #ffe6e6; color: var(--red); }
+
+        .btn-cancel {
+            background: #fee2e2;
+            color: var(--red);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-cancel:hover {
+            opacity: 0.85;
+        }
 
         .empty-pesanan {
-            padding: 45px 20px; 
+            padding: 45px 20px;
             text-align: center;
         }
 
@@ -290,13 +329,13 @@
         }
 
         /* FOOTER */
-        .main-footer { 
-            margin-top: 45px; 
-            padding-top: 20px; 
-            border-top: 1px solid var(--border); 
-            color: var(--muted); 
-            font-size: 12px; 
-            text-align: center; 
+        .main-footer {
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
         }
 
         /* RESPONSIVE */
@@ -364,16 +403,16 @@
         <p class="nav-title">Menu Utama</p>
 
         <nav class="menu">
-            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda') || request()->is('/') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
             </a>
-            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog') || request()->is('katalog') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
             </a>
-            <a href="{{ route('pesanan') }}" class="nav-link {{ request()->routeIs('pesanan', 'pembeli.pesanan') || request()->is('pesanan*') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
             </a>
-            <a href="{{ route('keranjang') }}" class="nav-link {{ request()->routeIs('keranjang', 'pembeli.keranjang') || request()->is('keranjang*') ? 'active' : '' }}">
+            <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
             </a>
         </nav>
@@ -402,6 +441,13 @@
         </header>
 
         @auth
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-error">{{ session('error') }}</div>
+            @endif
+
             <!-- TAMPILAN JIKA USER SUDAH LOGIN -->
             <section class="summary-grid">
                 <article class="summary-card"><p class="summary-label">Total Pesanan</p><p class="summary-number">{{ $totalPesanan ?? 0 }}</p></article>
@@ -425,31 +471,45 @@
                                 <th>Tanggal Pesan</th>
                                 <th>Total Harga</th>
                                 <th>Status</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($pesanans ?? [] as $pesanan)
+                                @php
+                                    $pesananId = $pesanan->id_pesanan ?? $pesanan->id;
+                                    $statusClasses = [
+                                        'Menunggu Konfirmasi' => 'status-menunggu',
+                                        'Diproses' => 'status-diproses',
+                                        'Selesai' => 'status-selesai',
+                                        'Dibatalkan' => 'status-dibatalkan',
+                                    ];
+                                    $statusClass = $statusClasses[$pesanan->status] ?? 'status-menunggu';
+                                @endphp
                                 <tr>
-                                    <td style="font-weight: bold; color: var(--navy);">#{{ $pesanan->id_pesanan ?? $pesanan->id }}</td>
+                                    <td style="font-weight: bold; color: var(--navy);">#{{ $pesananId }}</td>
                                     <td>{{ $pesanan->id_user }}</td>
                                     <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-' }}</td>
                                     <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
                                     <td>
-                                        @php
-                                            $statusClasses = [
-                                                'Menunggu Konfirmasi' => 'status-menunggu',
-                                                'Diproses' => 'status-diproses',
-                                                'Selesai' => 'status-selesai',
-                                                'Dibatalkan' => 'status-dibatalkan',
-                                            ];
-                                            $statusClass = $statusClasses[$pesanan->status] ?? 'status-menunggu';
-                                        @endphp
                                         <span class="status {{ $statusClass }}">{{ $pesanan->status }}</span>
+                                    </td>
+                                    <td>
+                                        @if($pesanan->status === 'Menunggu Konfirmasi')
+                                            <form action="{{ route('pembeli.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" class="btn-cancel" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">
+                                                    Batalkan Pesanan
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span style="color: var(--muted); font-size: 12px;">-</span>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="empty-pesanan">
+                                    <td colspan="6" class="empty-pesanan">
                                         <h3>Belum Ada Pesanan</h3>
                                         <p>Data pesanan belum tersedia.</p>
                                     </td>

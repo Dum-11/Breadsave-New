@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -87,6 +86,7 @@
             color: var(--white);
             font-size: 14px;
             width: 100%;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         .nav-link:hover {
@@ -147,6 +147,7 @@
             font-weight: bold;
             font-size: 13px;
             white-space: nowrap;
+            transition: opacity 0.2s;
         }
 
         .btn-add:hover {
@@ -217,6 +218,7 @@
             object-fit: cover;
             border-radius: 10px;
             display: block;
+            background-color: var(--pink-light);
         }
 
         .no-image {
@@ -232,6 +234,7 @@
             border-radius: 7px;
             font-size: 12px;
             font-weight: bold;
+            transition: background-color 0.2s;
         }
 
         .btn-edit:hover {
@@ -395,13 +398,15 @@
             <span>Katalog</span>
         </a>
 
-        <a href="{{ route('admin.kelola_akun') }}" class="nav-link">
+        <a href="{{ route('admin.kelola_akun') }}" 
+           class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}"
                  class="nav-icon" alt="">
             <span>Kelola Akun</span>
         </a>
 
-        <a href="{{ route('admin.laporan') }}" class="nav-link">
+        <a href="{{ route('admin.laporan') }}" 
+           class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-keranjang.png') }}"
                  class="nav-icon" alt="">
             <span>Laporan</span>
@@ -464,14 +469,22 @@
                     @forelse ($produks ?? [] as $produk)
 
                         <tr>
-                            <!-- FOTO PRODUK -->
+                            <!-- FOTO PRODUK (REVISI LOGIKA URL & FALLBACK) -->
                             <td>
                                 @if ($produk->foto)
-                                    <img
-                                        src="{{ asset('storage/' . $produk->foto) }}"
-                                        alt="{{ $produk->nama_produk }}"
-                                        class="product-image"
-                                    >
+                                    @php
+                                        if (str_starts_with($produk->foto, 'http')) {
+                                            $imageUrl = $produk->foto;
+                                        } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
+                                            $imageUrl = asset($produk->foto);
+                                        } else {
+                                            $imageUrl = asset('storage/' . $produk->foto);
+                                        }
+                                    @endphp
+                                    <img src="{{ $imageUrl }}"
+                                         alt="{{ $produk->nama_produk }}"
+                                         class="product-image"
+                                         onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';">
                                 @else
                                     <span class="no-image">
                                         Tidak ada foto
@@ -491,7 +504,7 @@
 
                             <!-- HARGA DISKON -->
                             <td class="discount-price">
-                                Rp {{ number_format($produk->harga_diskon, 0, ',', '.') }}
+                                Rp {{ number_format($produk->harga_diskon ?? $produk->harga_asli, 0, ',', '.') }}
                             </td>
 
                             <!-- STOK -->
@@ -501,7 +514,7 @@
 
                             <!-- AKSI -->
                             <td>
-                                <a href="{{ route('admin.produk.edit', $produk->id_produk) }}"
+                                <a href="{{ route('admin.produk.edit', $produk->id_produk ?? $produk->id) }}"
                                    class="btn-edit">
                                     Edit
                                 </a>
