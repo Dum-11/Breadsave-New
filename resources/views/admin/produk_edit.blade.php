@@ -33,10 +33,135 @@
             text-decoration: none;
         }
 
+        /* 
+        =========================================================
+        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
+        =========================================================
+        */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 70px; /* Lebar default saat kursor menjauh */
+            height: 100vh;
+            padding: 24px 12px;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            height: 45px;
+        }
+
+        .logo {
+            width: 140px;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            transition: opacity 0.2s;
+        }
+
+        .logo-small {
+            font-size: 24px;
+            display: none;
+        }
+
+        /* Tampilkan logo kecil saat menguncup, logo penuh saat di-hover */
+        .sidebar:not(:hover) .logo {
+            display: none;
+        }
+        .sidebar:not(:hover) .logo-small {
+            display: block;
+        }
+
+        .nav-title {
+            color: #c4cce0;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin: 0 10px 14px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-title {
+            opacity: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 50px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: var(--white);
+            font-size: 15px;
+            text-decoration: none;
+            border: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .nav-link span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-link span {
+            opacity: 1;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        /* MAIN CONTENT & FORM LAYOUT */
         .main {
+            margin-left: 70px;
+            min-height: 100vh;
+            padding: 40px 32px;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Wrapper untuk form agar tetap di tengah */
+        .form-container {
             max-width: 850px;
-            margin: 40px auto;
-            padding: 0 24px;
+            margin: 0 auto;
         }
 
         .header {
@@ -175,15 +300,29 @@
             opacity: 0.85;
         }
 
-        @media(max-width: 600px) {
+        /* RESPONSIVE LAYOUT */
+        @media(max-width: 700px) {
+            .sidebar {
+                width: 75px;
+                padding: 20px 10px;
+                align-items: center;
+            }
+
+            .logo { width: 50px; }
+            .logo-container { margin-bottom: 30px; }
+            .nav-title { display: none; }
+            .nav-link { justify-content: center; padding: 10px 5px; }
+            .nav-link span { display: none; }
+            .sidebar-bottom { width: 100%; }
+
+            .main {
+                margin-left: 75px;
+                padding: 20px 16px;
+            }
+
             .form-row {
                 grid-template-columns: 1fr;
                 gap: 0;
-            }
-
-            .main {
-                margin: 20px auto;
-                padding: 0 16px;
             }
 
             .form-card {
@@ -194,161 +333,214 @@
 </head>
 <body>
 
-    <main class="main">
+    <!-- SIDEBAR WITH HOVER EXPAND -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <a href="{{ route('admin.beranda') }}">
+                <span class="logo-small">🍞</span>
+                <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
+            </a>
+        </div>
+        <p class="nav-title">Admin Panel</p>
 
-        <!-- HEADER -->
-        <header class="header">
-            <h1>Edit Produk</h1>
-            <p>Ubah informasi produk yang sudah tersimpan di BreadSaver.</p>
-        </header>
+        <a href="{{ route('admin.beranda') }}" class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
+            <span>Beranda</span>
+        </a>
 
-        <!-- FORM CARD -->
-        <section class="form-card">
+        <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') || request()->routeIs('admin.produk.edit') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
+            <span>Katalog</span>
+        </a>
 
-            <!-- PESAN ERROR -->
-            @if($errors->any())
-                <div class="error-list">
-                    <strong>Terjadi kesalahan:</strong>
-                    <ul style="padding-left:20px;margin-top:8px;">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        <a href="{{ route('admin.kelola_akun') }}" class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
+            <span>Kelola Akun</span>
+        </a>
 
-            <!-- FORM EDIT PRODUK -->
-            <form action="{{ route('admin.produk.update', $produk->id_produk) }}"
-                  method="POST"
-                  enctype="multipart/form-data">
+        <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
+            <span>Laporan</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                @method('PUT')
-
-                <!-- NAMA PRODUK -->
-                <div class="form-group">
-                    <label for="nama_produk">Nama Produk</label>
-                    <input type="text"
-                           id="nama_produk"
-                           name="nama_produk"
-                           value="{{ old('nama_produk', $produk->nama_produk) }}"
-                           placeholder="Masukkan nama produk"
-                           required>
-                    @error('nama_produk')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- HARGA -->
-                <div class="form-row">
-                    <!-- HARGA ASLI -->
-                    <div class="form-group">
-                        <label for="harga_asli">Harga Asli (Rp)</label>
-                        <input type="number"
-                               id="harga_asli"
-                               name="harga_asli"
-                               min="0"
-                               step="0.01"
-                               value="{{ old('harga_asli', $produk->harga_asli) }}"
-                               required>
-                        @error('harga_asli')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- HARGA DISKON -->
-                    <div class="form-group">
-                        <label for="harga_diskon">Harga Diskon (Rp)</label>
-                        <input type="number"
-                               id="harga_diskon"
-                               name="harga_diskon"
-                               min="0"
-                               step="0.01"
-                               value="{{ old('harga_diskon', $produk->harga_diskon) }}"
-                               required>
-                        @error('harga_diskon')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- STOK DAN EXPIRED -->
-                <div class="form-row">
-                    <!-- STOK -->
-                    <div class="form-group">
-                        <label for="stok">Jumlah Stok</label>
-                        <input type="number"
-                               id="stok"
-                               name="stok"
-                               min="0"
-                               value="{{ old('stok', $produk->stok) }}"
-                               required>
-                        @error('stok')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- EXPIRED -->
-                    <div class="form-group">
-                        <label for="expired_at">Tanggal Kedaluwarsa</label>
-                        <input type="datetime-local"
-                               id="expired_at"
-                               name="expired_at"
-                               value="{{ old('expired_at', $produk->expired_at ? \Carbon\Carbon::parse($produk->expired_at)->format('Y-m-d\TH:i') : '') }}"
-                               required>
-                        @error('expired_at')
-                            <div class="error">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- DESKRIPSI -->
-                <div class="form-group">
-                    <label for="deskripsi">Deskripsi Produk</label>
-                    <textarea id="deskripsi"
-                              name="deskripsi"
-                              placeholder="Masukkan deskripsi produk...">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
-                    @error('deskripsi')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- FOTO LAMA -->
-                <div class="form-group">
-                    <label>Foto Produk Saat Ini</label>
-                    @if($produk->foto)
-                        <div>
-                            <img src="{{ asset('storage/' . $produk->foto) }}"
-                                 class="current-photo"
-                                 alt="{{ $produk->nama_produk }}">
-                        </div>
-                    @else
-                        <p class="note">Produk belum memiliki foto.</p>
-                    @endif
-                </div>
-
-                <!-- FOTO BARU -->
-                <div class="form-group">
-                    <label for="foto">Ganti Foto Produk</label>
-                    <input type="file"
-                           id="foto"
-                           name="foto"
-                           accept=".jpg,.jpeg,.png,.webp">
-                    <p class="note">
-                        Kosongkan jika tidak ingin mengganti foto lama. Format JPG, JPEG, PNG, atau WEBP. Ukuran maksimal 2 MB.
-                    </p>
-                    @error('foto')
-                        <div class="error">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <!-- TOMBOL -->
-                <div class="form-actions">
-                    <a href="{{ route('admin.katalog') }}" class="btn btn-back">Kembali</a>
-                    <button type="submit" class="btn btn-save">Simpan Perubahan</button>
-                </div>
-
+                <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+                    <span>Logout</span>
+                </button>
             </form>
-        </section>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="form-container">
+            
+            <!-- HEADER -->
+            <header class="header">
+                <h1>Edit Produk</h1>
+                <p>Ubah informasi produk yang sudah tersimpan di BreadSaver.</p>
+            </header>
+
+            <!-- FORM CARD -->
+            <section class="form-card">
+
+                <!-- PESAN ERROR -->
+                @if($errors->any())
+                    <div class="error-list">
+                        <strong>Terjadi kesalahan:</strong>
+                        <ul style="padding-left:20px;margin-top:8px;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <!-- FORM EDIT PRODUK -->
+                <form action="{{ route('admin.produk.update', $produk->id_produk ?? $produk->id) }}"
+                      method="POST"
+                      enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- NAMA PRODUK -->
+                    <div class="form-group">
+                        <label for="nama_produk">Nama Produk</label>
+                        <input type="text"
+                               id="nama_produk"
+                               name="nama_produk"
+                               value="{{ old('nama_produk', $produk->nama_produk) }}"
+                               placeholder="Masukkan nama produk"
+                               required>
+                        @error('nama_produk')
+                            <div class="error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- HARGA -->
+                    <div class="form-row">
+                        <!-- HARGA ASLI -->
+                        <div class="form-group">
+                            <label for="harga_asli">Harga Asli (Rp)</label>
+                            <input type="number"
+                                   id="harga_asli"
+                                   name="harga_asli"
+                                   min="0"
+                                   step="0.01"
+                                   value="{{ old('harga_asli', $produk->harga_asli) }}"
+                                   required>
+                            @error('harga_asli')
+                                <div class="error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- HARGA DISKON -->
+                        <div class="form-group">
+                            <label for="harga_diskon">Harga Diskon (Rp)</label>
+                            <input type="number"
+                                   id="harga_diskon"
+                                   name="harga_diskon"
+                                   min="0"
+                                   step="0.01"
+                                   value="{{ old('harga_diskon', $produk->harga_diskon) }}"
+                                   required>
+                            @error('harga_diskon')
+                                <div class="error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- STOK DAN EXPIRED -->
+                    <div class="form-row">
+                        <!-- STOK -->
+                        <div class="form-group">
+                            <label for="stok">Jumlah Stok</label>
+                            <input type="number"
+                                   id="stok"
+                                   name="stok"
+                                   min="0"
+                                   value="{{ old('stok', $produk->stok) }}"
+                                   required>
+                            @error('stok')
+                                <div class="error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- EXPIRED -->
+                        <div class="form-group">
+                            <label for="expired_at">Tanggal Kedaluwarsa</label>
+                            <input type="datetime-local"
+                                   id="expired_at"
+                                   name="expired_at"
+                                   value="{{ old('expired_at', $produk->expired_at ? \Carbon\Carbon::parse($produk->expired_at)->format('Y-m-d\TH:i') : '') }}"
+                                   required>
+                            @error('expired_at')
+                                <div class="error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- DESKRIPSI -->
+                    <div class="form-group">
+                        <label for="deskripsi">Deskripsi Produk</label>
+                        <textarea id="deskripsi"
+                                  name="deskripsi"
+                                  placeholder="Masukkan deskripsi produk...">{{ old('deskripsi', $produk->deskripsi) }}</textarea>
+                        @error('deskripsi')
+                            <div class="error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- FOTO LAMA -->
+                    <div class="form-group">
+                        <label>Foto Produk Saat Ini</label>
+                        @if($produk->foto)
+                            <div>
+                                @php
+                                    if (str_starts_with($produk->foto, 'http')) {
+                                        $imageUrl = $produk->foto;
+                                    } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
+                                        $imageUrl = asset($produk->foto);
+                                    } else {
+                                        $imageUrl = asset('storage/' . $produk->foto);
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl }}"
+                                     class="current-photo"
+                                     alt="{{ $produk->nama_produk }}">
+                            </div>
+                        @else
+                            <p class="note">Produk belum memiliki foto.</p>
+                        @endif
+                    </div>
+
+                    <!-- FOTO BARU -->
+                    <div class="form-group">
+                        <label for="foto">Ganti Foto Produk</label>
+                        <input type="file"
+                               id="foto"
+                               name="foto"
+                               accept=".jpg,.jpeg,.png,.webp">
+                        <p class="note">
+                            Kosongkan jika tidak ingin mengganti foto lama. Format JPG, JPEG, PNG, atau WEBP. Ukuran maksimal 2 MB.
+                        </p>
+                        @error('foto')
+                            <div class="error">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <!-- TOMBOL -->
+                    <div class="form-actions">
+                        <a href="{{ route('admin.katalog') }}" class="btn btn-back">Batal</a>
+                        <button type="submit" class="btn btn-save">Simpan Perubahan</button>
+                    </div>
+
+                </form>
+            </section>
+        </div>
     </main>
 
 </body>

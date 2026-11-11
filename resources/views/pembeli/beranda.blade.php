@@ -34,42 +34,75 @@
             text-decoration: none;
         }
 
-        /* SIDEBAR STANDAR PANEL */
+        /* 
+        =========================================================
+        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
+        =========================================================
+        */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 240px;
+            width: 70px; /* Lebar default menguncup saat kursor menjauh */
             height: 100vh;
-            padding: 28px 22px;
+            padding: 24px 12px;
             background: var(--navy);
             color: var(--white);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
+        .sidebar:hover {
+            width: 240px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 56px;
+            margin-bottom: 40px;
+            height: 45px;
         }
 
         .logo {
-            width: 180px;
+            width: 140px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
+            transition: opacity 0.2s;
+        }
+
+        .logo-small {
+            font-size: 24px;
+            display: none;
+        }
+
+        /* Tampilkan ikon kecil saat menguncup, logo penuh saat di-hover */
+        .sidebar:not(:hover) .logo {
+            display: none;
+        }
+        .sidebar:not(:hover) .logo-small {
+            display: block;
         }
 
         .menu-title {
             color: #c4cce0;
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: 1px;
-            margin: 0 10px 18px;
+            margin: 0 10px 14px;
             text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .menu-title {
+            opacity: 1;
         }
 
         .menu {
@@ -81,8 +114,8 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            min-height: 58px;
-            padding: 12px 14px;
+            min-height: 50px;
+            padding: 10px 14px;
             border-radius: 12px;
             margin-bottom: 8px;
             color: var(--white);
@@ -101,22 +134,32 @@
         }
 
         .menu-icon {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             object-fit: contain;
             flex-shrink: 0;
         }
 
+        .menu-link span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .menu-link span {
+            opacity: 1;
+        }
+
         .sidebar-bottom {
             margin-top: auto;
-            padding-top: 28px;
+            padding-top: 20px;
         }
 
         /* MAIN CONTENT STANDAR PANEL */
         .main {
-            margin-left: 240px;
+            margin-left: 70px;
             min-height: 100vh;
             padding: 32px;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .welcome-title {
@@ -346,8 +389,9 @@
 
             .logo { width: 50px; }
             .logo-container { margin-bottom: 30px; }
-            .menu-title, .menu-link span { display: none; }
+            .menu-title { display: none; }
             .menu-link { justify-content: center; padding: 10px 5px; }
+            .menu-link span { display: none; }
             .sidebar-bottom { width: 100%; }
 
             .main {
@@ -367,10 +411,11 @@
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGASI -->
+    <!-- SIDEBAR WITH HOVER EXPAND -->
     <aside class="sidebar">
         <div class="logo-container">
             <a href="{{ route('pembeli.beranda') }}">
+                <span class="logo-small" style="font-size: 24px;">🍞</span>
                 <img src="{{ asset('images/logo.png') }}" alt="BreadSaver" class="logo">
             </a>
         </div>

@@ -20,28 +20,133 @@
         body { font-family: Arial, Helvetica, sans-serif; background: var(--background); color: var(--text); overflow-x: hidden; }
         a { color: inherit; text-decoration: none; }
 
-        /* SIDEBAR STANDAR PANEL */
+        /* 
+        =========================================================
+        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
+        =========================================================
+        */
         .sidebar {
-            position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
-            padding: 28px 22px; background: var(--navy); color: var(--white);
-            display: flex; flex-direction: column; overflow-y: auto; z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 70px; /* Lebar default menguncup saat kursor menjauh */
+            height: 100vh;
+            padding: 24px 12px;
+            background: var(--navy);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
-        .logo-container { display: flex; justify-content: center; align-items: center; margin-bottom: 56px; }
-        .logo { width: 180px; max-width: 100%; height: auto; object-fit: contain; }
-        .nav-title { color: #c4cce0; font-size: 12px; letter-spacing: 1px; margin: 0 10px 18px; text-transform: uppercase; }
-        .menu { display: flex; flex-direction: column; }
-        .nav-link { 
-            display: flex; align-items: center; gap: 14px; min-height: 58px; 
-            padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; 
-            color: var(--white); font-size: 15px; transition: background-color 0.2s, color 0.2s;
-        }
-        .nav-link:hover { background: rgba(255, 255, 255, 0.1); }
-        .nav-link.active { background: var(--pink); color: var(--navy); font-weight: bold; }
-        .nav-icon { width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; }
-        .sidebar-bottom { margin-top: auto; padding-top: 28px; }
 
-        /* MAIN CONTENT */
-        .main { margin-left: 240px; min-height: 100vh; padding: 32px; }
+        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            height: 45px;
+        }
+
+        .logo {
+            width: 140px;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            transition: opacity 0.2s;
+        }
+
+        .logo-small {
+            font-size: 24px;
+            display: none;
+        }
+
+        /* Tampilkan logo kecil saat menguncup, logo penuh saat di-hover */
+        .sidebar:not(:hover) .logo {
+            display: none;
+        }
+        .sidebar:not(:hover) .logo-small {
+            display: block;
+        }
+
+        .nav-title {
+            color: #c4cce0;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin: 0 10px 14px;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-title {
+            opacity: 1;
+        }
+
+        .menu { display: flex; flex-direction: column; }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 50px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: var(--white);
+            font-size: 15px;
+            text-decoration: none;
+            border: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .nav-link span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-link span {
+            opacity: 1;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        /* MAIN CONTENT STANDAR PANEL */
+        .main {
+            margin-left: 70px;
+            min-height: 100vh;
+            padding: 32px;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .page-header { margin-bottom: 24px; }
         .page-header h1 { font-size: 30px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
         .page-header p { color: var(--muted); font-size: 15px; line-height: 1.6; }
@@ -113,10 +218,11 @@
 </head>
 <body>
 
-    <!-- SIDEBAR NAVIGASI ADMIN -->
+    <!-- SIDEBAR WITH HOVER EXPAND -->
     <aside class="sidebar">
         <div class="logo-container">
             <a href="{{ route('admin.beranda') }}">
+                <span class="logo-small">🍞</span>
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
             </a>
         </div>

@@ -34,50 +34,83 @@
             text-decoration: none;
         }
 
-        /* SIDEBAR STANDAR PANEL */
+        /* 
+        =========================================================
+        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
+        =========================================================
+        */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 240px;
+            width: 70px; /* Lebar default menguncup saat kursor menjauh */
             height: 100vh;
-            padding: 28px 22px;
+            padding: 24px 12px;
             background: var(--navy);
             color: var(--white);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
+        .sidebar:hover {
+            width: 240px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 56px;
+            margin-bottom: 40px;
+            height: 45px;
         }
 
         .logo {
-            width: 180px;
+            width: 140px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
+            transition: opacity 0.2s;
+        }
+
+        .logo-small {
+            font-size: 24px;
+            display: none;
+        }
+
+        /* Tampilkan logo kecil saat menguncup, logo penuh saat di-hover */
+        .sidebar:not(:hover) .logo {
+            display: none;
+        }
+        .sidebar:not(:hover) .logo-small {
+            display: block;
         }
 
         .nav-title {
             color: #c4cce0;
-            font-size: 12px;
+            font-size: 11px;
             letter-spacing: 1px;
-            margin: 0 10px 18px;
+            margin: 0 10px 14px;
             text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-title {
+            opacity: 1;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
             gap: 14px;
-            min-height: 58px;
-            padding: 12px 14px;
+            min-height: 50px;
+            padding: 10px 14px;
             border-radius: 12px;
             margin-bottom: 8px;
             color: var(--white);
@@ -98,22 +131,32 @@
         }
 
         .nav-icon {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             object-fit: contain;
             flex-shrink: 0;
         }
 
+        .nav-link span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-link span {
+            opacity: 1;
+        }
+
         .sidebar-bottom {
             margin-top: auto;
-            padding-top: 28px;
+            padding-top: 20px;
         }
 
         /* MAIN CONTENT STANDAR PANEL */
         .main {
-            margin-left: 240px;
+            margin-left: 70px;
             min-height: 100vh;
             padding: 32px;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .page-header {
@@ -270,73 +313,17 @@
                 height: 52px;
             }
         }
-
-        @media (max-width: 700px) {
-            .sidebar {
-                width: 75px;
-                padding: 20px 10px;
-                align-items: center;
-            }
-
-            .logo {
-                width: 50px;
-            }
-
-            .logo-container {
-                margin-bottom: 30px;
-            }
-
-            .nav-title {
-                display: none;
-            }
-
-            .nav-link {
-                justify-content: center;
-                padding: 10px 5px;
-            }
-
-            .nav-link span {
-                display: none;
-            }
-
-            .sidebar-bottom {
-                width: 100%;
-            }
-
-            .main {
-                margin-left: 75px;
-                padding: 20px 14px;
-            }
-
-            th, td {
-                padding: 8px 4px;
-                font-size: 10px;
-            }
-
-            th {
-                font-size: 9px;
-            }
-
-            .product-image {
-                width: 40px;
-                height: 40px;
-            }
-
-            .btn-edit {
-                padding: 6px 7px;
-                font-size: 9px;
-            }
-        }
     </style>
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR WITH HOVER EXPAND -->
     <aside class="sidebar">
 
         <div class="logo-container">
             <a href="{{ route('admin.beranda') }}">
+                <span class="logo-small">🍞</span>
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
             </a>
         </div>
@@ -416,11 +403,10 @@
                     @forelse ($produks ?? [] as $produk)
 
                         <tr>
-                            <!-- FOTO PRODUK (REVISI PATH & FALLBACK) -->
+                            <!-- FOTO PRODUK -->
                             <td>
                                 @if ($produk->foto)
                                     @php
-                                        // Menentukan URL foto secara presisi berdasarkan prefix simpanan database
                                         if (str_starts_with($produk->foto, 'http')) {
                                             $imageUrl = $produk->foto;
                                         } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
