@@ -40,7 +40,7 @@ class PesananController extends Controller
         ]);
     }
 
-    // Memproses keranjang belanja pembeli menjadi pesanan (Checkout Aman)
+    // Memproses keranjang belanja pembeli menjadi pesanan (Checkout Aman & Filter Kadaluarsa)
     public function checkout(Request $request)
     {
         $userId = Auth::id();
@@ -70,13 +70,14 @@ class PesananController extends Controller
 
             $totalHarga = 0;
 
-            // 3. Validasi & penguncian stok per produk
+            // 3. Validasi, penguncian stok, & pengecekan status kedaluwarsa per produk
             foreach ($items as $item) {
                 $produk = DB::table('produks')
                             ->where('id_produk', $item->id_produk)
                             ->lockForUpdate()
                             ->first();
 
+                // Cek apakah produk ditemukan, apakah sudah kadaluarsa (expired_at < now()), atau stok tidak mencukupi
                 if (!$produk || ($produk->expired_at && $produk->expired_at < now()) || $produk->stok < $item->jumlah) {
                     $namaProduk = $produk->nama_produk ?? 'Produk';
                     return redirect()->back()->with('error', "Maaf, stok untuk produk '{$namaProduk}' tidak mencukupi, habis, atau telah kedaluwarsa.");
@@ -174,7 +175,6 @@ class PesananController extends Controller
         $userId = Auth::id();
 
         return DB::transaction(function () use ($id, $userId) {
-            // Menggunakan klausa where langsung pada 'id_pesanan'
             $pesanan = DB::table('pesanans')
                 ->where('id_user', $userId)
                 ->where('id_pesanan', $id)

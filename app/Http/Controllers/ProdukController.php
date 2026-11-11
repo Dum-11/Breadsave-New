@@ -1,131 +1,227 @@
 <?php
 
-namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\PesananController;
+use App\Http\Controllers\KeranjangController;
 
 use App\Models\Produk;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Pesanan;
+use App\Models\User;
 
-class ProdukController extends Controller
-{
-    // Halaman utama
-    public function index()
-    {
-        $produks = Produk::latest()->get();
+/*
+|--------------------------------------------------------------------------
+| HALAMAN UTAMA & PUBLIK (Redirect & Filter Kadaluarsa)
+|--------------------------------------------------------------------------
+*/
 
-        return view('index', compact('produks'));
-    }
+// Beranda Utama -> Mengalihkan ke /pembeli/beranda
+Route::get('/', function () {
+    return redirect()->route('pembeli.beranda');
+})->name('home');
 
-    // Katalog pembeli
-    public function katalog()
-    {
-        $produks = Produk::latest()->get();
+// Beranda Pembeli -> Memanggil ProdukController@index
+Route::get('/pembeli/beranda', [\App\Http\Controllers\ProdukController::class, 'index'])->name('pembeli.beranda');
 
-        return view('pembeli.katalog', compact('produks'));
-    }
+// Katalog Produk -> Mengalihkan ke /pembeli/katalog
+Route::get('/katalog', function () {
+    return redirect()->route('pembeli.katalog');
+})->name('katalog');
 
-    // Katalog pegawai
-    public function katalogPegawai()
-    {
-        $produks = Produk::latest()->get();
+// Katalog Pembeli -> Memanggil ProdukController@katalog (Filter Kadaluarsa)
+Route::get('/pembeli/katalog', [\App\Http\Controllers\ProdukController::class, 'katalog'])->name('pembeli.katalog');
 
-        return view('pegawai.katalog', compact('produks'));
-    }
+// Pesanan & Keranjang
+Route::get('/pesanan', function () {
+    return redirect()->route('pembeli.pesanan');
+})->name('pesanan');
 
-    // Katalog admin
-    public function katalogAdmin()
-    {
-        $produks = Produk::latest()->get();
+Route::get('/pembeli/pesanan', [\App\Http\Controllers\PesananController::class, 'indexPembeli'])->name('pembeli.pesanan');
 
-        return view('admin.katalog', compact('produks'));
-    }
+Route::get('/keranjang', function () {
+    return redirect()->route('pembeli.keranjang');
+})->name('keranjang');
 
-    // Halaman tambah produk
-    public function create()
-    {
-        return view('admin.tambah_produk');
-    }
+Route::get('/pembeli/keranjang', [\App\Http\Controllers\KeranjangController::class, 'index'])->name('pembeli.keranjang');
 
-    // Menyimpan produk
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama_produk' => 'required|string|max:100',
-            'harga_asli' => 'required|numeric|min:0',
-            'harga_diskon' => 'required|numeric|min:0|lte:harga_asli',
-            'stok' => 'required|integer|min:0',
-            'deskripsi' => 'nullable|string',
-            'expired_at' => 'required|date',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
 
-        if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')
-                ->store('produk', 'public');
+/*
+|--------------------------------------------------------------------------
+| LOGIN, LOGOUT & REGISTER
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+Route::get('/register', [\App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register'])->name('register.store');
+
+
+/*
+|--------------------------------------------------------------------------
+| HALAMAN PEMBELI (Aksi Khusus yang Memerlukan Auth)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    // Aksi Keranjang
+    Route::post('/keranjang/tambah/{id}', [\App\Http\Controllers\KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+    Route::post('/keranjang/tambah-qty/{id}', [\App\Http\Controllers\KeranjangController::class, 'tambahQty'])->name('keranjang.tambahQty');
+    Route::post('/keranjang/kurang-qty/{id}', [\App\Http\Controllers\KeranjangController::class, 'kurangQty'])->name('keranjang.kurangQty');
+    Route::post('/keranjang/hapus/{id}', [\App\Http\Controllers\KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+
+    // Aksi Checkout Pesanan
+    Route::post('/pembeli/checkout', [\App\Http\Controllers\PesananController::class, 'checkout'])->name('pembeli.checkout');
+
+    // Aksi Batalkan Pesanan oleh Pembeli
+    Route::post('/pembeli/pesanan/{id}/batal', [\App\Http\Controllers\PesananController::class, 'batalkanPembeli'])->name('pembeli.pesanan.batal');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| HALAMAN PEGAWAI (Memerlukan Auth)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/pegawai/beranda', function () {
+        $jumlahProduk = Produk::count();
+        $jumlahPesanan = Pesanan::count();
+        $pesananMenunggu = Pesanan::where('status', 'Menunggu Konfirmasi')->count();
+        $pesananDiproses = Pesanan::where('status', 'Diproses')->count();
+        $pesananSelesai = Pesanan::where('status', 'Selesai')->count();
+        $pesananDibatalkan = Pesanan::where('status', 'Dibatalkan')->count();
+        $jumlahAkun = User::count();
+
+        $totalProduk = $jumlahProduk;
+        $pesananBaru = $pesananMenunggu;
+        $totalAkun = $jumlahAkun;
+        $jumlahPesananMenunggu = $pesananMenunggu;
+        $jumlahPesananDiproses = $pesananDiproses;
+        $jumlahPesananSelesai = $pesananSelesai;
+        $jumlahPesananDibatalkan = $pesananDibatalkan;
+
+        return view('pegawai.beranda', compact(
+            'jumlahProduk', 'totalProduk', 'jumlahPesanan',
+            'pesananMenunggu', 'pesananBaru', 'pesananDiproses',
+            'pesananSelesai', 'pesananDibatalkan', 'jumlahPesananMenunggu',
+            'jumlahPesananDiproses', 'jumlahPesananSelesai',
+            'jumlahPesananDibatalkan', 'jumlahAkun', 'totalAkun'
+        ));
+    })->name('pegawai.beranda');
+
+    Route::get('/pegawai/katalog', [\App\Http\Controllers\ProdukController::class, 'katalogPegawai'])->name('pegawai.katalog');
+
+    Route::get('/pegawai/pesanan', function () {
+        $pesanans = Pesanan::latest()->get();
+        return view('pegawai.pesanan', compact('pesanans'));
+    })->name('pegawai.pesanan');
+
+    Route::post('/pegawai/pesanan/{id}/proses', function ($id) {
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->status = 'Diproses';
+        $pesanan->save();
+        return redirect()->route('pegawai.pesanan')->with('success', 'Pesanan berhasil diproses.');
+    })->name('pegawai.pesanan.proses');
+
+    Route::post('/pegawai/pesanan/{id}/selesai', function ($id) {
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->status = 'Selesai';
+        $pesanan->save();
+        return redirect()->route('pegawai.pesanan')->with('success', 'Pesanan berhasil diselesaikan.');
+    })->name('pegawai.pesanan.selesai');
+
+    Route::post('/pegawai/pesanan/{id}/batal', [\App\Http\Controllers\PesananController::class, 'batalkanPesanan'])->name('pegawai.pesanan.batal');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| HALAMAN ADMIN (Memerlukan Auth)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/admin/beranda', function () {
+        $totalProduk = Produk::count();
+        $totalPesanan = Pesanan::count();
+        $totalPengguna = User::count();
+
+        $totalPendapatan = Pesanan::where('status', 'Selesai')->sum('total_harga');
+        $pesananTerbaru = Pesanan::with('user')->latest()->take(5)->get();
+
+        $statusCounts = [
+            'menunggu'   => Pesanan::where('status', 'Menunggu Konfirmasi')->count(),
+            'diproses'   => Pesanan::where('status', 'Diproses')->count(),
+            'selesai'    => Pesanan::where('status', 'Selesai')->count(),
+            'dibatalkan' => Pesanan::where('status', 'Dibatalkan')->count(),
+        ];
+
+        return view('admin.beranda', compact(
+            'totalProduk',
+            'totalPesanan',
+            'totalPengguna',
+            'totalPendapatan',
+            'pesananTerbaru',
+            'statusCounts'
+        ));
+    })->name('admin.beranda');
+
+    Route::get('/admin/katalog', [\App\Http\Controllers\ProdukController::class, 'katalogAdmin'])->name('admin.katalog');
+
+    Route::get('/admin/produk/tambah', [\App\Http\Controllers\ProdukController::class, 'create'])->name('admin.produk.create');
+    Route::post('/admin/produk', [\App\Http\Controllers\ProdukController::class, 'store'])->name('admin.produk.store');
+    Route::get('/admin/produk/edit/{id}', [\App\Http\Controllers\ProdukController::class, 'edit'])->name('admin.produk.edit');
+    Route::put('/admin/produk/update/{id}', [\App\Http\Controllers\ProdukController::class, 'update'])->name('admin.produk.update');
+    Route::delete('/admin/produk/hapus/{id}', [\App\Http\Controllers\ProdukController::class, 'destroy'])->name('admin.produk.destroy');
+
+    Route::get('/admin/kelola-akun', function () {
+        $users = User::all();
+        return view('admin.kelola_akun', compact('users'));
+    })->name('admin.kelola_akun');
+
+    Route::put('/admin/kelola-akun/{id}/role', function (Request $request, $id) {
+        $user = User::findOrFail($id);
+        
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat mengubah role akun Anda sendiri.');
         }
 
-        // Tidak memasukkan id_toko karena tidak ada di tabel produks.
-        Produk::create($validated);
+        $request->validate(['role' => 'required|in:admin,pegawai,pembeli']);
+        $user->role = $request->role;
+        $user->save();
 
-        return redirect()
-            ->route('admin.katalog')
-            ->with('success', 'Produk berhasil ditambahkan!');
-    }
+        return redirect()->back()->with('success', "Role akun {$user->email} berhasil diubah!");
+    })->name('admin.kelola_akun.role');
 
-    // Halaman edit produk
-    public function edit($id)
-    {
-        $produk = Produk::findOrFail($id);
+    Route::put('/admin/kelola-akun/{id}/status', function ($id) {
+        $user = User::findOrFail($id);
 
-        return view('admin.produk_edit', compact('produk'));
-    }
-
-    // Memperbarui produk
-    public function update(Request $request, $id)
-    {
-        $produk = Produk::findOrFail($id);
-
-        $validated = $request->validate([
-            'nama_produk' => 'required|string|max:100',
-            'harga_asli' => 'required|numeric|min:0',
-            'harga_diskon' => 'required|numeric|min:0|lte:harga_asli',
-            'stok' => 'required|integer|min:0',
-            'deskripsi' => 'nullable|string',
-            'expired_at' => 'required|date',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
-
-        $fotoLama = $produk->foto;
-
-        if ($request->hasFile('foto')) {
-            $validated['foto'] = $request->file('foto')
-                ->store('produk', 'public');
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak dapat memblokir akun Anda sendiri.');
         }
 
-        $produk->update($validated);
+        $user->is_active = !$user->is_active;
+        $user->save();
 
-        if ($request->hasFile('foto') && $fotoLama) {
-            Storage::disk('public')->delete($fotoLama);
-        }
+        $statusText = $user->is_active ? 'diaktifkan' : 'diblokir / dinonaktifkan';
+        return redirect()->back()->with('success', "Akun {$user->email} berhasil {$statusText}!");
+    })->name('admin.kelola_akun.status');
 
-        return redirect()
-            ->route('admin.katalog')
-            ->with('success', 'Produk berhasil diperbarui!');
-    }
+    Route::get('/admin/laporan', function () {
+        $pesanans = Pesanan::latest()->get();
+        return view('admin.laporan', compact('pesanans'));
+    })->name('admin.laporan');
 
-    // Menghapus produk
-    public function destroy($id)
-    {
-        $produk = Produk::findOrFail($id);
-
-        if ($produk->foto) {
-            Storage::disk('public')->delete($produk->foto);
-        }
-
-        $produk->delete();
-
-        return redirect()
-            ->route('admin.katalog')
-            ->with('success', 'Produk berhasil dihapus!');
-    }
-}
+});

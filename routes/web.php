@@ -14,39 +14,51 @@ use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN UTAMA & PUBLIK (Redirect Paksa ke URL /pembeli/...)
+| HALAMAN UTAMA & PUBLIK (Saring Kadaluarsa & Stok Presisi)
 |--------------------------------------------------------------------------
 */
 
-// Beranda Utama -> Mengalihkan ke URL /pembeli/beranda
+// Beranda Utama -> Redirect ke Beranda Pembeli
 Route::get('/', function () {
     return redirect()->route('pembeli.beranda');
 })->name('home');
 
-Route::get('/pembeli/beranda', [ProdukController::class, 'index'])->name('pembeli.beranda');
+// Beranda Pembeli -> Hanya Tampilkan Roti Aktif & Belum Kadaluarsa
+Route::get('/pembeli/beranda', function () {
+    $produks = Produk::where('stok', '>', 0)
+        ->where(function ($query) {
+            $query->whereNull('expired_at')
+                  ->orWhere('expired_at', '>', now());
+        })
+        ->latest()
+        ->get();
 
-// Katalog Produk -> Mengalihkan ke URL /pembeli/katalog
+    return view('pembeli.beranda', compact('produks'));
+})->name('pembeli.beranda');
+
+// Katalog Produk -> Redirect ke Katalog Pembeli
 Route::get('/katalog', function () {
     return redirect()->route('pembeli.katalog');
 })->name('katalog');
 
+// Katalog Pembeli -> Hanya Tampilkan Roti Aktif & Belum Kadaluarsa
 Route::get('/pembeli/katalog', function () {
-    $produks = Produk::latest()->get();
+    $produks = Produk::where('stok', '>', 0)
+        ->where(function ($query) {
+            $query->whereNull('expired_at')
+                  ->orWhere('expired_at', '>', now());
+        })
+        ->latest()
+        ->get();
+
     return view('pembeli.katalog', compact('produks'));
 })->name('pembeli.katalog');
 
-// Pesanan -> Mengalihkan ke URL /pembeli/pesanan
-Route::get('/pesanan', function () {
-    return redirect()->route('pembeli.pesanan');
-})->name('pesanan');
-
+// Pesanan & Keranjang (Publik & Pembeli)
+Route::get('/pesanan', [PesananController::class, 'indexPembeli'])->name('pesanan');
 Route::get('/pembeli/pesanan', [PesananController::class, 'indexPembeli'])->name('pembeli.pesanan');
 
-// Keranjang -> Mengalihkan ke URL /pembeli/keranjang
-Route::get('/keranjang', function () {
-    return redirect()->route('pembeli.keranjang');
-})->name('keranjang');
-
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang');
 Route::get('/pembeli/keranjang', [KeranjangController::class, 'index'])->name('pembeli.keranjang');
 
 
@@ -89,7 +101,7 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN PEGAWAI (Memerlukan Auth)
+| HALAMAN PEGAWAI (Menampilkan Semua Produk untuk Pengelolaan Toko)
 |--------------------------------------------------------------------------
 */
 
@@ -121,6 +133,7 @@ Route::middleware(['auth'])->group(function () {
         ));
     })->name('pegawai.beranda');
 
+    // Katalog Pegawai -> Menampilkan SEMUA produk (tanpa saring kedaluwarsa)
     Route::get('/pegawai/katalog', function () {
         $produks = Produk::latest()->get();
         return view('pegawai.katalog', compact('produks'));
@@ -152,7 +165,7 @@ Route::middleware(['auth'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| HALAMAN ADMIN (Memerlukan Auth)
+| HALAMAN ADMIN (Menampilkan Semua Produk untuk Management)
 |--------------------------------------------------------------------------
 */
 
@@ -183,16 +196,81 @@ Route::middleware(['auth'])->group(function () {
         ));
     })->name('admin.beranda');
 
+    // Katalog Admin -> Menampilkan SEMUA produk (tanpa saring kedaluwarsa)
     Route::get('/admin/katalog', function () {
         $produks = Produk::latest()->get();
         return view('admin.katalog', compact('produks'));
     })->name('admin.katalog');
 
-    Route::get('/admin/produk/tambah', [ProdukController::class, 'create'])->name('admin.produk.create');
-    Route::post('/admin/produk', [ProdukController::class, 'store'])->name('admin.produk.store');
-    Route::get('/admin/produk/edit/{id}', [ProdukController::class, 'edit'])->name('admin.produk.edit');
-    Route::put('/admin/produk/update/{id}', [ProdukController::class, 'update'])->name('admin.produk.update');
-    Route::delete('/admin/produk/hapus/{id}', [ProdukController::class, 'destroy'])->name('admin.produk.destroy');
+    Route::get('/admin/produk/tambah', function () {
+        return view('admin.tambah_produk');
+    })->name('admin.produk.create');
+
+    // Aksi CRUD Produk Admin
+    Route::post('/admin/produk', function (Request $request) {
+        $validated = $request->validate([
+            'nama_produk' => 'required|string|max:100',
+            'harga_asli' => 'required|numeric|min:0',
+            'harga_diskon' => 'required|numeric|min:0|lte:harga_asli',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'expired_at' => 'required|date',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('produk', 'public');
+        }
+
+        Produk::create($validated);
+
+        return redirect()->route('admin.katalog')->with('success', 'Produk berhasil ditambahkan!');
+    })->name('admin.produk.store');
+
+    Route::get('/admin/produk/edit/{id}', function ($id) {
+        $produk = Produk::findOrFail($id);
+        return view('admin.produk_edit', compact('produk'));
+    })->name('admin.produk.edit');
+
+    Route::put('/admin/produk/update/{id}', function (Request $request, $id) {
+        $produk = Produk::findOrFail($id);
+
+        $validated = $request->validate([
+            'nama_produk' => 'required|string|max:100',
+            'harga_asli' => 'required|numeric|min:0',
+            'harga_diskon' => 'required|numeric|min:0|lte:harga_asli',
+            'stok' => 'required|integer|min:0',
+            'deskripsi' => 'nullable|string',
+            'expired_at' => 'required|date',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $fotoLama = $produk->foto;
+
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('produk', 'public');
+        }
+
+        $produk->update($validated);
+
+        if ($request->hasFile('foto') && $fotoLama) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($fotoLama);
+        }
+
+        return redirect()->route('admin.katalog')->with('success', 'Produk berhasil diperbarui!');
+    })->name('admin.produk.update');
+
+    Route::delete('/admin/produk/hapus/{id}', function ($id) {
+        $produk = Produk::findOrFail($id);
+
+        if ($produk->foto) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($produk->foto);
+        }
+
+        $produk->delete();
+
+        return redirect()->route('admin.katalog')->with('success', 'Produk berhasil dihapus!');
+    })->name('admin.produk.destroy');
 
     Route::get('/admin/kelola-akun', function () {
         $users = User::all();
