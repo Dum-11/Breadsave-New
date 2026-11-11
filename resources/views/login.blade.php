@@ -241,11 +241,11 @@
 
         /*
         =========================================================
-        BAGIAN 11: TAUTAN KEMBALI
+        BAGIAN 11: TAUTAN KEMBALI & REGISTRASI
         =========================================================
 
-        Tautan ini memungkinkan pengguna kembali ke beranda
-        tanpa mengirimkan data login.
+        Tautan ini memungkinkan pengguna melakukan registrasi atau
+        kembali ke beranda tanpa mengirimkan data login.
         */
         .form-footer {
             margin-top: 20px;
@@ -262,6 +262,10 @@
 
         .form-footer a:hover {
             text-decoration: underline;
+        }
+
+        .register-link {
+            margin-bottom: 8px;
         }
 
         /*
@@ -372,9 +376,14 @@
                 <button type="submit" class="login-button">Masuk</button>
             </form>
 
-            <!-- Tautan untuk kembali ke halaman utama. -->
+            <!-- Tautan untuk registrasi akun dan kembali ke halaman utama. -->
             <div class="form-footer">
-                <a href="{{ url('/') }}">Kembali ke beranda</a>
+                <div class="register-link">
+                    Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a>
+                </div>
+                <div>
+                    <a href="{{ url('/') }}">Kembali ke beranda</a>
+                </div>
             </div>
 
         </main>

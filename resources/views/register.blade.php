@@ -241,11 +241,11 @@
 
         /*
         =========================================================
-        BAGIAN 11: TAUTAN KEMBALI
+        BAGIAN 11: TAUTAN KEMBALI & LOGIN
         =========================================================
 
-        Tautan ini memungkinkan pengguna kembali ke beranda
-        tanpa mengirimkan data login.
+        Tautan ini memungkinkan pengguna kembali ke halaman login
+        maupun ke beranda tanpa mengirimkan data pendaftaran.
         */
         .form-footer {
             margin-top: 20px;
@@ -262,6 +262,10 @@
 
         .form-footer a:hover {
             text-decoration: underline;
+        }
+
+        .login-link {
+            margin-bottom: 8px;
         }
 
         /*
@@ -371,9 +375,9 @@
                     <input
                         type="text"
                         id="nama"
-                        name="nama"
+                        name="name"
                         placeholder="Masukkan nama lengkap"
-                        value="{{ old('nama') }}"
+                        value="{{ old('name', old('nama')) }}"
                         autocomplete="name"
                         required
                         autofocus
@@ -432,10 +436,15 @@
 
             </form>
 
-            <!-- Tautan untuk pengguna yang sudah memiliki akun. -->
+            <!-- Tautan untuk pengguna yang sudah memiliki akun dan kembali ke beranda. -->
             <div class="form-footer">
-                Sudah punya akun?
-                <a href="{{ url('/login') }}">Login</a>
+                <div class="login-link">
+                    Sudah punya akun?
+                    <a href="{{ url('/login') }}">Login</a>
+                </div>
+                <div>
+                    <a href="{{ url('/') }}">Kembali ke beranda</a>
+                </div>
             </div>
 
         </main>
