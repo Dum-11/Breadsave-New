@@ -25,9 +25,9 @@ class AdminController extends Controller
 
         // 3. Ringkasan Status Pesanan
         $statusCounts = [
-            'menunggu'  => DB::table('pesanans')->where('status', 'Menunggu Konfirmasi')->count(),
-            'diproses'  => DB::table('pesanans')->where('status', 'Diproses')->count(),
-            'selesai'   => DB::table('pesanans')->where('status', 'Selesai')->count(),
+            'menunggu'   => DB::table('pesanans')->where('status', 'Menunggu Konfirmasi')->count(),
+            'diproses'   => DB::table('pesanans')->where('status', 'Diproses')->count(),
+            'selesai'    => DB::table('pesanans')->where('status', 'Selesai')->count(),
             'dibatalkan' => DB::table('pesanans')->where('status', 'Dibatalkan')->count(),
         ];
 

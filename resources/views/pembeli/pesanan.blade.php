@@ -36,16 +36,12 @@
             text-decoration: none;
         }
 
-        /* 
-        =========================================================
-        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
-        =========================================================
-        */
+        /* SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND) */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px; /* Lebar default menguncup saat kursor menjauh */
+            width: 70px;
             height: 100vh;
             padding: 24px 12px;
             background: var(--navy);
@@ -59,7 +55,6 @@
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
         .sidebar:hover {
             width: 240px;
         }
@@ -85,7 +80,6 @@
             display: none;
         }
 
-        /* Tampilkan ikon kecil saat menguncup, logo penuh saat di-hover */
         .sidebar:not(:hover) .logo {
             display: none;
         }
@@ -156,7 +150,7 @@
             padding-top: 20px;
         }
 
-        /* MAIN CONTENT STANDAR PANEL */
+        /* MAIN CONTENT */
         .main {
             margin-left: 70px;
             min-height: 100vh;
@@ -202,7 +196,7 @@
             border: 1px solid #fecaca;
         }
 
-        /* KOTAK PERINGATAN BELUM LOGIN */
+        /* AUTH CARD */
         .auth-card {
             background: var(--white);
             border: 1px solid var(--border);
@@ -244,7 +238,7 @@
             opacity: 0.85;
         }
 
-        /* RINGKASAN RINGKAS */
+        /* SUMMARY GRID */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -271,7 +265,7 @@
             font-weight: bold;
         }
 
-        /* TABEL PESANAN */
+        /* TABLE */
         .table-card {
             background: var(--white);
             border: 1px solid var(--border);
@@ -295,7 +289,7 @@
             color: var(--muted);
             font-size: 14px;
         }
-        
+       
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -323,8 +317,8 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
-        /* STATUS STYLING */
+       
+        /* STATUS */
         .status {
             display: inline-block;
             padding: 6px 14px;
@@ -371,7 +365,6 @@
             font-size: 14px;
         }
 
-        /* FOOTER */
         .main-footer {
             margin-top: 45px;
             padding-top: 20px;
@@ -381,56 +374,22 @@
             text-align: center;
         }
 
-        /* RESPONSIVE */
         @media (max-width: 700px) {
             .sidebar {
                 width: 75px;
                 padding: 20px 10px;
                 align-items: center;
             }
-
-            .logo {
-                width: 50px;
-            }
-
-            .logo-container {
-                margin-bottom: 30px;
-            }
-
-            .nav-title {
-                display: none;
-            }
-
-            .nav-link {
-                justify-content: center;
-                padding: 10px 5px;
-            }
-
-            .nav-link span {
-                display: none;
-            }
-
-            .sidebar-bottom {
-                width: 100%;
-            }
-
-            .main {
-                margin-left: 75px;
-                padding: 20px 14px;
-            }
-
-            .page-header h1 {
-                font-size: 23px;
-            }
-
-            .table-header {
-                padding: 18px 20px;
-            }
-
-            th, td {
-                padding: 12px 14px;
-                font-size: 13px;
-            }
+            .logo { width: 50px; }
+            .logo-container { margin-bottom: 30px; }
+            .nav-title { display: none; }
+            .nav-link { justify-content: center; padding: 10px 5px; }
+            .nav-link span { display: none; }
+            .sidebar-bottom { width: 100%; }
+            .main { margin-left: 75px; padding: 20px 14px; }
+            .page-header h1 { font-size: 23px; }
+            .table-header { padding: 18px 20px; }
+            th, td { padding: 12px 14px; font-size: 13px; }
         }
     </style>
 </head>
@@ -492,7 +451,7 @@
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
 
-            <!-- TAMPILAN JIKA USER SUDAH LOGIN -->
+            <!-- SUMMARY GRID -->
             <section class="summary-grid">
                 <article class="summary-card"><p class="summary-label">Total Pesanan</p><p class="summary-number">{{ $totalPesanan ?? 0 }}</p></article>
                 <article class="summary-card"><p class="summary-label">Menunggu Konfirmasi</p><p class="summary-number">{{ $menungguKonfirmasi ?? 0 }}</p></article>
@@ -528,20 +487,22 @@
                                         'Selesai' => 'status-selesai',
                                         'Dibatalkan' => 'status-dibatalkan',
                                     ];
+                                    // DIPERBAIKI: Menambahkan tanda $ pada variabel statusClasses
                                     $statusClass = $statusClasses[$pesanan->status] ?? 'status-menunggu';
                                 @endphp
                                 <tr>
                                     <td style="font-weight: bold; color: var(--navy);">#{{ $pesananId }}</td>
-                                    <td>{{ $pesanan->id_user }}</td>
-                                    <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-' }}</td>
-                                    <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga, 0, ',', '.') }}</td>
+                                    <td>{{ $pesanan->id_user ?? '-' }}</td>
+                                    <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : ($pesanan->created_at ?? '-') }}</td>
+                                    <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga ?? 0, 0, ',', '.') }}</td>
                                     <td>
-                                        <span class="status {{ $statusClass }}">{{ $pesanan->status }}</span>
+                                        <span class="status {{ $statusClass }}">{{ $pesanan->status ?? 'Menunggu Konfirmasi' }}</span>
                                     </td>
                                     <td>
                                         @if($pesanan->status === 'Menunggu Konfirmasi')
                                             <form action="{{ route('pembeli.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
                                                 @csrf
+                                                <!-- Easy Reversal: Konfirmasi interaktif via Javascript sebelum membatalkan -->
                                                 <button type="submit" class="btn-cancel" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">
                                                     Batalkan Pesanan
                                                 </button>

@@ -144,18 +144,29 @@ Route::middleware(['auth'])->group(function () {
         return view('pegawai.pesanan', compact('pesanans'));
     })->name('pegawai.pesanan');
 
+    // Aksi Pesanan: UI/UX Error Prevention & Feedback
     Route::post('/pegawai/pesanan/{id}/proses', function ($id) {
         $pesanan = Pesanan::findOrFail($id);
+        
+        if ($pesanan->status !== 'Menunggu Konfirmasi') {
+            return redirect()->route('pegawai.pesanan')->with('error', "Gagal: Pesanan #{$id} tidak dapat diproses karena statusnya saat ini '{$pesanan->status}'.");
+        }
+
         $pesanan->status = 'Diproses';
         $pesanan->save();
-        return redirect()->route('pegawai.pesanan')->with('success', 'Pesanan berhasil diproses.');
+        return redirect()->route('pegawai.pesanan')->with('success', "Pesanan #{$id} kini sedang diproses.");
     })->name('pegawai.pesanan.proses');
 
     Route::post('/pegawai/pesanan/{id}/selesai', function ($id) {
         $pesanan = Pesanan::findOrFail($id);
+        
+        if ($pesanan->status !== 'Diproses') {
+            return redirect()->route('pegawai.pesanan')->with('error', "Gagal: Hanya pesanan berstatus 'Diproses' yang dapat diselesaikan.");
+        }
+
         $pesanan->status = 'Selesai';
         $pesanan->save();
-        return redirect()->route('pegawai.pesanan')->with('success', 'Pesanan berhasil diselesaikan.');
+        return redirect()->route('pegawai.pesanan')->with('success', "Pesanan #{$id} telah berhasil diselesaikan.");
     })->name('pegawai.pesanan.selesai');
 
     Route::post('/pegawai/pesanan/{id}/batal', [PesananController::class, 'batalkanPesanan'])->name('pegawai.pesanan.batal');
@@ -206,7 +217,7 @@ Route::middleware(['auth'])->group(function () {
         return view('admin.tambah_produk');
     })->name('admin.produk.create');
 
-    // Aksi CRUD Produk Admin
+    // Aksi CRUD Produk Admin (Dengan UI/UX Feedback)
     Route::post('/admin/produk', function (Request $request) {
         $validated = $request->validate([
             'nama_produk' => 'required|string|max:100',
@@ -224,7 +235,7 @@ Route::middleware(['auth'])->group(function () {
 
         Produk::create($validated);
 
-        return redirect()->route('admin.katalog')->with('success', 'Produk berhasil ditambahkan!');
+        return redirect()->route('admin.katalog')->with('success', 'Data produk baru berhasil ditambahkan ke sistem.');
     })->name('admin.produk.store');
 
     Route::get('/admin/produk/edit/{id}', function ($id) {
@@ -257,11 +268,12 @@ Route::middleware(['auth'])->group(function () {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($fotoLama);
         }
 
-        return redirect()->route('admin.katalog')->with('success', 'Produk berhasil diperbarui!');
+        return redirect()->route('admin.katalog')->with('success', "Data produk '{$produk->nama_produk}' berhasil diperbarui.");
     })->name('admin.produk.update');
 
     Route::delete('/admin/produk/hapus/{id}', function ($id) {
         $produk = Produk::findOrFail($id);
+        $namaProduk = $produk->nama_produk;
 
         if ($produk->foto) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($produk->foto);
@@ -269,7 +281,7 @@ Route::middleware(['auth'])->group(function () {
 
         $produk->delete();
 
-        return redirect()->route('admin.katalog')->with('success', 'Produk berhasil dihapus!');
+        return redirect()->route('admin.katalog')->with('success', "Produk '{$namaProduk}' telah dihapus secara permanen.");
     })->name('admin.produk.destroy');
 
     Route::get('/admin/kelola-akun', function () {
@@ -277,32 +289,33 @@ Route::middleware(['auth'])->group(function () {
         return view('admin.kelola_akun', compact('users'));
     })->name('admin.kelola_akun');
 
+    // Manajemen Akun: Error Prevention & Feedback Deskriptif
     Route::put('/admin/kelola-akun/{id}/role', function (Request $request, $id) {
         $user = User::findOrFail($id);
-        
+       
         if ($user->id === auth()->id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat mengubah role akun Anda sendiri.');
+            return redirect()->back()->with('error', 'Keamanan: Anda tidak diperbolehkan mengubah role akun Anda sendiri.');
         }
 
         $request->validate(['role' => 'required|in:admin,pegawai,pembeli']);
         $user->role = $request->role;
         $user->save();
 
-        return redirect()->back()->with('success', "Role akun {$user->email} berhasil diubah!");
+        return redirect()->back()->with('success', "Peran untuk pengguna {$user->email} berhasil diubah menjadi {$request->role}.");
     })->name('admin.kelola_akun.role');
 
     Route::put('/admin/kelola-akun/{id}/status', function ($id) {
         $user = User::findOrFail($id);
 
         if ($user->id === auth()->id()) {
-            return redirect()->back()->with('error', 'Anda tidak dapat memblokir akun Anda sendiri.');
+            return redirect()->back()->with('error', 'Keamanan: Anda tidak diperbolehkan memblokir akun Anda sendiri.');
         }
 
         $user->is_active = !$user->is_active;
         $user->save();
 
-        $statusText = $user->is_active ? 'diaktifkan' : 'diblokir / dinonaktifkan';
-        return redirect()->back()->with('success', "Akun {$user->email} berhasil {$statusText}!");
+        $statusText = $user->is_active ? 'diaktifkan kembali' : 'diblokir / dinonaktifkan';
+        return redirect()->back()->with('success', "Status akun {$user->email} berhasil {$statusText}.");
     })->name('admin.kelola_akun.status');
 
     Route::get('/admin/laporan', function () {
