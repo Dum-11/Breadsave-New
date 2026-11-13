@@ -28,7 +28,7 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        // Validasi data yang dikirim dari form register
+        // Validasi data yang dikirim dari form register (menggunakan 'nama' sesuai database)
         $validated = $request->validate([
             'nama' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:100', 'unique:users,email'],
