@@ -43,7 +43,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px; /* Lebar default menguncup saat kursor menjauh */
+            width: 70px;
             height: 100vh;
             padding: 24px 12px;
             background: var(--navy);
@@ -57,7 +57,6 @@
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
         .sidebar:hover {
             width: 240px;
         }
@@ -83,10 +82,10 @@
             display: none;
         }
 
-        /* Tampilkan logo kecil saat menguncup, logo penuh saat di-hover */
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
@@ -130,6 +129,25 @@
             font-weight: bold;
         }
 
+        /* PROFIL AKTIF */
+
+        .profile-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link.active:hover {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link.active .profile-initial {
+            background: var(--navy);
+            color: var(--white);
+        }
+
         .nav-icon {
             width: 24px;
             height: 24px;
@@ -146,12 +164,32 @@
             opacity: 1;
         }
 
+        /* PROFILE INITIAL */
+
+        .profile-initial {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
         .sidebar-bottom {
             margin-top: auto;
             padding-top: 20px;
         }
 
         /* MAIN CONTENT STANDAR PANEL */
+
         .main {
             margin-left: 70px;
             min-height: 100vh;
@@ -198,6 +236,7 @@
         }
 
         /* NOTIFIKASI */
+
         .alert-success {
             padding: 13px 16px;
             background: #e8f8ed;
@@ -208,6 +247,7 @@
         }
 
         /* TABEL PRODUK */
+
         .table-card {
             width: 100%;
             background: var(--white);
@@ -292,6 +332,7 @@
         }
 
         /* FOOTER */
+
         .main-footer {
             margin-top: 45px;
             padding-top: 20px;
@@ -302,6 +343,7 @@
         }
 
         /* RESPONSIVE */
+
         @media (max-width: 900px) {
             th, td {
                 padding: 10px 8px;
@@ -319,6 +361,7 @@
 <body>
 
     <!-- SIDEBAR WITH HOVER EXPAND -->
+
     <aside class="sidebar">
 
         <div class="logo-container">
@@ -330,42 +373,84 @@
 
         <p class="nav-title">Admin Panel</p>
 
-        <a href="{{ route('admin.beranda') }}" class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
+        <a href="{{ route('admin.beranda') }}"
+           class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
 
-        <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
+        <a href="{{ route('admin.katalog') }}"
+           class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
             <span>Katalog</span>
         </a>
 
-        <a href="{{ route('admin.kelola_akun') }}" class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
+        <a href="{{ route('admin.kelola_akun') }}"
+           class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
             <span>Kelola Akun</span>
         </a>
 
-        <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+        <a href="{{ route('admin.laporan') }}"
+           class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
             <span>Laporan</span>
         </a>
 
         <div class="sidebar-bottom">
+
+            <!-- PROFIL -->
+
+            <a href="{{ route('admin.profil') }}"
+               class="nav-link profile-link {{ request()->routeIs('admin.profil') ? 'active' : '' }}">
+
+                @if(Auth::user()->foto_profil)
+
+                    <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                         class="nav-icon"
+                         alt="Foto Profil"
+                         style="border-radius: 50%; object-fit: cover;">
+
+                @else
+
+                    <div class="nav-icon profile-initial">
+                        {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                    </div>
+
+                @endif
+
+                <span>Profil</span>
+
+            </a>
+
+            <!-- LOGOUT -->
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+
+                <button type="submit"
+                        class="nav-link"
+                        style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+
+                    <img src="{{ asset('images/icon-login.png') }}"
+                         class="nav-icon"
+                         alt="">
+
                     <span>Logout</span>
+
                 </button>
             </form>
+
         </div>
 
     </aside>
 
     <!-- KONTEN UTAMA -->
+
     <main class="main">
 
         <header class="page-header">
+
             <div>
                 <h1>Kelola Katalog Produk</h1>
                 <p>Tambah, ubah, atau hapus daftar roti diskon.</p>
@@ -374,20 +459,27 @@
             <a href="{{ route('admin.produk.create') }}" class="btn-add">
                 + Tambah Produk
             </a>
+
         </header>
 
         <!-- NOTIFIKASI -->
+
         @if(session('success'))
+
             <div class="alert-success">
                 {{ session('success') }}
             </div>
+
         @endif
 
         <!-- TABEL PRODUK -->
+
         <section class="table-card">
 
             <table>
+
                 <thead>
+
                     <tr>
                         <th>Foto</th>
                         <th>Nama Produk</th>
@@ -396,6 +488,7 @@
                         <th>Stok</th>
                         <th>Aksi</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
@@ -403,10 +496,15 @@
                     @forelse ($produks ?? [] as $produk)
 
                         <tr>
+
                             <!-- FOTO PRODUK -->
+
                             <td>
+
                                 @if ($produk->foto)
+
                                     @php
+
                                         if (str_starts_with($produk->foto, 'http')) {
                                             $imageUrl = $produk->foto;
                                         } elseif (str_starts_with($produk->foto, 'storage/') || str_starts_with($produk->foto, 'images/')) {
@@ -414,57 +512,77 @@
                                         } else {
                                             $imageUrl = asset('storage/' . $produk->foto);
                                         }
+
                                     @endphp
-                                    <img src="{{ $imageUrl }}" 
-                                         alt="{{ $produk->nama_produk }}" 
+
+                                    <img src="{{ $imageUrl }}"
+                                         alt="{{ $produk->nama_produk }}"
                                          class="product-image"
                                          onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';">
+
                                 @else
+
                                     <span class="no-image">Tidak ada foto</span>
+
                                 @endif
+
                             </td>
 
                             <!-- NAMA -->
+
                             <td class="product-name">
                                 {{ $produk->nama_produk }}
                             </td>
 
                             <!-- HARGA ASLI -->
+
                             <td>
                                 Rp {{ number_format($produk->harga_asli, 0, ',', '.') }}
                             </td>
 
                             <!-- HARGA DISKON -->
+
                             <td>
+
                                 <span class="discount-price">
                                     Rp {{ number_format($produk->harga_diskon ?? $produk->harga_asli, 0, ',', '.') }}
                                 </span>
+
                             </td>
 
                             <!-- STOK -->
+
                             <td>
                                 {{ $produk->stok }}
                             </td>
 
                             <!-- AKSI -->
+
                             <td>
-                                <a href="{{ route('admin.produk.edit', $produk->id_produk ?? $produk->id) }}" class="btn-edit">
+
+                                <a href="{{ route('admin.produk.edit', $produk->id_produk ?? $produk->id) }}"
+                                   class="btn-edit">
                                     Edit
                                 </a>
+
                             </td>
+
                         </tr>
 
                     @empty
 
                         <tr>
+
                             <td colspan="6" class="empty-data">
                                 Belum ada data produk.
                             </td>
+
                         </tr>
 
                     @endforelse
 
                 </tbody>
+
             </table>
 
         </section>
