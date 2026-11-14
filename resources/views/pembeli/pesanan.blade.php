@@ -83,6 +83,7 @@
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
@@ -143,6 +144,23 @@
 
         .sidebar:hover .nav-link span {
             opacity: 1;
+        }
+
+        /* PROFIL INITIAL */
+        .profile-initial {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+            text-transform: uppercase;
         }
 
         .sidebar-bottom {
@@ -289,7 +307,7 @@
             color: var(--muted);
             font-size: 14px;
         }
-       
+
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -317,7 +335,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-       
+
         /* STATUS */
         .status {
             display: inline-block;
@@ -380,16 +398,49 @@
                 padding: 20px 10px;
                 align-items: center;
             }
-            .logo { width: 50px; }
-            .logo-container { margin-bottom: 30px; }
-            .nav-title { display: none; }
-            .nav-link { justify-content: center; padding: 10px 5px; }
-            .nav-link span { display: none; }
-            .sidebar-bottom { width: 100%; }
-            .main { margin-left: 75px; padding: 20px 14px; }
-            .page-header h1 { font-size: 23px; }
-            .table-header { padding: 18px 20px; }
-            th, td { padding: 12px 14px; font-size: 13px; }
+
+            .logo {
+                width: 50px;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 10px 5px;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+            }
+
+            .main {
+                margin-left: 75px;
+                padding: 20px 14px;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .table-header {
+                padding: 18px 20px;
+            }
+
+            th, td {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -403,35 +454,74 @@
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
             </a>
         </div>
+
         <p class="nav-title">Menu Utama</p>
 
         <nav class="menu">
             <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
-                <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
+                <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
+                <span>Beranda</span>
             </a>
+
             <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
-                <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
+                <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
+                <span>Katalog Produk</span>
             </a>
+
             <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
-                <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
+                <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
+                <span>Pesanan</span>
             </a>
+
             <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
-                <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
+                <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
+                <span>Keranjang</span>
             </a>
         </nav>
 
         <div class="sidebar-bottom">
             @auth
+
+                <!-- PROFIL -->
+                <a href="{{ route('pembeli.profil') }}"
+                   class="nav-link {{ request()->routeIs('pembeli.profil') ? 'active' : '' }}">
+
+                    @if(Auth::user()->foto_profil)
+                        <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                             class="nav-icon"
+                             alt="Foto Profil"
+                             style="border-radius: 50%; object-fit: cover;">
+                    @else
+                        <div class="nav-icon profile-initial">
+                            {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                        </div>
+                    @endif
+
+                    <span>Profil</span>
+                </a>
+
+                <!-- LOGOUT -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                        <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Logout</span>
+                    <button type="submit"
+                            class="nav-link"
+                            style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+                        <img src="{{ asset('images/icon-login.png') }}"
+                             class="nav-icon"
+                             alt="">
+                        <span>Logout</span>
                     </button>
                 </form>
+
             @else
+
                 <a href="{{ route('login') }}" class="nav-link">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Login</span>
+                    <img src="{{ asset('images/icon-login.png') }}"
+                         class="nav-icon"
+                         alt="">
+                    <span>Login</span>
                 </a>
+
             @endauth
         </div>
     </aside>
@@ -447,17 +537,37 @@
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+
             @if(session('error'))
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
 
             <!-- SUMMARY GRID -->
             <section class="summary-grid">
-                <article class="summary-card"><p class="summary-label">Total Pesanan</p><p class="summary-number">{{ $totalPesanan ?? 0 }}</p></article>
-                <article class="summary-card"><p class="summary-label">Menunggu Konfirmasi</p><p class="summary-number">{{ $menungguKonfirmasi ?? 0 }}</p></article>
-                <article class="summary-card"><p class="summary-label">Sedang Diproses</p><p class="summary-number">{{ $diproses ?? 0 }}</p></article>
-                <article class="summary-card"><p class="summary-label">Pesanan Selesai</p><p class="summary-number">{{ $selesai ?? 0 }}</p></article>
-                <article class="summary-card"><p class="summary-label">Pesanan Dibatalkan</p><p class="summary-number">{{ $dibatalkan ?? 0 }}</p></article>
+                <article class="summary-card">
+                    <p class="summary-label">Total Pesanan</p>
+                    <p class="summary-number">{{ $totalPesanan ?? 0 }}</p>
+                </article>
+
+                <article class="summary-card">
+                    <p class="summary-label">Menunggu Konfirmasi</p>
+                    <p class="summary-number">{{ $menungguKonfirmasi ?? 0 }}</p>
+                </article>
+
+                <article class="summary-card">
+                    <p class="summary-label">Sedang Diproses</p>
+                    <p class="summary-number">{{ $diproses ?? 0 }}</p>
+                </article>
+
+                <article class="summary-card">
+                    <p class="summary-label">Pesanan Selesai</p>
+                    <p class="summary-number">{{ $selesai ?? 0 }}</p>
+                </article>
+
+                <article class="summary-card">
+                    <p class="summary-label">Pesanan Dibatalkan</p>
+                    <p class="summary-number">{{ $dibatalkan ?? 0 }}</p>
+                </article>
             </section>
 
             <section class="table-card">
@@ -465,6 +575,7 @@
                     <h2>Daftar Pesanan</h2>
                     <p>Data pesanan yang tersimpan di database.</p>
                 </div>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -477,33 +588,59 @@
                                 <th>Aksi</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @forelse ($pesanans ?? [] as $pesanan)
                                 @php
                                     $pesananId = $pesanan->id_pesanan ?? $pesanan->id;
+
                                     $statusClasses = [
                                         'Menunggu Konfirmasi' => 'status-menunggu',
                                         'Diproses' => 'status-diproses',
                                         'Selesai' => 'status-selesai',
                                         'Dibatalkan' => 'status-dibatalkan',
                                     ];
-                                    // DIPERBAIKI: Menambahkan tanda $ pada variabel statusClasses
+
                                     $statusClass = $statusClasses[$pesanan->status] ?? 'status-menunggu';
                                 @endphp
+
                                 <tr>
-                                    <td style="font-weight: bold; color: var(--navy);">#{{ $pesananId }}</td>
-                                    <td>{{ $pesanan->id_user ?? '-' }}</td>
-                                    <td>{{ $pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : ($pesanan->created_at ?? '-') }}</td>
-                                    <td style="font-weight: bold;">Rp{{ number_format($pesanan->total_harga ?? 0, 0, ',', '.') }}</td>
-                                    <td>
-                                        <span class="status {{ $statusClass }}">{{ $pesanan->status ?? 'Menunggu Konfirmasi' }}</span>
+                                    <td style="font-weight: bold; color: var(--navy);">
+                                        #{{ $pesananId }}
                                     </td>
+
+                                    <td>
+                                        {{ $pesanan->id_user ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        {{ $pesanan->tanggal_pesan
+                                            ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i')
+                                            : ($pesanan->created_at ?? '-') }}
+                                    </td>
+
+                                    <td style="font-weight: bold;">
+                                        Rp{{ number_format($pesanan->total_harga ?? 0, 0, ',', '.') }}
+                                    </td>
+
+                                    <td>
+                                        <span class="status {{ $statusClass }}">
+                                            {{ $pesanan->status ?? 'Menunggu Konfirmasi' }}
+                                        </span>
+                                    </td>
+
                                     <td>
                                         @if($pesanan->status === 'Menunggu Konfirmasi')
-                                            <form action="{{ route('pembeli.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
+                                            <form action="{{ route('pembeli.pesanan.batal', $pesananId) }}"
+                                                  method="POST"
+                                                  style="display: inline;">
+
                                                 @csrf
+
                                                 <!-- Easy Reversal: Konfirmasi interaktif via Javascript sebelum membatalkan -->
-                                                <button type="submit" class="btn-cancel" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">
+                                                <button type="submit"
+                                                        class="btn-cancel"
+                                                        onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">
                                                     Batalkan Pesanan
                                                 </button>
                                             </form>
@@ -512,6 +649,7 @@
                                         @endif
                                     </td>
                                 </tr>
+
                             @empty
                                 <tr>
                                     <td colspan="6" class="empty-pesanan">
@@ -524,16 +662,24 @@
                     </table>
                 </div>
             </section>
+
         @else
+
             <!-- TAMPILAN JIKA USER BELUM LOGIN (GUEST) -->
             <section class="auth-card">
                 <h3>Anda Belum Masuk ke Akun</h3>
                 <p>Silakan masuk terlebih dahulu untuk melihat dan memantau status pesanan Anda.</p>
-                <a href="{{ route('login') }}" class="btn-login">Login Sekarang</a>
+                <a href="{{ route('login') }}" class="btn-login">
+                    Login Sekarang
+                </a>
             </section>
+
         @endauth
 
-        <footer class="main-footer">© {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.</footer>
+        <footer class="main-footer">
+            © {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.
+        </footer>
     </main>
+
 </body>
 </html>
