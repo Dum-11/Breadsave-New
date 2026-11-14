@@ -46,7 +46,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px; /* Lebar default menguncup saat kursor menjauh */
+            width: 70px;
             height: 100vh;
             padding: 24px 12px;
             background: var(--navy);
@@ -60,7 +60,6 @@
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
         .sidebar:hover {
             width: 240px;
         }
@@ -86,10 +85,10 @@
             display: none;
         }
 
-        /* Tampilkan ikon kecil saat menguncup, logo penuh saat di-hover */
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
@@ -147,6 +146,39 @@
 
         .sidebar:hover .nav-link span {
             opacity: 1;
+        }
+
+        .profile-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link.active:hover {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-initial {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .profile-link.active .profile-initial {
+            background: var(--navy);
+            color: var(--white);
         }
 
         .sidebar-bottom {
@@ -365,38 +397,86 @@
     </style>
 </head>
 <body>
+
     <!-- SIDEBAR WITH HOVER EXPAND -->
     <aside class="sidebar">
+
         <div class="logo-container">
             <a href="{{ route('pegawai.beranda') }}">
                 <span class="logo-small">🍞</span>
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="BreadSaver">
             </a>
         </div>
+
         <p class="nav-title">Pegawai Panel</p>
-        
-        <a href="{{ route('pegawai.beranda') }}" class="nav-link {{ request()->routeIs('pegawai.beranda') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
+
+        <a href="{{ route('pegawai.beranda') }}"
+           class="nav-link {{ request()->routeIs('pegawai.beranda') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
+            <span>Beranda</span>
         </a>
-        <a href="{{ route('pegawai.katalog') }}" class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
+
+        <a href="{{ route('pegawai.katalog') }}"
+           class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
+            <span>Katalog Produk</span>
         </a>
-        <a href="{{ route('pegawai.pesanan') }}" class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
-            <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan Masuk</span>
+
+        <a href="{{ route('pegawai.pesanan') }}"
+           class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
+            <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
+            <span>Pesanan Masuk</span>
         </a>
 
         <div class="sidebar-bottom">
+
+            <!-- PROFIL -->
+            <a href="{{ route('pegawai.profil') }}"
+               class="nav-link profile-link {{ request()->routeIs('pegawai.profil') ? 'active' : '' }}">
+
+                @if(Auth::user()->foto_profil)
+
+                    <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                         class="nav-icon"
+                         alt="Foto Profil"
+                         style="border-radius: 50%; object-fit: cover;">
+
+                @else
+
+                    <div class="nav-icon profile-initial">
+                        {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                    </div>
+
+                @endif
+
+                <span>Profil</span>
+
+            </a>
+
+            <!-- LOGOUT -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Logout</span>
+
+                <button type="submit"
+                        class="nav-link"
+                        style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+
+                    <img src="{{ asset('images/icon-login.png') }}"
+                         class="nav-icon"
+                         alt="">
+
+                    <span>Logout</span>
+
                 </button>
             </form>
+
         </div>
+
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="main">
+
         <header class="page-header">
             <h1>Pesanan Masuk</h1>
             <p>Daftar pesanan dari pelanggan yang harus diproses oleh staf toko.</p>
@@ -407,6 +487,7 @@
                 {{ session('success') }}
             </div>
         @endif
+
         @if(session('error'))
             <div class="alert-error">
                 {{ session('error') }}
@@ -414,12 +495,16 @@
         @endif
 
         <section class="table-card">
+
             <div class="table-header">
                 <h2>Daftar Pesanan</h2>
                 <p>Data pesanan yang masuk ke sistem toko.</p>
             </div>
+
             <div class="table-wrapper">
+
                 <table>
+
                     <thead>
                         <tr>
                             <th>ID Pesanan</th>
@@ -430,68 +515,158 @@
                             <th>Aksi Pegawai</th>
                         </tr>
                     </thead>
+
                     <tbody>
+
                         @forelse ($pesanans ?? [] as $pesanan)
+
                             @php
                                 $pesananId = $pesanan->id_pesanan ?? $pesanan->id;
                                 $status = $pesanan->status ?? 'Menunggu Konfirmasi';
-                                
+
                                 $statusClass = 'status-menunggu';
-                                if($status == 'Diproses') $statusClass = 'status-diproses';
-                                elseif($status == 'Selesai') $statusClass = 'status-selesai';
-                                elseif($status == 'Dibatalkan') $statusClass = 'status-dibatalkan';
+
+                                if ($status == 'Diproses') {
+                                    $statusClass = 'status-diproses';
+                                } elseif ($status == 'Selesai') {
+                                    $statusClass = 'status-selesai';
+                                } elseif ($status == 'Dibatalkan') {
+                                    $statusClass = 'status-dibatalkan';
+                                }
                             @endphp
+
                             <tr>
-                                <td style="font-weight: bold; color: var(--navy);">#{{ $pesananId }}</td>
-                                <td>{{ $pesanan->user->nama ?? $pesanan->user->name ?? 'User #'.$pesanan->id_user }}</td>
-                                <td>{{ $pesanan->created_at ? \Carbon\Carbon::parse($pesanan->created_at)->format('d-m-Y H:i') : ($pesanan->tanggal_pesan ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i') : '-') }}</td>
-                                <td style="font-weight: bold;">Rp {{ number_format($pesanan->total_harga ?? 0, 0, ',', '.') }}</td>
+
+                                <td style="font-weight: bold; color: var(--navy);">
+                                    #{{ $pesananId }}
+                                </td>
+
+                                <td>
+                                    {{ $pesanan->user->nama ?? $pesanan->user->name ?? 'User #'.$pesanan->id_user }}
+                                </td>
+
+                                <td>
+                                    {{ $pesanan->created_at
+                                        ? \Carbon\Carbon::parse($pesanan->created_at)->format('d-m-Y H:i')
+                                        : ($pesanan->tanggal_pesan
+                                            ? \Carbon\Carbon::parse($pesanan->tanggal_pesan)->format('d-m-Y H:i')
+                                            : '-') }}
+                                </td>
+
+                                <td style="font-weight: bold;">
+                                    Rp {{ number_format($pesanan->total_harga ?? 0, 0, ',', '.') }}
+                                </td>
+
                                 <td>
                                     <span class="status {{ $statusClass }}">
                                         {{ $status }}
                                     </span>
                                 </td>
+
                                 <td>
+
                                     @if($status == 'Menunggu Konfirmasi')
-                                        <!-- Tombol Konfirmasi -->
-                                        <form action="{{ route('pegawai.pesanan.proses', $pesananId) }}" method="POST" style="display: inline;">
+
+                                        <form action="{{ route('pegawai.pesanan.proses', $pesananId) }}"
+                                              method="POST"
+                                              style="display: inline;">
+
                                             @csrf
-                                            <button type="submit" class="btn-action btn-konfirmasi">Konfirmasi & Siapkan</button>
+
+                                            <button type="submit"
+                                                    class="btn-action btn-konfirmasi">
+                                                Konfirmasi & Siapkan
+                                            </button>
+
                                         </form>
-                                        <!-- Tombol Batalkan -->
-                                        <form action="{{ route('pegawai.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
+
+                                        <form action="{{ route('pegawai.pesanan.batal', $pesananId) }}"
+                                              method="POST"
+                                              style="display: inline;">
+
                                             @csrf
-                                            <button type="submit" class="btn-action btn-batal" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">Batalkan</button>
+
+                                            <button type="submit"
+                                                    class="btn-action btn-batal"
+                                                    onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">
+                                                Batalkan
+                                            </button>
+
                                         </form>
+
                                     @elseif($status == 'Diproses')
-                                        <!-- Tombol Selesai -->
-                                        <form action="{{ route('pegawai.pesanan.selesai', $pesananId) }}" method="POST" style="display: inline;">
+
+                                        <form action="{{ route('pegawai.pesanan.selesai', $pesananId) }}"
+                                              method="POST"
+                                              style="display: inline;">
+
                                             @csrf
-                                            <button type="submit" class="btn-action btn-selesai">Tandai Selesai</button>
+
+                                            <button type="submit"
+                                                    class="btn-action btn-selesai">
+                                                Tandai Selesai
+                                            </button>
+
                                         </form>
-                                        <!-- Tombol Batalkan -->
-                                        <form action="{{ route('pegawai.pesanan.batal', $pesananId) }}" method="POST" style="display: inline;">
+
+                                        <form action="{{ route('pegawai.pesanan.batal', $pesananId) }}"
+                                              method="POST"
+                                              style="display: inline;">
+
                                             @csrf
-                                            <button type="submit" class="btn-action btn-batal" onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">Batalkan</button>
+
+                                            <button type="submit"
+                                                    class="btn-action btn-batal"
+                                                    onclick="return confirm('Apakah Anda yakin ingin membatalkan pesanan #{{ $pesananId }}?')">
+                                                Batalkan
+                                            </button>
+
                                         </form>
+
                                     @elseif($status == 'Selesai')
-                                        <span style="color: var(--green); font-weight: bold; font-size: 12px;">Selesai Disiapkan</span>
+
+                                        <span style="color: var(--green); font-weight: bold; font-size: 12px;">
+                                            Selesai Disiapkan
+                                        </span>
+
                                     @elseif($status == 'Dibatalkan')
-                                        <span style="color: var(--red); font-weight: bold; font-size: 12px;">Pesanan Dibatalkan</span>
+
+                                        <span style="color: var(--red); font-weight: bold; font-size: 12px;">
+                                            Pesanan Dibatalkan
+                                        </span>
+
                                     @endif
+
                                 </td>
+
                             </tr>
+
                         @empty
+
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--muted);">Belum ada pesanan masuk.</td>
+
+                                <td colspan="6"
+                                    style="text-align: center; padding: 40px; color: var(--muted);">
+                                    Belum ada pesanan masuk.
+                                </td>
+
                             </tr>
+
                         @endforelse
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </section>
 
-        <footer class="main-footer">© {{ date('Y') }} BreadSaver. Staff Panel.</footer>
+        <footer class="main-footer">
+            © {{ date('Y') }} BreadSaver. Staff Panel.
+        </footer>
+
     </main>
+
 </body>
 </html>
