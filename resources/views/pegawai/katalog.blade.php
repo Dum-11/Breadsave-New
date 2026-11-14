@@ -31,19 +31,16 @@
         }
 
         a {
+            color: inherit;
             text-decoration: none;
         }
 
-        /* 
-        =========================================================
-        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
-        =========================================================
-        */
+        /* SIDEBAR */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px; /* Lebar default saat kursor menjauh (menguncup) */
+            width: 70px;
             height: 100vh;
             padding: 24px 12px;
             background: var(--navy);
@@ -57,7 +54,6 @@
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
         .sidebar:hover {
             width: 240px;
         }
@@ -83,10 +79,10 @@
             display: none;
         }
 
-        /* Tampilkan ikon kecil saat menguncup, logo penuh saat di-hover */
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
@@ -151,7 +147,7 @@
             padding-top: 20px;
         }
 
-        /* MAIN CONTENT STANDAR PANEL */
+        /* MAIN CONTENT */
         .main {
             margin-left: 70px;
             min-height: 100vh;
@@ -295,7 +291,7 @@
 
 <body>
 
-    <!-- SIDEBAR WITH HOVER EXPAND -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
 
         <div class="logo-container">
@@ -307,29 +303,67 @@
 
         <p class="nav-title">Pegawai Panel</p>
 
-        <a href="{{ route('pegawai.beranda') }}" class="nav-link {{ request()->routeIs('pegawai.beranda') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.beranda') }}"
+           class="nav-link {{ request()->routeIs('pegawai.beranda') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
 
-        <a href="{{ route('pegawai.katalog') }}" class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.katalog') }}"
+           class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
             <span>Katalog Produk</span>
         </a>
 
-        <a href="{{ route('pegawai.pesanan') }}" class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.pesanan') }}"
+           class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
             <span>Pesanan Masuk</span>
         </a>
 
         <div class="sidebar-bottom">
+
+            <!-- PROFIL PEGAWAI -->
+            <a href="{{ route('pegawai.profil') }}"
+               class="nav-link profile-link {{ request()->routeIs('pegawai.profil') ? 'active' : '' }}">
+
+                @if(Auth::user()->foto_profil)
+
+                    <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                         class="nav-icon"
+                         alt="Foto Profil"
+                         style="border-radius: 50%; object-fit: cover;">
+
+                @else
+
+                    <div class="nav-icon profile-initial"
+                         style="width: 24px; height: 24px; border-radius: 50%; background: var(--pink); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">
+                        {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                    </div>
+
+                @endif
+
+                <span>Profil</span>
+
+            </a>
+
+            <!-- LOGOUT -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="nav-link" style="width:100%; border:0; background:transparent; cursor:pointer; text-align:left;">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+
+                <button type="submit"
+                        class="nav-link"
+                        style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+
+                    <img src="{{ asset('images/icon-login.png') }}"
+                         class="nav-icon"
+                         alt="">
+
                     <span>Logout</span>
+
                 </button>
             </form>
+
         </div>
 
     </aside>
@@ -343,19 +377,24 @@
         </header>
 
         <section class="info-card">
+
             <h3>Informasi Katalog</h3>
+
             <p>
                 Data produk di halaman ini berasal dari database yang sama
                 dengan halaman admin. Setiap perubahan produk oleh admin
                 akan ditampilkan ketika halaman ini dimuat ulang.
             </p>
+
         </section>
 
         <!-- TABEL PRODUK -->
         <section class="table-card">
 
             <table>
+
                 <thead>
+
                     <tr>
                         <th>Foto</th>
                         <th>Nama Produk</th>
@@ -364,6 +403,7 @@
                         <th>Deskripsi</th>
                         <th>Kedaluwarsa</th>
                     </tr>
+
                 </thead>
 
                 <tbody>
@@ -371,13 +411,18 @@
                     @forelse ($produks ?? [] as $produk)
 
                         <tr>
+
                             <td>
                                 @if ($produk->foto)
+
                                     <img src="{{ asset('storage/' . $produk->foto) }}"
                                          class="product-image"
                                          alt="{{ $produk->nama_produk }}">
+
                                 @else
+
                                     <span>-</span>
+
                                 @endif
                             </td>
 
@@ -404,19 +449,23 @@
                                     ? \Carbon\Carbon::parse($produk->expired_at)->format('d-m-Y')
                                     : '-' }}
                             </td>
+
                         </tr>
 
                     @empty
 
                         <tr>
+
                             <td colspan="6" class="empty-data">
                                 Belum ada data produk toko.
                             </td>
+
                         </tr>
 
                     @endforelse
 
                 </tbody>
+
             </table>
 
         </section>
