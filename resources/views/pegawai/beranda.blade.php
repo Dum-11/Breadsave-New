@@ -38,7 +38,7 @@
             text-decoration: none;
         }
 
-        /* 
+        /*
         =========================================================
         SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
         =========================================================
@@ -47,7 +47,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px; /* Lebar default menguncup saat kursor menjauh */
+            width: 70px;
             height: 100vh;
             padding: 24px 12px;
             background: var(--navy);
@@ -61,7 +61,6 @@
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
         .sidebar:hover {
             width: 240px;
         }
@@ -87,10 +86,10 @@
             display: none;
         }
 
-        /* Tampilkan logo kecil saat menguncup, logo penuh saat di-hover */
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
@@ -153,6 +152,78 @@
         .sidebar-bottom {
             margin-top: auto;
             padding-top: 20px;
+        }
+
+        /* =========================================================
+           PROFIL PEGAWAI
+        ========================================================= */
+
+        .profile-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-height: 50px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            color: var(--white);
+            font-size: 15px;
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .profile-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link.active:hover {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link span {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .profile-link span {
+            opacity: 1;
+        }
+
+        .profile-initial {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .profile-link.active .profile-initial {
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        .profile-photo {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
         }
 
         /* MAIN CONTENT STANDAR PANEL */
@@ -241,10 +312,21 @@
             font-weight: bold;
         }
 
-        .text-warning { color: var(--yellow); }
-        .text-info { color: var(--blue); }
-        .text-success { color: var(--green); }
-        .text-danger { color: var(--red); }
+        .text-warning {
+            color: var(--yellow);
+        }
+
+        .text-info {
+            color: var(--blue);
+        }
+
+        .text-success {
+            color: var(--green);
+        }
+
+        .text-danger {
+            color: var(--red);
+        }
 
         /* TABEL PESANAN TERBARU */
         .table-card {
@@ -279,7 +361,8 @@
             white-space: nowrap;
         }
 
-        th, td {
+        th,
+        td {
             padding: 14px 20px;
             text-align: left;
             border-bottom: 1px solid var(--border);
@@ -303,10 +386,25 @@
             font-weight: bold;
         }
 
-        .status-menunggu { background: #fff4d6; color: var(--yellow); }
-        .status-diproses { background: #e6efff; color: var(--blue); }
-        .status-selesai { background: #e2f7e9; color: var(--green); }
-        .status-dibatalkan { background: #ffe6e6; color: var(--red); }
+        .status-menunggu {
+            background: #fff4d6;
+            color: var(--yellow);
+        }
+
+        .status-diproses {
+            background: #e6efff;
+            color: var(--blue);
+        }
+
+        .status-selesai {
+            background: #e2f7e9;
+            color: var(--green);
+        }
+
+        .status-dibatalkan {
+            background: #ffe6e6;
+            color: var(--red);
+        }
 
         /* FOOTER */
         .main-footer {
@@ -320,7 +418,8 @@
 
         /* RESPONSIVE */
         @media (max-width: 1000px) {
-            .summary-grid, .status-grid {
+            .summary-grid,
+            .status-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -332,28 +431,51 @@
                 align-items: center;
             }
 
-            .logo { width: 50px; }
-            .logo-container { margin-bottom: 30px; }
-            .nav-title { display: none; }
-            .nav-link { justify-content: center; padding: 10px 5px; }
-            .nav-link span { display: none; }
-            .sidebar-bottom { width: 100%; }
+            .logo {
+                width: 50px;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link,
+            .profile-link {
+                justify-content: center;
+                padding: 10px 5px;
+            }
+
+            .nav-link span,
+            .profile-link span {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+            }
 
             .main {
                 margin-left: 75px;
                 padding: 20px 14px;
             }
 
-            .summary-grid, .status-grid {
+            .summary-grid,
+            .status-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
 
     <!-- SIDEBAR WITH HOVER EXPAND -->
     <aside class="sidebar">
+
         <div class="logo-container">
             <a href="{{ route('pegawai.beranda') }}">
                 <span class="logo-small">🍞</span>
@@ -363,81 +485,163 @@
 
         <p class="nav-title">Pegawai Panel</p>
 
-        <a href="{{ route('pegawai.beranda') }}" class="nav-link {{ request()->routeIs('pegawai.beranda') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.beranda') }}"
+           class="nav-link {{ request()->routeIs('pegawai.beranda') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
 
-        <a href="{{ route('pegawai.katalog') }}" class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.katalog') }}"
+           class="nav-link {{ request()->routeIs('pegawai.katalog') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
             <span>Katalog Produk</span>
         </a>
 
-        <a href="{{ route('pegawai.pesanan') }}" class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
+        <a href="{{ route('pegawai.pesanan') }}"
+           class="nav-link {{ request()->routeIs('pegawai.pesanan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
             <span>Pesanan Masuk</span>
         </a>
 
         <div class="sidebar-bottom">
+
+            <!-- PROFIL PEGAWAI -->
+            <a href="{{ route('pegawai.profil') }}"
+               class="profile-link {{ request()->routeIs('pegawai.profil') ? 'active' : '' }}">
+
+                @if(Auth::user()->foto_profil)
+
+                    <img
+                        src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                        class="profile-photo"
+                        alt="Foto Profil"
+                    >
+
+                @else
+
+                    <div class="profile-initial">
+                        {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                    </div>
+
+                @endif
+
+                <span>Profil</span>
+            </a>
+
+            <!-- LOGOUT -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="nav-link" style="width:100%; border:0; background:transparent; cursor:pointer; text-align:left;">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+
+                <button
+                    type="submit"
+                    class="nav-link"
+                    style="width:100%; border:0; background:transparent; cursor:pointer; text-align:left;"
+                >
+                    <img
+                        src="{{ asset('images/icon-login.png') }}"
+                        class="nav-icon"
+                        alt=""
+                    >
+
                     <span>Logout</span>
                 </button>
             </form>
+
         </div>
     </aside>
 
     <!-- KONTEN UTAMA -->
     <main class="main">
+
         <header class="page-header">
             <h1>Beranda Pegawai Toko</h1>
-            <p>Selamat bekerja. Ringkasan status produk dan pesanan masuk di BreadSaver.</p>
+
+            <p>
+                Selamat bekerja. Ringkasan status produk dan pesanan masuk di BreadSaver.
+            </p>
         </header>
 
         <!-- KARTU RINGKASAN UTAMA -->
         <section class="summary-grid">
+
             <article class="summary-card">
-                <p class="summary-label">Total Katalog Produk</p>
-                <p class="summary-number">{{ $jumlahProduk ?? $totalProduk ?? 0 }}</p>
+                <p class="summary-label">
+                    Total Katalog Produk
+                </p>
+
+                <p class="summary-number">
+                    {{ $jumlahProduk ?? $totalProduk ?? 0 }}
+                </p>
             </article>
 
             <article class="summary-card">
-                <p class="summary-label">Pesanan Perlu Diproses</p>
-                <p class="summary-number text-warning">{{ $pesananMenunggu ?? $jumlahPesananMenunggu ?? 0 }}</p>
+                <p class="summary-label">
+                    Pesanan Perlu Diproses
+                </p>
+
+                <p class="summary-number text-warning">
+                    {{ $pesananMenunggu ?? $jumlahPesananMenunggu ?? 0 }}
+                </p>
             </article>
 
             <article class="summary-card">
-                <p class="summary-label">Total Semua Pesanan</p>
-                <p class="summary-number">{{ $jumlahPesanan ?? 0 }}</p>
+                <p class="summary-label">
+                    Total Semua Pesanan
+                </p>
+
+                <p class="summary-number">
+                    {{ $jumlahPesanan ?? 0 }}
+                </p>
             </article>
+
         </section>
 
         <!-- KARTU STATUS PESANAN DETIL -->
-        <h2 class="section-title">Status Pesanan Hari Ini</h2>
+        <h2 class="section-title">
+            Status Pesanan Hari Ini
+        </h2>
+
         <section class="status-grid">
+
             <article class="status-card">
                 <p>Menunggu Konfirmasi</p>
-                <h2 class="text-warning">{{ $pesananMenunggu ?? 0 }}</h2>
+
+                <h2 class="text-warning">
+                    {{ $pesananMenunggu ?? 0 }}
+                </h2>
             </article>
+
             <article class="status-card">
                 <p>Sedang Diproses</p>
-                <h2 class="text-info">{{ $pesananDiproses ?? 0 }}</h2>
+
+                <h2 class="text-info">
+                    {{ $pesananDiproses ?? 0 }}
+                </h2>
             </article>
+
             <article class="status-card">
                 <p>Pesanan Selesai</p>
-                <h2 class="text-success">{{ $pesananSelesai ?? 0 }}</h2>
+
+                <h2 class="text-success">
+                    {{ $pesananSelesai ?? 0 }}
+                </h2>
             </article>
+
             <article class="status-card">
                 <p>Pesanan Dibatalkan</p>
-                <h2 class="text-danger">{{ $pesananDibatalkan ?? 0 }}</h2>
+
+                <h2 class="text-danger">
+                    {{ $pesananDibatalkan ?? 0 }}
+                </h2>
             </article>
+
         </section>
 
         <footer class="main-footer">
             © {{ date('Y') }} BreadSaver. Pegawai Panel.
         </footer>
+
     </main>
+
 </body>
 </html>
