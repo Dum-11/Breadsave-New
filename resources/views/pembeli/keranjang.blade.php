@@ -87,6 +87,7 @@
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
@@ -147,6 +148,23 @@
 
         .sidebar:hover .nav-link span {
             opacity: 1;
+        }
+
+        /* PROFIL INITIAL */
+        .profile-initial {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+            text-transform: uppercase;
         }
 
         .sidebar-bottom {
@@ -438,18 +456,22 @@
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
             </a>
         </div>
+
         <p class="nav-title">Menu Utama</p>
 
         <nav class="menu">
             <a href="{{ route('pembeli.beranda') }}" class="nav-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt=""><span>Beranda</span>
             </a>
+
             <a href="{{ route('pembeli.katalog') }}" class="nav-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt=""><span>Katalog Produk</span>
             </a>
+
             <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt=""><span>Pesanan</span>
             </a>
+
             <a href="{{ route('pembeli.keranjang') }}" class="nav-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt=""><span>Keranjang</span>
             </a>
@@ -457,15 +479,40 @@
 
         <div class="sidebar-bottom">
             @auth
+
+                <!-- PROFIL -->
+                <a href="{{ route('pembeli.profil') }}"
+                   class="nav-link {{ request()->routeIs('pembeli.profil') ? 'active' : '' }}">
+
+                    @if(Auth::user()->foto_profil)
+                        <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                             class="nav-icon"
+                             alt="Foto Profil"
+                             style="border-radius: 50%; object-fit: cover;">
+                    @else
+                        <div class="nav-icon profile-initial">
+                            {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                        </div>
+                    @endif
+
+                    <span>Profil</span>
+                </a>
+
+                <!-- LOGOUT -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                        <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Logout</span>
+                    <button type="submit"
+                            class="nav-link"
+                            style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
+                        <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+                        <span>Logout</span>
                     </button>
                 </form>
+
             @else
                 <a href="{{ route('login') }}" class="nav-link">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt=""><span>Login</span>
+                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+                    <span>Login</span>
                 </a>
             @endauth
         </div>
@@ -498,6 +545,7 @@
                                 <th>Aksi</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @foreach ($keranjangs as $item)
                                 @php
@@ -505,25 +553,40 @@
                                     $subtotal = $harga * $item->jumlah;
                                     $totalSemua += $subtotal;
                                 @endphp
+
                                 <tr>
-                                    <td style="font-weight: bold; color: var(--navy);">{{ $item->nama_produk ?? 'Produk' }}</td>
-                                    <td>Rp{{ number_format($harga, 0, ',', '.') }}</td>
+                                    <td style="font-weight: bold; color: var(--navy);">
+                                        {{ $item->nama_produk ?? 'Produk' }}
+                                    </td>
+
+                                    <td>
+                                        Rp{{ number_format($harga, 0, ',', '.') }}
+                                    </td>
+
                                     <td>
                                         <div class="qty-box">
+
                                             <!-- Tombol Kurang (-) -->
                                             <form action="{{ route('keranjang.kurangQty', $item->id) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="qty-btn">-</button>
                                             </form>
+
                                             <span>{{ $item->jumlah }}</span>
+
                                             <!-- Tombol Tambah (+) -->
                                             <form action="{{ route('keranjang.tambahQty', $item->id) }}" method="POST">
                                                 @csrf
                                                 <button type="submit" class="qty-btn">+</button>
                                             </form>
+
                                         </div>
                                     </td>
-                                    <td style="font-weight: bold;">Rp{{ number_format($subtotal, 0, ',', '.') }}</td>
+
+                                    <td style="font-weight: bold;">
+                                        Rp{{ number_format($subtotal, 0, ',', '.') }}
+                                    </td>
+
                                     <td>
                                         <!-- Tombol Hapus Item -->
                                         <form action="{{ route('keranjang.hapus', $item->id) }}" method="POST">
@@ -541,23 +604,42 @@
                     <div class="total-price">
                         Total Pembayaran: Rp{{ number_format($totalSemua, 0, ',', '.') }}
                     </div>
+
                     <!-- Tombol Checkout -->
                     <form action="{{ route('pembeli.checkout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn-checkout">Checkout Pesanan Sekarang</button>
+                        <button type="submit" class="btn-checkout">
+                            Checkout Pesanan Sekarang
+                        </button>
                     </form>
                 </div>
+
             @else
+
                 <div class="empty-cart">
-                    <img src="{{ asset('images/icon-keranjang.png') }}" class="cart-icon" alt="Keranjang Kosong">
+                    <img src="{{ asset('images/icon-keranjang.png') }}"
+                         class="cart-icon"
+                         alt="Keranjang Kosong">
+
                     <h3>Keranjang Masih Kosong</h3>
-                    <p>Kamu belum menambahkan produk ke keranjang.<br>Yuk, pilih roti yang tersedia di katalog.</p>
-                    <a href="{{ route('pembeli.katalog') }}" class="btn-catalog">Lihat Katalog Produk</a>
+
+                    <p>
+                        Kamu belum menambahkan produk ke keranjang.<br>
+                        Yuk, pilih roti yang tersedia di katalog.
+                    </p>
+
+                    <a href="{{ route('pembeli.katalog') }}" class="btn-catalog">
+                        Lihat Katalog Produk
+                    </a>
                 </div>
+
             @endif
         </section>
 
-        <footer class="footer">© {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.</footer>
+        <footer class="footer">
+            © {{ date('Y') }} BreadSaver. Selamatkan Roti, Kurangi Food Waste.
+        </footer>
     </main>
+
 </body>
 </html>
