@@ -118,6 +118,39 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pembeli/profil/password', [ProfileController::class, 'updatePassword'])
         ->name('pembeli.profil.password');
 
+    // =========================================================
+    // PROFIL PEGAWAI
+    // =========================================================
+
+    Route::get('/pegawai/profil', [ProfileController::class, 'index'])
+        ->name('pegawai.profil');
+
+    Route::put('/pegawai/profil', [ProfileController::class, 'update'])
+        ->name('pegawai.profil.update');
+
+    Route::delete('/pegawai/profil/foto', [ProfileController::class, 'deletePhoto'])
+        ->name('pegawai.profil.deletePhoto');
+
+    Route::put('/pegawai/profil/password', [ProfileController::class, 'updatePassword'])
+        ->name('pegawai.profil.password');
+
+
+    // =========================================================
+    // PROFIL ADMIN
+    // =========================================================
+
+    Route::get('/admin/profil', [ProfileController::class, 'index'])
+        ->name('admin.profil');
+
+    Route::put('/admin/profil', [ProfileController::class, 'update'])
+        ->name('admin.profil.update');
+
+    Route::delete('/admin/profil/foto', [ProfileController::class, 'deletePhoto'])
+        ->name('admin.profil.deletePhoto');
+
+    Route::put('/admin/profil/password', [ProfileController::class, 'updatePassword'])
+        ->name('admin.profil.password');
+
 });
 
 
