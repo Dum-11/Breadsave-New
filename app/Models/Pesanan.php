@@ -18,13 +18,17 @@ class Pesanan extends Model
         'tanggal_pesan',
         'status',
         'total_harga',
+        'waktu_pengambilan',
+        'kode_pickup',
     ];
 
     protected $casts = [
         'tanggal_pesan' => 'datetime',
         'total_harga' => 'decimal:2',
+        'waktu_pengambilan' => 'datetime',
     ];
 
+    // Relasi ke pengguna
     public function user()
     {
         return $this->belongsTo(
@@ -34,10 +38,21 @@ class Pesanan extends Model
         );
     }
 
+    // Relasi ke detail pesanan
     public function detailPesanans()
     {
         return $this->hasMany(
             DetailPesanan::class,
+            'id_pesanan',
+            'id_pesanan'
+        );
+    }
+
+    // Relasi ke pembayaran
+    public function pembayaran()
+    {
+        return $this->hasOne(
+            Pembayaran::class,
             'id_pesanan',
             'id_pesanan'
         );

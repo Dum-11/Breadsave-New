@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -611,6 +610,93 @@
                 line-height: 32px;
             }
         }
+    
+        /* RATING & ULASAN PRODUK */
+        .bread-rating-line {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #7f8aa3;
+        }
+
+        .bread-rating-stars {
+            color: #e8a317;
+            font-size: 18px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .bread-rating-score {
+            font-size: 13px;
+            color: #23365f;
+            font-weight: bold;
+        }
+
+        .bread-rating-count {
+            font-size: 12px;
+            color: #7f8aa3;
+        }
+
+        .bread-review-preview {
+            padding: 10px 11px;
+            background: #f6f8fc;
+            border: 1px solid #e8edf5;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #5d6981;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .bread-review-details {
+            margin: 0 0 13px;
+            font-size: 12px;
+        }
+
+        .bread-review-details summary {
+            cursor: pointer;
+            color: #29477d;
+            font-weight: bold;
+            list-style-position: inside;
+            padding: 4px 0;
+        }
+
+        .bread-review-list {
+            margin-top: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            border: 1px solid #e8edf5;
+            border-radius: 10px;
+            background: white;
+            padding: 0 10px;
+        }
+
+        .bread-review-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e8edf5;
+            color: #5d6981;
+            line-height: 1.5;
+        }
+
+        .bread-review-item:last-child {
+            border-bottom: none;
+        }
+
+        .bread-review-item .bread-review-stars {
+            color: #e8a317;
+            letter-spacing: 1px;
+        }
+
+        .bread-review-item p {
+            margin: 5px 0 0;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
     </style>
 </head>
 
@@ -832,6 +918,31 @@
 
             @if(isset($produks) && $produks->count() > 0)
 
+                @php
+                    // Ambil rating untuk seluruh produk pada halaman sekaligus.
+                    $idsProdukRating = $produks->map(function ($produkItem) {
+                        return $produkItem->id_produk ?? $produkItem->id;
+                    })->all();
+
+                    $statistikRatingProduk = \Illuminate\Support\Facades\DB::table('ratings')
+                        ->select('id_produk')
+                        ->selectRaw('COUNT(*) AS jumlah_rating, AVG(bintang) AS rata_rating')
+                        ->whereIn('id_produk', $idsProdukRating)
+                        ->groupBy('id_produk')
+                        ->get()
+                        ->keyBy('id_produk');
+
+                    $ulasanPerProduk = \Illuminate\Support\Facades\DB::table('ratings')
+                        ->select('id_produk', 'bintang', 'ulasan', 'created_at')
+                        ->whereIn('id_produk', $idsProdukRating)
+                        ->whereNotNull('ulasan')
+                        ->where('ulasan', '<>', '')
+                        ->orderByDesc('created_at')
+                        ->get()
+                        ->groupBy('id_produk');
+                @endphp
+
+
                 <div class="product-grid">
 
                     @foreach($produks as $produk)
@@ -925,6 +1036,65 @@
 
                                 </h3>
 
+
+                                
+                                <!-- Rating dan ulasan dari pembeli -->
+                                @php
+                                    $idProdukRating = $produk->id_produk ?? $produk->id;
+                                    $dataRating = $statistikRatingProduk->get($idProdukRating);
+                                    $jumlahRating = (int) ($dataRating->jumlah_rating ?? 0);
+                                    $rataRating = $jumlahRating > 0
+                                        ? (float) $dataRating->rata_rating
+                                        : 0;
+                                    $bintangBulat = max(0, min(5, (int) round($rataRating)));
+                                    $ulasanProduk = $ulasanPerProduk->get($idProdukRating, collect());
+                                @endphp
+
+                                <div class="bread-rating-line">
+                                    @if($jumlahRating > 0)
+                                        <span class="bread-rating-stars" aria-label="Rating {{ number_format($rataRating, 1, ',', '.') }} dari 5">
+                                            {{ str_repeat('★', $bintangBulat) }}{{ str_repeat('☆', 5 - $bintangBulat) }}
+                                        </span>
+                                        <span class="bread-rating-score">
+                                            {{ number_format($rataRating, 1, ',', '.') }} / 5
+                                        </span>
+                                        <span class="bread-rating-count">
+                                            ({{ $jumlahRating }} penilaian)
+                                        </span>
+                                    @else
+                                        <span class="bread-rating-stars" aria-hidden="true">☆☆☆☆☆</span>
+                                        <span class="bread-rating-count">Belum ada rating</span>
+                                    @endif
+                                </div>
+
+                                @if($ulasanProduk->isNotEmpty())
+                                    <div class="bread-review-preview">
+                                        <strong>Ulasan terbaru:</strong>
+                                        {{ \Illuminate\Support\Str::limit($ulasanProduk->first()->ulasan, 110) }}
+                                    </div>
+
+                                    <details class="bread-review-details">
+                                        <summary>Lihat ulasan pembeli ({{ $ulasanProduk->count() }})</summary>
+                                        <div class="bread-review-list">
+                                            @foreach($ulasanProduk->take(5) as $ulasan)
+                                                @php
+                                                    $bintangUlasan = max(1, min(5, (int) $ulasan->bintang));
+                                                @endphp
+                                                <div class="bread-review-item">
+                                                    <span class="bread-review-stars">
+                                                        {{ str_repeat('★', $bintangUlasan) }}{{ str_repeat('☆', 5 - $bintangUlasan) }}
+                                                    </span>
+                                                    <p>{{ $ulasan->ulasan }}</p>
+                                                </div>
+                                            @endforeach
+                                            @if($ulasanProduk->count() > 5)
+                                                <div class="bread-review-item">
+                                                    Menampilkan 5 ulasan terbaru.
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </details>
+                                @endif
 
                                 <div class="price-row">
 
@@ -1092,4 +1262,3 @@
 
 </body>
 </html>
-```

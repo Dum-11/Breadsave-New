@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
@@ -6,11 +7,20 @@
 -- Waktu pembuatan: 28 Okt 2026 pada 07.32
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.0.30
+=======
+
+-- ============================================
+-- DATABASE BREADSAVER
+-- MariaDB 10.4.32
+-- SQL DIPERBAIKI
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+<<<<<<< HEAD
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -35,6 +45,13 @@ CREATE TABLE `customer` (
 --
 -- Struktur dari tabel `detail_pesanans`
 --
+=======
+SET NAMES utf8mb4;
+
+-- ============================================
+-- 1. TABEL DETAIL PESANAN
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `detail_pesanans` (
   `id_detail` bigint(20) UNSIGNED NOT NULL,
@@ -44,6 +61,7 @@ CREATE TABLE `detail_pesanans` (
   `subtotal` decimal(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -51,6 +69,14 @@ CREATE TABLE `detail_pesanans` (
 --
 -- Struktur dari tabel `failed_jobs`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 2. TABEL FAILED JOBS
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `failed_jobs` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -59,6 +85,7 @@ CREATE TABLE `failed_jobs` (
   `queue` text NOT NULL,
   `payload` longtext NOT NULL,
   `exception` longtext NOT NULL,
+<<<<<<< HEAD
   `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -76,6 +103,16 @@ CREATE TABLE `jual` (
 --
 -- Struktur dari tabel `keranjang_items`
 --
+=======
+  `failed_at` timestamp NOT NULL
+    DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 3. TABEL KERANJANG
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `keranjang_items` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -84,6 +121,7 @@ CREATE TABLE `keranjang_items` (
   `jumlah` int(11) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -107,11 +145,28 @@ CREATE TABLE `memberi_nilai` (
 --
 -- Struktur dari tabel `migrations`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `keranjang_items`
+(`id`, `id_user`, `id_produk`, `jumlah`,
+ `created_at`, `updated_at`)
+VALUES
+(5, 3, 2, 1,
+ '2026-10-27 23:32:08',
+ '2026-10-27 23:32:08');
+
+-- ============================================
+-- 4. TABEL MIGRATIONS
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `migrations` (
   `id` int(10) UNSIGNED NOT NULL,
   `migration` varchar(255) NOT NULL,
   `batch` int(11) NOT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -130,11 +185,39 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 -- Struktur dari tabel `password_resets`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `migrations`
+(`id`, `migration`, `batch`)
+VALUES
+(1,
+ '2014_10_12_100000_create_password_resets_table',
+ 1),
+(2,
+ '2019_08_19_000000_create_failed_jobs_table',
+ 1),
+(3,
+ '2019_12_14_000001_create_personal_access_tokens_table',
+ 1),
+(4,
+ '2026_10_14_071732_create_breadsaver_tables',
+ 1),
+(5,
+ '2026_10_27_160433_create_keranjang_items_table',
+ 2);
+
+-- ============================================
+-- 5. TABEL PASSWORD RESETS
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `password_resets` (
   `email` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -142,6 +225,14 @@ CREATE TABLE `password_resets` (
 --
 -- Struktur dari tabel `personal_access_tokens`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 6. TABEL PERSONAL ACCESS TOKENS
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `personal_access_tokens` (
   `id` bigint(20) UNSIGNED NOT NULL,
@@ -153,6 +244,7 @@ CREATE TABLE `personal_access_tokens` (
   `last_used_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -160,10 +252,19 @@ CREATE TABLE `personal_access_tokens` (
 --
 -- Struktur dari tabel `pesanans`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 7. TABEL PESANAN
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `pesanans` (
   `id_pesanan` bigint(20) UNSIGNED NOT NULL,
   `id_user` bigint(20) UNSIGNED NOT NULL,
+<<<<<<< HEAD
   `tanggal_pesan` datetime NOT NULL DEFAULT current_timestamp(),
   `status` enum('Menunggu Konfirmasi','Diproses','Selesai','Dibatalkan') NOT NULL DEFAULT 'Menunggu Konfirmasi',
   `total_harga` decimal(10,2) NOT NULL,
@@ -184,6 +285,39 @@ INSERT INTO `pesanans` (`id_pesanan`, `id_user`, `tanggal_pesan`, `status`, `tot
 --
 -- Struktur dari tabel `produks`
 --
+=======
+  `tanggal_pesan` datetime NOT NULL
+    DEFAULT current_timestamp(),
+  `status` enum(
+    'Menunggu Konfirmasi',
+    'Diproses',
+    'Selesai',
+    'Dibatalkan'
+  ) NOT NULL DEFAULT 'Menunggu Konfirmasi',
+  `total_harga` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `pesanans`
+(`id_pesanan`, `id_user`, `tanggal_pesan`,
+ `status`, `total_harga`,
+ `created_at`, `updated_at`)
+VALUES
+(1, 3, '2026-10-21 15:41:29',
+ 'Diproses', 12000.00,
+ '2026-10-21 01:41:29',
+ '2026-10-27 07:38:07'),
+(2, 3, '2026-10-28 06:12:24',
+ 'Diproses', 10000.00,
+ '2026-10-27 23:12:24',
+ '2026-10-27 23:12:46');
+
+-- ============================================
+-- 8. TABEL PRODUK
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `produks` (
   `id_produk` bigint(20) UNSIGNED NOT NULL,
@@ -196,6 +330,7 @@ CREATE TABLE `produks` (
   `foto` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -219,6 +354,25 @@ CREATE TABLE `produk_view` (
 --
 -- Struktur dari tabel `ratings`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `produks`
+(`id_produk`, `nama_produk`,
+ `harga_asli`, `harga_diskon`,
+ `stok`, `deskripsi`, `expired_at`,
+ `foto`, `created_at`, `updated_at`)
+VALUES
+(2, 'Roti Coklat Spesial',
+ 15000.00, 10000.00,
+ 20, NULL, '2026-10-21 09:58:13',
+ NULL, NULL, NULL);
+
+-- ============================================
+-- 9. TABEL RATINGS
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `ratings` (
   `id_rating` bigint(20) UNSIGNED NOT NULL,
@@ -227,6 +381,7 @@ CREATE TABLE `ratings` (
   `ulasan` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+<<<<<<< HEAD
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -243,12 +398,21 @@ CREATE TABLE `staff` (
 --
 -- Struktur dari tabel `users`
 --
+=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- 10. TABEL USERS
+-- ============================================
+>>>>>>> 9500a5d (Rating, Payment)
 
 CREATE TABLE `users` (
   `id_user` bigint(20) UNSIGNED NOT NULL,
   `nama` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+<<<<<<< HEAD
   `role` enum('pembeli','pegawai','admin') NOT NULL,
   `no_hp` varchar(20) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -466,3 +630,260 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+=======
+  `role` enum(
+    'pembeli',
+    'pegawai',
+    'admin'
+  ) NOT NULL,
+  `no_hp` varchar(20) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `users`
+(`id_user`, `nama`, `email`,
+ `password`, `role`, `no_hp`,
+ `created_at`, `updated_at`)
+VALUES
+(1, 'Admin Toko', 'admin@gmail.com',
+ '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+ 'admin', NULL, NULL, NULL),
+
+(2, 'Pegawai Toko', 'pegawai@gmail.com',
+ '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+ 'pegawai', NULL,
+ '2026-10-21 08:02:13',
+ '2026-10-21 08:02:13'),
+
+(3, 'Pembeli Setia', 'pembeli@gmail.com',
+ '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+ 'pembeli', NULL,
+ '2026-10-21 08:02:13',
+ '2026-10-21 08:02:13');
+
+-- ============================================
+-- PRIMARY KEY DAN INDEX
+-- ============================================
+
+ALTER TABLE `detail_pesanans`
+  ADD PRIMARY KEY (`id_detail`),
+  ADD KEY `detail_pesanans_id_pesanan_foreign`
+    (`id_pesanan`),
+  ADD KEY `detail_pesanans_id_produk_foreign`
+    (`id_produk`);
+
+ALTER TABLE `failed_jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `failed_jobs_uuid_unique`
+    (`uuid`);
+
+ALTER TABLE `keranjang_items`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `password_resets`
+  ADD KEY `password_resets_email_index`
+    (`email`);
+
+ALTER TABLE `personal_access_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY
+    `personal_access_tokens_token_unique`
+    (`token`),
+  ADD KEY
+    `personal_access_tokens_tokenable_type_tokenable_id_index`
+    (`tokenable_type`, `tokenable_id`);
+
+ALTER TABLE `pesanans`
+  ADD PRIMARY KEY (`id_pesanan`),
+  ADD KEY `pesanans_id_user_foreign`
+    (`id_user`);
+
+ALTER TABLE `produks`
+  ADD PRIMARY KEY (`id_produk`);
+
+ALTER TABLE `ratings`
+  ADD PRIMARY KEY (`id_rating`),
+  ADD UNIQUE KEY `ratings_id_pesanan_unique`
+    (`id_pesanan`);
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id_user`),
+  ADD UNIQUE KEY `users_email_unique`
+    (`email`);
+
+-- ============================================
+-- AUTO INCREMENT
+-- ============================================
+
+ALTER TABLE `detail_pesanans`
+  MODIFY `id_detail`
+  bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `failed_jobs`
+  MODIFY `id`
+  bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `keranjang_items`
+  MODIFY `id`
+  bigint(20) UNSIGNED NOT NULL
+  AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+ALTER TABLE `migrations`
+  MODIFY `id`
+  int(10) UNSIGNED NOT NULL
+  AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+ALTER TABLE `personal_access_tokens`
+  MODIFY `id`
+  bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `pesanans`
+  MODIFY `id_pesanan`
+  bigint(20) UNSIGNED NOT NULL
+  AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE `produks`
+  MODIFY `id_produk`
+  bigint(20) UNSIGNED NOT NULL
+  AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE `ratings`
+  MODIFY `id_rating`
+  bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `users`
+  MODIFY `id_user`
+  bigint(20) UNSIGNED NOT NULL
+  AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+-- ============================================
+-- FOREIGN KEY
+-- ============================================
+
+ALTER TABLE `detail_pesanans`
+  ADD CONSTRAINT
+  `detail_pesanans_id_pesanan_foreign`
+  FOREIGN KEY (`id_pesanan`)
+  REFERENCES `pesanans` (`id_pesanan`)
+  ON DELETE CASCADE,
+
+  ADD CONSTRAINT
+  `detail_pesanans_id_produk_foreign`
+  FOREIGN KEY (`id_produk`)
+  REFERENCES `produks` (`id_produk`)
+  ON DELETE CASCADE;
+
+ALTER TABLE `pesanans`
+  ADD CONSTRAINT
+  `pesanans_id_user_foreign`
+  FOREIGN KEY (`id_user`)
+  REFERENCES `users` (`id_user`)
+  ON DELETE CASCADE;
+
+ALTER TABLE `ratings`
+  ADD CONSTRAINT
+  `ratings_id_pesanan_foreign`
+  FOREIGN KEY (`id_pesanan`)
+  REFERENCES `pesanans` (`id_pesanan`)
+  ON DELETE CASCADE;
+
+-- ============================================
+-- VIEW CUSTOMER
+-- ============================================
+
+CREATE VIEW `customer` AS
+SELECT
+  `id_user` AS `id_customer`,
+  `nama`,
+  `email`,
+  `password`,
+  `no_hp`,
+  'Yogyakarta' AS `alamat`
+FROM `users`
+WHERE `role` = 'pembeli';
+
+-- ============================================
+-- VIEW JUAL
+-- ============================================
+
+CREATE VIEW `jual` AS
+SELECT
+  p.id_pesanan,
+  p.id_user AS id_customer,
+  dp.id_produk,
+  CONCAT('ORD-', p.id_pesanan) AS kode_pesanan,
+  p.total_harga,
+  p.tanggal_pesan AS tanggal,
+  p.status,
+  dp.subtotal / NULLIF(dp.jumlah, 0)
+    AS harga_satuan,
+  dp.jumlah
+FROM `pesanans` p
+JOIN `detail_pesanans` dp
+  ON p.id_pesanan = dp.id_pesanan;
+
+-- ============================================
+-- VIEW MEMBERI NILAI
+-- ============================================
+
+CREATE VIEW `memberi_nilai` AS
+SELECT
+  r.id_rating AS id_nilai,
+  p.id_user AS id_customer,
+  dp.id_produk,
+  r.id_pesanan,
+  r.bintang,
+  r.ulasan,
+  p.tanggal_pesan AS tanggal
+FROM `ratings` r
+JOIN `pesanans` p
+  ON r.id_pesanan = p.id_pesanan
+JOIN `detail_pesanans` dp
+  ON p.id_pesanan = dp.id_pesanan;
+
+-- ============================================
+-- VIEW PRODUK
+-- ============================================
+
+CREATE VIEW `produk_view` AS
+SELECT
+  `id_produk`,
+  NULL AS `id_user`,
+  `nama_produk`,
+  'Roti' AS `kategori`,
+  `harga_asli`,
+  `harga_diskon`,
+  `stok`,
+  IF(`stok` > 0, 'Aktif', 'Habis')
+    AS `status`,
+  `expired_at` AS `kadaluarsa`,
+  `foto`,
+  `deskripsi`
+FROM `produks`;
+
+-- ============================================
+-- VIEW STAFF
+-- ============================================
+
+CREATE VIEW `staff` AS
+SELECT
+  `id_user`,
+  `nama`,
+  `email`,
+  `password`,
+  `no_hp`,
+  'Yogyakarta' AS `alamat`
+FROM `users`
+WHERE `role` IN ('admin', 'pegawai');
+
+-- ============================================
+-- SELESAI
+-- ============================================
+
+COMMIT;
+>>>>>>> 9500a5d (Rating, Payment)
