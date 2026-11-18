@@ -525,6 +525,23 @@
             <p>Periksa produk pilihanmu sebelum melanjutkan pembelian.</p>
         </header>
 
+
+        @if(session('error'))
+            <div style="background:#fee2e2; color:#991b1b;
+                        padding:14px; border-radius:8px;
+                        margin-bottom:15px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div style="background:#fee2e2; color:#991b1b;
+                        padding:14px; border-radius:8px;
+                        margin-bottom:15px;">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
         <section class="cart-card">
             <div class="cart-header">
                 <h2>Daftar Keranjang</h2>
@@ -605,13 +622,75 @@
                         Total Pembayaran: Rp{{ number_format($totalSemua, 0, ',', '.') }}
                     </div>
 
-                    <!-- Tombol Checkout -->
-                    <form action="{{ route('pembeli.checkout') }}" method="POST">
+                    
+                    <!-- CHECKOUT PAYMENT SIMULASI -->
+                    <form action="{{ route('pembeli.checkout') }}"
+                        method="POST"
+                        style="width:100%; max-width:420px;">
+
                         @csrf
-                        <button type="submit" class="btn-checkout">
-                            Checkout Pesanan Sekarang
+
+                        <!-- METODE PEMBAYARAN -->
+                        <label for="metode"
+                            style="display:block; font-weight:bold; margin-bottom:8px;">
+                            Metode Pembayaran
+                        </label>
+
+                        <select name="metode" id="metode" required
+                                style="width:100%; padding:12px; margin-bottom:18px;
+                                    border:1px solid #e7eaf2; border-radius:8px;
+                                    background:white; font-size:14px;">
+
+                            <option value="">Pilih Metode Pembayaran</option>
+
+                            <option value="QRIS"
+                                {{ old('metode') == 'QRIS' ? 'selected' : '' }}>
+                                QRIS (Simulasi)
+                            </option>
+
+                            <option value="Transfer Bank"
+                                {{ old('metode') == 'Transfer Bank' ? 'selected' : '' }}>
+                                Transfer Bank (Simulasi)
+                            </option>
+
+                            <option value="E-Wallet"
+                                {{ old('metode') == 'E-Wallet' ? 'selected' : '' }}>
+                                E-Wallet (Simulasi)
+                            </option>
+                        </select>
+
+                        <!-- JADWAL PICKUP -->
+                        <label for="waktu_pengambilan"
+                            style="display:block; font-weight:bold; margin-bottom:8px;">
+                            Jadwal Pengambilan di Toko
+                        </label>
+
+                        <input type="datetime-local"
+                            name="waktu_pengambilan"
+                            id="waktu_pengambilan"
+                            required
+                            min="{{ \Carbon\Carbon::now('Asia/Jakarta')->addMinutes(30)->format('Y-m-d\TH:i') }}"
+                            max="{{ \Carbon\Carbon::now('Asia/Jakarta')->addDays(7)->format('Y-m-d\TH:i') }}"
+                            value="{{ old('waktu_pengambilan') }}"
+                            style="width:100%; padding:12px;
+                                    border:1px solid #e7eaf2; border-radius:8px;
+                                    font-size:14px; margin-bottom:10px;">
+
+                        <p style="font-size:12px; color:#8991a4;
+                                line-height:1.6; margin-bottom:18px;">
+                            Pengambilan tersedia pukul 08.00–20.00 WIB.
+                            Minimal 30 menit sebelum pengambilan.
+                            Tidak tersedia pengiriman atau COD.
+                        </p>
+
+                        <!-- TOMBOL CHECKOUT -->
+                        <button type="submit" class="btn-checkout"
+                                style="width:100%;">
+                            Lanjutkan ke Pembayaran
                         </button>
+
                     </form>
+
                 </div>
 
             @else
