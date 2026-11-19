@@ -36,53 +36,63 @@
             text-decoration: none;
         }
 
-        /*
-        =========================================================
-        SIDEBAR COLLAPSIBLE HOVER
-        =========================================================
-        */
-
+        /* SIDEBAR - SAMA DENGAN HALAMAN PESANAN */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px;
+            width: 76px;
             height: 100vh;
-            padding: 24px 12px;
-            background: var(--navy);
+            padding: 20px 12px;
+            background: linear-gradient(180deg, #203761 0%, #172b4e 100%);
             color: var(--white);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             white-space: nowrap;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
             z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 4px 0 18px rgba(0, 0, 0, 0.10);
         }
 
         .sidebar:hover {
-            width: 240px;
+            width: 245px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 40px;
-            height: 45px;
+            margin-bottom: 34px;
+            height: 48px;
+            flex-shrink: 0;
+        }
+
+        .logo-container a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .logo {
-            width: 140px;
+            width: 145px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
-            transition: opacity 0.2s;
         }
 
         .logo-small {
-            font-size: 24px;
+
+            width: 40px;
+
+            height: 40px;
+
+            object-fit: contain;
+
+            flex-shrink: 0;
+
             display: none;
+
         }
 
         .sidebar:not(:hover) .logo {
@@ -94,7 +104,7 @@
         }
 
         .menu-title {
-            color: #c4cce0;
+            color: #c3cee4;
             font-size: 11px;
             letter-spacing: 1px;
             margin: 0 10px 14px;
@@ -117,58 +127,25 @@
             align-items: center;
             gap: 14px;
             min-height: 50px;
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
             margin-bottom: 8px;
             color: var(--white);
             font-size: 15px;
-            transition: background-color 0.2s, color 0.2s;
+            text-decoration: none;
+            transition: 0.2s ease;
+            width: 100%;
         }
 
         .menu-link:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.10);
         }
-
-        /*
-        =========================================================
-        MENU ACTIVE
-        =========================================================
-        */
 
         .menu-link.active {
             background: var(--pink);
             color: var(--navy);
             font-weight: bold;
         }
-
-        /*
-        =========================================================
-        PROFIL AKTIF
-        =========================================================
-        */
-
-        .profile-link.active {
-            background: var(--pink);
-            color: var(--navy);
-            font-weight: normal;
-        }
-
-        .profile-link.active:hover {
-            background: var(--pink);
-            color: var(--navy);
-            font-weight: normal;
-        }
-
-        .profile-link.active .profile-initial {
-            background: var(--navy);
-            color: var(--white);
-        }
-
-        /*
-        =========================================================
-        MENU ICON
-        =========================================================
-        */
 
         .menu-icon {
             width: 24px;
@@ -186,12 +163,6 @@
             opacity: 1;
         }
 
-        /*
-        =========================================================
-        PROFILE INITIAL
-        =========================================================
-        */
-
         .profile-initial {
             width: 24px;
             height: 24px;
@@ -204,9 +175,19 @@
             justify-content: center;
             font-size: 12px;
             font-weight: bold;
-            line-height: 1;
+            text-transform: uppercase;
             flex-shrink: 0;
-            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .profile-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link.active .profile-initial {
+            background: var(--navy);
+            color: white;
         }
 
         .sidebar-bottom {
@@ -214,12 +195,25 @@
             padding-top: 20px;
         }
 
+        .logout-button {
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        /* KONTEN UTAMA */
         .main {
-            margin-left: 70px;
+            margin-left: 76px;
             min-height: 100vh;
             padding: 32px;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
 
         /*
         =========================================================
@@ -481,9 +475,13 @@
 
         @media (max-width: 700px) {
             .sidebar {
-                width: 75px;
+                width: 76px;
                 padding: 20px 10px;
                 align-items: center;
+            }
+
+            .sidebar:hover {
+                width: 76px;
             }
 
             .logo {
@@ -512,7 +510,7 @@
             }
 
             .main {
-                margin-left: 75px;
+                margin-left: 76px;
                 padding: 20px 14px;
             }
 
@@ -542,9 +540,10 @@
 
             <a href="{{ route('admin.beranda') }}">
 
-                <span class="logo-small" style="font-size: 24px;">
-                    🍞
-                </span>
+                <img src="{{ asset('images/logo-icon.png') }}"
+                     onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';"
+                     alt="Logo BreadSaver"
+                     class="logo-small">
 
                 <img src="{{ asset('images/logo.png') }}"
                      alt="BreadSaver"

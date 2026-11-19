@@ -83,8 +83,17 @@
         }
 
         .logo-small {
-            font-size: 24px;
+
+            width: 40px;
+
+            height: 40px;
+
+            object-fit: contain;
+
+            flex-shrink: 0;
+
             display: none;
+
         }
 
         .sidebar:not(:hover) .logo {
@@ -806,7 +815,10 @@
     <aside class="sidebar">
         <div class="logo-container">
             <a href="{{ route('pembeli.beranda') }}">
-                <span class="logo-small">🍞</span>
+                <img src="{{ asset('images/logo-icon.png') }}"
+                     onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';"
+                     alt="Logo BreadSaver"
+                     class="logo-small">
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
             </a>
         </div>

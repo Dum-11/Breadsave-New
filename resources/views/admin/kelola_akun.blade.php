@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Akun - Admin BreadSaver</title>
-
     <style>
         :root {
             --navy: #23365f;
@@ -18,7 +17,6 @@
             --green: #237844;
             --red: #b53a3a;
         }
-
         * {
             margin: 0;
             padding: 0;
@@ -40,43 +38,51 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px;
+            width: 76px;
             height: 100vh;
-            padding: 24px 12px;
-            background: var(--navy);
+            padding: 20px 12px;
+            background: linear-gradient(180deg, #203761 0%, #172b4e 100%);
             color: var(--white);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             white-space: nowrap;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
             z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 4px 0 18px rgba(0, 0, 0, 0.10);
         }
 
         .sidebar:hover {
-            width: 240px;
+            width: 245px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 40px;
-            height: 45px;
+            margin-bottom: 34px;
+            height: 48px;
         }
 
         .logo {
-            width: 140px;
+            width: 145px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
-            transition: opacity 0.2s;
         }
 
         .logo-small {
-            font-size: 24px;
+
+            width: 40px;
+
+            height: 40px;
+
+            object-fit: contain;
+
+            flex-shrink: 0;
+
             display: none;
+
         }
 
         .sidebar:not(:hover) .logo {
@@ -88,7 +94,7 @@
         }
 
         .nav-title {
-            color: #c4cce0;
+            color: #c3cee4;
             font-size: 11px;
             letter-spacing: 1px;
             margin: 0 10px 14px;
@@ -106,14 +112,14 @@
             align-items: center;
             gap: 14px;
             min-height: 50px;
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
             margin-bottom: 8px;
             color: var(--white);
             font-size: 15px;
             text-decoration: none;
             border: none;
-            transition: background-color 0.2s, color 0.2s;
+            transition: 0.2s ease;
         }
 
         .nav-link:hover {
@@ -179,10 +185,9 @@
         }
 
         .main {
-            margin-left: 70px;
+            margin-left: 76px;
             min-height: 100vh;
-            padding: 32px;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px;
         }
 
         .page-header {
@@ -240,7 +245,6 @@
             border-collapse: collapse;
             white-space: nowrap;
         }
-
         th, td {
             padding: 16px 20px;
             text-align: left;
@@ -336,44 +340,76 @@
                 font-size: 12px;
             }
         }
+
+        /* SIDEBAR RESPONSIVE - SAMA DENGAN HALAMAN PESANAN */
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 76px;
+                padding: 20px 10px;
+                align-items: center;
+            }
+
+            .logo {
+                width: 50px;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 10px 5px;
+            }
+
+            .nav-link span {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+            }
+
+            .main {
+                margin-left: 76px;
+                padding: 18px 14px;
+            }
+        }
     </style>
 </head>
-
 <body>
-
     <aside class="sidebar">
-
         <div class="logo-container">
             <a href="{{ route('admin.beranda') }}">
-                <span class="logo-small">🍞</span>
+                <img src="{{ asset('images/logo-icon.png') }}"
+                     onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';"
+                     alt="Logo BreadSaver"
+                     class="logo-small">
                 <img src="{{ asset('images/logo.png') }}" class="logo" alt="BreadSaver">
             </a>
         </div>
-
         <p class="nav-title">Admin Panel</p>
-
         <a href="{{ route('admin.beranda') }}" class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
-
         <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
             <span>Katalog</span>
         </a>
-
         <a href="{{ route('admin.kelola_akun') }}" class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
             <span>Kelola Akun</span>
         </a>
-
         <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
             <span>Laporan</span>
         </a>
-
         <div class="sidebar-bottom">
-
             <a href="{{ route('admin.profil') }}" class="nav-link profile-link {{ request()->routeIs('admin.profil') ? 'active' : '' }}">
                 @if(Auth::user()->foto_profil)
                     <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}" class="nav-icon" alt="Foto Profil">
@@ -384,7 +420,6 @@
                 @endif
                 <span>Profil</span>
             </a>
-
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
@@ -392,36 +427,26 @@
                     <span>Logout</span>
                 </button>
             </form>
-
         </div>
-
     </aside>
-
     <main class="main">
-
         <header class="page-header">
             <h1>Kelola Akun Pengguna</h1>
             <p>Daftar akun yang terdaftar dalam sistem aplikasi.</p>
         </header>
-
         @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
-
         @if(session('error'))
             <div class="alert alert-error">
                 {{ session('error') }}
             </div>
         @endif
-
         <section class="table-card">
-
             <div class="table-wrapper">
-
                 <table>
-
                     <thead>
                         <tr>
                             <th>Nama Pengguna</th>
@@ -431,150 +456,101 @@
                             <th>Aksi Bantuan</th>
                         </tr>
                     </thead>
-
                     <tbody>
-
                         @forelse ($users ?? [] as $user)
-
                             @php
                                 $userId = $user->id_user ?? $user->id;
                                 $isActive = $user->is_active ?? true;
                             @endphp
-
                             <tr>
-
                                 <td style="font-weight: bold; color: var(--navy);">
                                     {{ $user->nama ?? $user->name ?? 'Pengguna' }}
                                 </td>
-
                                 <td>
                                     {{ $user->email }}
                                 </td>
-
                                 <td>
-
                                     <form action="{{ route('admin.kelola_akun.role', $userId) }}"
                                           method="POST"
                                           style="display: flex; align-items: center; gap: 6px;">
-
                                         @csrf
                                         @method('PUT')
-
                                         <select name="role"
                                                 class="role-select"
-                                                {{ $userId == auth()->id() ? 'disabled' : '' }}>
-
+                                                {{ $userId === auth()->id() ? 'disabled' : '' }}>
                                             <option value="admin"
                                                 {{ $user->role === 'admin' ? 'selected' : '' }}>
                                                 Admin
                                             </option>
-
                                             <option value="pegawai"
                                                 {{ $user->role === 'pegawai' ? 'selected' : '' }}>
                                                 Pegawai
                                             </option>
-
                                             <option value="pembeli"
                                                 {{ $user->role === 'pembeli' ? 'selected' : '' }}>
                                                 Pembeli
                                             </option>
-
                                         </select>
-
                                         @if($userId !== auth()->id())
                                             <button type="submit" class="btn-action btn-save">
                                                 Simpan
                                             </button>
                                         @endif
-
                                     </form>
-
                                 </td>
-
                                 <td>
-
                                     @if($isActive)
-
                                         <span class="status-badge status-active">
                                             Aktif
                                         </span>
-
                                     @else
-
                                         <span class="status-badge status-blocked">
                                             Diblokir
                                         </span>
-
                                     @endif
-
                                 </td>
-
                                 <td>
-
                                     @if($userId !== auth()->id())
-
                                         <form action="{{ route('admin.kelola_akun.status', $userId) }}"
                                               method="POST"
                                               style="display: inline;">
-
                                             @csrf
                                             @method('PUT')
-
                                             @if($isActive)
-
                                                 <button type="submit"
                                                         class="btn-action btn-block"
                                                         onclick="return confirm('Apakah Anda yakin ingin memblokir akun {{ $user->email }}?')">
                                                     Blokir Akun
                                                 </button>
-
                                             @else
-
                                                 <button type="submit"
                                                         class="btn-action btn-unblock"
                                                         onclick="return confirm('Aktifkan kembali akun {{ $user->email }}?')">
                                                     Aktifkan Akun
                                                 </button>
-
                                             @endif
-
                                         </form>
-
                                     @else
-
                                         <span style="color: var(--muted); font-size: 12px;">
                                             Akun Anda
                                         </span>
-
                                     @endif
-
                                 </td>
-
                             </tr>
-
                         @empty
-
                             <tr>
                                 <td colspan="5" class="empty-data">
                                     Belum ada data pengguna.
                                 </td>
                             </tr>
-
                         @endforelse
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </section>
-
         <footer class="main-footer">
             © {{ date('Y') }} BreadSaver. Administrator Panel.
         </footer>
-
     </main>
-
 </body>
 </html>
