@@ -35,51 +35,49 @@
             text-decoration: none;
         }
 
-        /* 
-        =========================================================
-        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
-        =========================================================
-        */
+        /* SIDEBAR - SERAGAM DENGAN HALAMAN PESANAN */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px;
+            width: 76px;
             height: 100vh;
-            padding: 24px 12px;
-            background: var(--navy);
+            padding: 20px 12px;
+            background: linear-gradient(180deg, #203761 0%, #172b4e 100%);
             color: var(--white);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             white-space: nowrap;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
             z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 4px 0 18px rgba(0, 0, 0, 0.10);
         }
 
         .sidebar:hover {
-            width: 240px;
+            width: 245px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 40px;
-            height: 45px;
+            margin-bottom: 34px;
+            height: 48px;
         }
 
         .logo {
-            width: 140px;
+            width: 145px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
-            transition: opacity 0.2s;
         }
 
         .logo-small {
-            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            flex-shrink: 0;
             display: none;
         }
 
@@ -91,8 +89,8 @@
             display: block;
         }
 
-        .menu-title {
-            color: #c4cce0;
+        .nav-title {
+            color: #c3cee4;
             font-size: 11px;
             letter-spacing: 1px;
             margin: 0 10px 14px;
@@ -101,7 +99,7 @@
             transition: opacity 0.2s ease;
         }
 
-        .sidebar:hover .menu-title {
+        .sidebar:hover .nav-title {
             opacity: 1;
         }
 
@@ -110,42 +108,37 @@
             flex-direction: column;
         }
 
-        .menu-link {
+        .nav-link {
             display: flex;
             align-items: center;
             gap: 14px;
             min-height: 50px;
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
             margin-bottom: 8px;
             color: var(--white);
             font-size: 15px;
-            transition: background-color 0.2s, color 0.2s;
+            transition: 0.2s ease;
         }
 
-        .menu-link:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .nav-link:hover {
+            background: rgba(255,255,255,0.10);
         }
 
-        .menu-link.active {
+        .nav-link.active {
             background: var(--pink);
             color: var(--navy);
             font-weight: bold;
         }
 
-        .menu-icon {
+        .nav-icon {
             width: 24px;
             height: 24px;
             object-fit: contain;
             flex-shrink: 0;
         }
 
-        /*
-        =========================================================
-        AVATAR PROFIL SIDEBAR
-        =========================================================
-        */
-
+        /* Avatar profil tetap terlihat meskipun sidebar mengecil */
         .profile-avatar {
             width: 24px;
             height: 24px;
@@ -170,18 +163,12 @@
             display: block;
         }
 
-        /*
-        =========================================================
-        HANYA TEKS MENU YANG DISEMBUNYIKAN SAAT SIDEBAR MENGECIL
-        =========================================================
-        */
-
-        .menu-link > span:not(.profile-avatar) {
+        .nav-link > span:not(.profile-avatar) {
             opacity: 0;
             transition: opacity 0.2s ease;
         }
 
-        .sidebar:hover .menu-link > span:not(.profile-avatar) {
+        .sidebar:hover .nav-link > span:not(.profile-avatar) {
             opacity: 1;
         }
 
@@ -190,13 +177,11 @@
             padding-top: 20px;
         }
 
-        /* MAIN CONTENT STANDAR PANEL */
-
+        /* MAIN - SELARAS DENGAN LEBAR SIDEBAR */
         .main {
-            margin-left: 70px;
+            margin-left: 76px;
             min-height: 100vh;
-            padding: 32px;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px;
         }
 
         .welcome-title {
@@ -525,7 +510,7 @@
         @media (max-width: 700px) {
 
             .sidebar {
-                width: 75px;
+                width: 76px;
                 padding: 20px 10px;
                 align-items: center;
             }
@@ -538,11 +523,11 @@
                 margin-bottom: 30px;
             }
 
-            .menu-title {
+            .nav-title {
                 display: none;
             }
 
-            .menu-link {
+            .nav-link {
                 justify-content: center;
                 padding: 10px 5px;
             }
@@ -552,7 +537,7 @@
             Avatar profil tetap terlihat.
             */
 
-            .menu-link > span:not(.profile-avatar) {
+            .nav-link > span:not(.profile-avatar) {
                 display: none;
             }
 
@@ -561,8 +546,8 @@
             }
 
             .main {
-                margin-left: 75px;
-                padding: 20px 14px;
+                margin-left: 76px;
+                padding: 18px 14px;
             }
 
             .welcome-title {
@@ -709,9 +694,10 @@
 
             <a href="{{ route('pembeli.beranda') }}">
 
-                <span class="logo-small" style="font-size: 24px;">
-                    🍞
-                </span>
+                <img src="{{ asset('images/logo-icon.png') }}"
+                     onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';"
+                     alt="Logo BreadSaver"
+                     class="logo-small">
 
                 <img src="{{ asset('images/logo.png') }}"
                      alt="BreadSaver"
@@ -722,7 +708,7 @@
         </div>
 
 
-        <p class="menu-title">
+        <p class="nav-title">
             MENU UTAMA
         </p>
 
@@ -730,10 +716,10 @@
         <nav class="menu">
 
             <a href="{{ route('pembeli.beranda') }}"
-               class="menu-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
+               class="nav-link {{ request()->routeIs('pembeli.beranda', 'home') ? 'active' : '' }}">
 
                 <img src="{{ asset('images/icon-home.png') }}"
-                     class="menu-icon"
+                     class="nav-icon"
                      alt="">
 
                 <span>
@@ -744,10 +730,10 @@
 
 
             <a href="{{ route('pembeli.katalog') }}"
-               class="menu-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
+               class="nav-link {{ request()->routeIs('pembeli.katalog', 'katalog') ? 'active' : '' }}">
 
                 <img src="{{ asset('images/icon-product.png') }}"
-                     class="menu-icon"
+                     class="nav-icon"
                      alt="">
 
                 <span>
@@ -758,10 +744,10 @@
 
 
             <a href="{{ route('pembeli.pesanan') }}"
-               class="menu-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
+               class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
 
                 <img src="{{ asset('images/icon-orders.png') }}"
-                     class="menu-icon"
+                     class="nav-icon"
                      alt="">
 
                 <span>
@@ -772,10 +758,10 @@
 
 
             <a href="{{ route('pembeli.keranjang') }}"
-               class="menu-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
+               class="nav-link {{ request()->routeIs('pembeli.keranjang', 'keranjang') ? 'active' : '' }}">
 
                 <img src="{{ asset('images/icon-keranjang.png') }}"
-                     class="menu-icon"
+                     class="nav-icon"
                      alt="">
 
                 <span>
@@ -793,7 +779,7 @@
 
                 <!-- PROFIL -->
                 <a href="{{ route('pembeli.profil') }}"
-                   class="menu-link {{ request()->routeIs('pembeli.profil') ? 'active' : '' }}">
+                   class="nav-link {{ request()->routeIs('pembeli.profil') ? 'active' : '' }}">
 
                     @if(!empty(Auth::user()->foto_profil))
 
@@ -829,11 +815,11 @@
                     @csrf
 
                     <button type="submit"
-                            class="menu-link"
+                            class="nav-link"
                             style="width: 100%; border: none; background: transparent; cursor: pointer; text-align: left;">
 
                         <img src="{{ asset('images/icon-login.png') }}"
-                             class="menu-icon"
+                             class="nav-icon"
                              alt="">
 
                         <span>
@@ -848,10 +834,10 @@
             @else
 
                 <a href="{{ route('login') }}"
-                   class="menu-link">
+                   class="nav-link">
 
                     <img src="{{ asset('images/icon-login.png') }}"
-                         class="menu-icon"
+                         class="nav-icon"
                          alt="">
 
                     <span>

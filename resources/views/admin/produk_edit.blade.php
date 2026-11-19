@@ -33,65 +33,71 @@
             text-decoration: none;
         }
 
-        /* 
-        =========================================================
-        SIDEBAR COLLAPSIBLE HOVER (AUTO EXPAND)
-        =========================================================
-        */
+        /* SIDEBAR SERAGAM - ADMIN */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 70px; /* Lebar default saat kursor menjauh */
+            width: 76px;
             height: 100vh;
-            padding: 24px 12px;
-            background: var(--navy);
+            padding: 20px 12px;
+            background: linear-gradient(180deg, #203761 0%, #172b4e 100%);
             color: var(--white);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             white-space: nowrap;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
             z-index: 1000;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 4px 0 18px rgba(0, 0, 0, 0.10);
         }
 
-        /* Saat kursor diarahkan ke sidebar -> Terbuka Penuh */
         .sidebar:hover {
-            width: 240px;
+            width: 245px;
         }
 
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 40px;
-            height: 45px;
+            margin-bottom: 34px;
+            height: 48px;
+            flex-shrink: 0;
+        }
+
+        .logo-container a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
         }
 
         .logo {
-            width: 140px;
+            width: 145px;
             max-width: 100%;
             height: auto;
             object-fit: contain;
-            transition: opacity 0.2s;
         }
 
         .logo-small {
-            font-size: 24px;
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
             display: none;
+            flex-shrink: 0;
         }
 
-        /* Tampilkan logo kecil saat menguncup, logo penuh saat di-hover */
         .sidebar:not(:hover) .logo {
             display: none;
         }
+
         .sidebar:not(:hover) .logo-small {
             display: block;
         }
 
         .nav-title {
-            color: #c4cce0;
+            color: #c3cee4;
             font-size: 11px;
             letter-spacing: 1px;
             margin: 0 10px 14px;
@@ -109,18 +115,20 @@
             align-items: center;
             gap: 14px;
             min-height: 50px;
-            padding: 10px 14px;
-            border-radius: 12px;
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
             margin-bottom: 8px;
             color: var(--white);
+            font-family: inherit;
             font-size: 15px;
-            text-decoration: none;
+            text-align: left;
             border: none;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.10);
         }
 
         .nav-link.active {
@@ -129,19 +137,47 @@
             font-weight: bold;
         }
 
-        .nav-icon {
+        .nav-icon,
+        .profile-initial {
             width: 24px;
             height: 24px;
-            object-fit: contain;
+            min-width: 24px;
             flex-shrink: 0;
         }
 
-        .nav-link span {
+        .nav-icon {
+            object-fit: contain;
+        }
+
+        .profile-initial {
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .profile-link.active {
+            background: var(--pink);
+            color: var(--navy);
+            font-weight: normal;
+        }
+
+        .profile-link.active .profile-initial {
+            background: var(--navy);
+            color: var(--white);
+        }
+
+        .nav-link > span {
             opacity: 0;
             transition: opacity 0.2s ease;
         }
 
-        .sidebar:hover .nav-link span {
+        .sidebar:hover .nav-link > span {
             opacity: 1;
         }
 
@@ -150,15 +186,22 @@
             padding-top: 20px;
         }
 
-        /* MAIN CONTENT & FORM LAYOUT */
-        .main {
-            margin-left: 70px;
-            min-height: 100vh;
-            padding: 40px 32px;
-            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .logout-btn {
+            background: transparent;
+            cursor: pointer;
         }
 
-        /* Wrapper untuk form agar tetap di tengah */
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        /* MAIN CONTENT & FORM LAYOUT */
+        .main {
+            margin-left: 76px;
+            min-height: 100vh;
+            padding: 40px 32px;
+        }
+
         .form-container {
             max-width: 850px;
             margin: 0 auto;
@@ -300,23 +343,46 @@
             opacity: 0.85;
         }
 
-        /* RESPONSIVE LAYOUT */
-        @media(max-width: 700px) {
-            .sidebar {
-                width: 75px;
+        @media (max-width: 700px) {
+            .sidebar,
+            .sidebar:hover {
+                width: 76px;
                 padding: 20px 10px;
                 align-items: center;
             }
 
-            .logo { width: 50px; }
-            .logo-container { margin-bottom: 30px; }
-            .nav-title { display: none; }
-            .nav-link { justify-content: center; padding: 10px 5px; }
-            .nav-link span { display: none; }
-            .sidebar-bottom { width: 100%; }
+            .sidebar .logo {
+                display: none;
+            }
+
+            .sidebar .logo-small {
+                display: block;
+            }
+
+            .logo-container {
+                margin-bottom: 30px;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            .nav-link {
+                justify-content: center;
+                padding: 10px 5px;
+            }
+
+            .nav-link > span,
+            .sidebar:hover .nav-link > span {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                width: 100%;
+            }
 
             .main {
-                margin-left: 75px;
+                margin-left: 76px;
                 padding: 20px 16px;
             }
 
@@ -332,62 +398,82 @@
     </style>
 </head>
 <body>
-
-    <!-- SIDEBAR WITH HOVER EXPAND -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="logo-container">
             <a href="{{ route('admin.beranda') }}">
-                <span class="logo-small">🍞</span>
-                <img src="{{ asset('images/logo.png') }}" class="logo" alt="Logo BreadSaver">
+                <img src="{{ asset('images/logo-icon.png') }}"
+                     onerror="this.onerror=null; this.src='{{ asset('images/logo.png') }}';"
+                     class="logo-small"
+                     alt="Logo BreadSaver">
+                <img src="{{ asset('images/logo.png') }}"
+                     class="logo"
+                     alt="Logo BreadSaver">
             </a>
         </div>
+
         <p class="nav-title">Admin Panel</p>
 
-        <a href="{{ route('admin.beranda') }}" class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
+        <a href="{{ route('admin.beranda') }}"
+           class="nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-home.png') }}" class="nav-icon" alt="">
             <span>Beranda</span>
         </a>
 
-        <a href="{{ route('admin.katalog') }}" class="nav-link {{ request()->routeIs('admin.katalog') || request()->routeIs('admin.produk.edit') ? 'active' : '' }}">
+        <a href="{{ route('admin.katalog') }}"
+           class="nav-link {{ request()->routeIs('admin.katalog', 'admin.produk.edit', 'admin.produk.create') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-product.png') }}" class="nav-icon" alt="">
             <span>Katalog</span>
         </a>
 
-        <a href="{{ route('admin.kelola_akun') }}" class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
+        <a href="{{ route('admin.kelola_akun') }}"
+           class="nav-link {{ request()->routeIs('admin.kelola_akun') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
             <span>Kelola Akun</span>
         </a>
 
-        <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+        <a href="{{ route('admin.laporan') }}"
+           class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
             <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
             <span>Laporan</span>
         </a>
 
         <div class="sidebar-bottom">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="nav-link" style="width: 100%; border: 0; background: transparent; cursor: pointer; text-align: left;">
-                    <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
-                    <span>Logout</span>
-                </button>
-            </form>
+            @auth
+                <a href="{{ route('admin.profil') }}"
+                   class="nav-link profile-link {{ request()->routeIs('admin.profil') ? 'active' : '' }}">
+                    @if(Auth::user()->foto_profil)
+                        <img src="{{ asset('storage/' . Auth::user()->foto_profil) }}"
+                             class="nav-icon" alt="Foto Profil"
+                             style="border-radius: 50%; object-fit: cover;">
+                    @else
+                        <div class="profile-initial">
+                            {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
+                        </div>
+                    @endif
+                    <span>Profil</span>
+                </a>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-link logout-btn">
+                        <img src="{{ asset('images/icon-login.png') }}" class="nav-icon" alt="">
+                        <span>Logout</span>
+                    </button>
+                </form>
+            @endauth
         </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="main">
         <div class="form-container">
-            
-            <!-- HEADER -->
             <header class="header">
                 <h1>Edit Produk</h1>
                 <p>Ubah informasi produk yang sudah tersimpan di BreadSaver.</p>
             </header>
 
-            <!-- FORM CARD -->
             <section class="form-card">
-
-                <!-- PESAN ERROR -->
                 @if($errors->any())
                     <div class="error-list">
                         <strong>Terjadi kesalahan:</strong>
@@ -406,7 +492,6 @@
                     @csrf
                     @method('PUT')
 
-                    <!-- NAMA PRODUK -->
                     <div class="form-group">
                         <label for="nama_produk">Nama Produk</label>
                         <input type="text"
@@ -420,9 +505,7 @@
                         @enderror
                     </div>
 
-                    <!-- HARGA -->
                     <div class="form-row">
-                        <!-- HARGA ASLI -->
                         <div class="form-group">
                             <label for="harga_asli">Harga Asli (Rp)</label>
                             <input type="number"
@@ -437,7 +520,6 @@
                             @enderror
                         </div>
 
-                        <!-- HARGA DISKON -->
                         <div class="form-group">
                             <label for="harga_diskon">Harga Diskon (Rp)</label>
                             <input type="number"
@@ -453,9 +535,7 @@
                         </div>
                     </div>
 
-                    <!-- STOK DAN EXPIRED -->
                     <div class="form-row">
-                        <!-- STOK -->
                         <div class="form-group">
                             <label for="stok">Jumlah Stok</label>
                             <input type="number"
@@ -469,7 +549,6 @@
                             @enderror
                         </div>
 
-                        <!-- EXPIRED -->
                         <div class="form-group">
                             <label for="expired_at">Tanggal Kedaluwarsa</label>
                             <input type="datetime-local"
@@ -483,7 +562,6 @@
                         </div>
                     </div>
 
-                    <!-- DESKRIPSI -->
                     <div class="form-group">
                         <label for="deskripsi">Deskripsi Produk</label>
                         <textarea id="deskripsi"
@@ -494,7 +572,6 @@
                         @enderror
                     </div>
 
-                    <!-- FOTO LAMA -->
                     <div class="form-group">
                         <label>Foto Produk Saat Ini</label>
                         @if($produk->foto)
@@ -517,7 +594,6 @@
                         @endif
                     </div>
 
-                    <!-- FOTO BARU -->
                     <div class="form-group">
                         <label for="foto">Ganti Foto Produk</label>
                         <input type="file"
@@ -532,16 +608,13 @@
                         @enderror
                     </div>
 
-                    <!-- TOMBOL -->
                     <div class="form-actions">
                         <a href="{{ route('admin.katalog') }}" class="btn btn-back">Batal</a>
                         <button type="submit" class="btn btn-save">Simpan Perubahan</button>
                     </div>
-
                 </form>
             </section>
         </div>
     </main>
-
 </body>
 </html>
