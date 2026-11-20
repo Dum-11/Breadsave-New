@@ -725,5 +725,7 @@
 
     </main>
 
+
+@include('components.notifikasi-panel')
 </body>
 </html>
