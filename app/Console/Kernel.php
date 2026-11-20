@@ -15,7 +15,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // Periksa pesanan kedaluwarsa setiap menit
+        // Mode uji dulu agar stok tetap aman
+        $schedule->command('orders:cancel-expired')
+                ->everyMinute()
+                ->withoutOverlapping();
     }
 
     /**
