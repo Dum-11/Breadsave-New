@@ -15,7 +15,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('breadsaver:advanced')->everyMinute()->withoutOverlapping();
+        $schedule->command('breadsaver:extras')->everyMinute()->withoutOverlapping();
+        // Periksa pesanan kedaluwarsa setiap menit
+        // Mode uji dulu agar stok tetap aman
+        $schedule->command('orders:cancel-expired')
+                ->everyMinute()
+                ->withoutOverlapping();
     }
 
     /**

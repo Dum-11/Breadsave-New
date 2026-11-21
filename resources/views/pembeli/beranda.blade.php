@@ -245,6 +245,108 @@
             white-space: nowrap;
         }
 
+
+        /* PENCARIAN & FILTER PRODUK */
+        .bread-filter-bar {
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 18px;
+            margin-bottom: 24px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .bread-filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1 1 290px;
+            min-width: 0;
+        }
+
+        .bread-filter-field--sort {
+            flex: 0 1 250px;
+        }
+
+        .bread-filter-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .bread-filter-input,
+        .bread-filter-select {
+            width: 100%;
+            height: 44px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0 14px;
+            background: var(--white);
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .bread-filter-input:focus,
+        .bread-filter-select:focus {
+            border-color: var(--pink);
+            box-shadow: 0 0 0 3px rgba(255, 143, 177, 0.16);
+        }
+
+        .bread-filter-reset {
+            height: 44px;
+            padding: 0 17px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #f3f5f9;
+            color: var(--navy);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .bread-filter-reset:hover {
+            background: #e9edf5;
+        }
+
+        .product-card[hidden],
+        .product-grid[hidden],
+        .bread-filter-empty[hidden] {
+            display: none !important;
+        }
+
+        .bread-filter-empty {
+            padding: 38px 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--white);
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .bread-filter-empty strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--navy);
+            font-size: 18px;
+        }
+
+        @media (max-width: 700px) {
+            .bread-filter-field,
+            .bread-filter-field--sort {
+                flex-basis: 100%;
+            }
+            .bread-filter-reset {
+                width: 100%;
+            }
+        }
+
         /* GRID KATALOG RAPI & SERAGAM */
 
         .product-grid {
@@ -682,6 +784,21 @@
             overflow-wrap: anywhere;
         }
 
+        /* Foto profil transparan, tanpa lingkaran pink */
+        .profile-avatar:has(img),
+        .bs-buyer-side-profile-avatar:has(img) {
+            background: transparent !important;
+            border-radius: 0 !important;
+            overflow: visible !important;
+        }
+
+        /* Pertahankan seluruh gambar tanpa terpotong */
+        .profile-avatar img,
+        .bs-buyer-side-profile-avatar img {
+            background: transparent !important;
+            object-fit: contain !important;
+        }
+
     </style>
 </head>
 
@@ -743,7 +860,17 @@
             </a>
 
 
-            <a href="{{ route('pembeli.pesanan') }}"
+                                    <a href="{{ route('pembeli.wishlist') }}"
+               class="nav-link {{ request()->routeIs('pembeli.wishlist*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-wishlist.svg') }}" class="nav-icon" alt="">
+                <span>Wishlist Saya</span>
+            </a>
+<a href="{{ route('pembeli.rescue-box') }}"
+               class="nav-link {{ request()->routeIs('pembeli.rescue-box*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-rescue-box.png') }}" class="nav-icon" alt="">
+                <span>Bread Rescue Box</span>
+            </a>
+<a href="{{ route('pembeli.pesanan') }}"
                class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
 
                 <img src="{{ asset('images/icon-orders.png') }}"
@@ -769,6 +896,12 @@
                 </span>
 
             </a>
+            <a href="{{ route('pembeli.loyalty') }}"
+               class="nav-link {{ request()->routeIs('pembeli.loyalty*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-poin-voucher.png') }}" class="nav-icon" alt="">
+                <span>Poin &amp; Voucher</span>
+            </a>
+
 
         </nav>
 
@@ -895,7 +1028,7 @@
                 </div>
 
 
-                <span class="product-count">
+                <span class="product-count" id="breadProductCount" aria-live="polite">
                     {{ isset($produks) ? $produks->count() : 0 }} Produk
                 </span>
 
@@ -903,6 +1036,29 @@
 
 
             @if(isset($produks) && $produks->count() > 0)
+
+                <!-- Pencarian dan pengurutan hanya memproses produk yang tampil di halaman ini -->
+                <div class="bread-filter-bar" role="search" aria-label="Cari dan urutkan roti">
+                    <div class="bread-filter-field">
+                        <label class="bread-filter-label" for="breadSearch">Cari Nama Roti</label>
+                        <input class="bread-filter-input" type="search" id="breadSearch"
+                               placeholder="Contoh: roti cokelat" autocomplete="off">
+                    </div>
+
+                    <div class="bread-filter-field bread-filter-field--sort">
+                        <label class="bread-filter-label" for="breadSort">Urutkan Produk</label>
+                        <select class="bread-filter-select" id="breadSort">
+                            <option value="default">Urutan Awal</option>
+                            <option value="price_asc">Harga Termurah</option>
+                            <option value="discount_desc">Diskon Terbesar (%)</option>
+                            <option value="rating_desc">Rating Tertinggi</option>
+                        </select>
+                    </div>
+
+                    <button class="bread-filter-reset" type="button" id="breadReset">Reset</button>
+                </div>
+
+
 
                 @php
                     // Ambil rating untuk seluruh produk pada halaman sekaligus.
@@ -929,7 +1085,7 @@
                 @endphp
 
 
-                <div class="product-grid">
+                <div class="product-grid" id="breadProductGrid">
 
                     @foreach($produks as $produk)
 
@@ -1001,7 +1157,20 @@
                         @endphp
 
 
-                        <article class="product-card">
+                        @php
+                            $idSortProduk = $produk->id_produk ?? $produk->id;
+                            $statSortRating = $statistikRatingProduk->get($idSortProduk);
+                            $nilaiSortRating = (float) ($statSortRating->rata_rating ?? 0);
+                            $persenSortDiskon = $hargaAsli > 0
+                                ? max(0, ($hargaAsli - $hargaDiskon) / $hargaAsli * 100)
+                                : 0;
+                        @endphp
+
+                        <article class="product-card" data-wishlist-id="{{ $produk->id_produk ?? $produk->id }}"
+                                 data-nama="{{ $produk->nama_produk }}"
+                                 data-harga="{{ $hargaDiskon }}"
+                                 data-diskon="{{ $persenSortDiskon }}"
+                                 data-rating="{{ $nilaiSortRating }}">
 
                             <div class="product-image-container">
 
@@ -1169,6 +1338,11 @@
 
                 </div>
 
+                <div class="bread-filter-empty" id="breadFilterEmpty" role="status" hidden>
+                    <strong>Roti tidak ditemukan</strong>
+                    Coba kata kunci lain atau klik Reset untuk melihat semua produk.
+                </div>
+
             @else
 
                 <div class="empty-state">
@@ -1246,5 +1420,79 @@
         }
     </script>
 
+
+    <!-- Pencarian dan filter roti: tanpa mengubah proses checkout/keranjang -->
+    <script>
+        (() => {
+            const grid = document.getElementById('breadProductGrid');
+            if (!grid) return;
+
+            const search = document.getElementById('breadSearch');
+            const sort = document.getElementById('breadSort');
+            const reset = document.getElementById('breadReset');
+            const count = document.getElementById('breadProductCount');
+            const empty = document.getElementById('breadFilterEmpty');
+            const cards = Array.from(grid.querySelectorAll('.product-card'));
+            const originalIndex = new Map(cards.map((card, index) => [card, index]));
+
+            function asNumber(value) {
+                const parsed = Number(value);
+                return Number.isFinite(parsed) ? parsed : 0;
+            }
+
+            function applyBreadFilter() {
+                const term = search.value.trim().toLocaleLowerCase('id-ID');
+                const filtered = cards.filter((card) =>
+                    (card.dataset.nama || '').toLocaleLowerCase('id-ID').includes(term)
+                );
+
+                const sortValue = sort.value;
+                filtered.sort((a, b) => {
+                    let difference = 0;
+                    if (sortValue === 'price_asc') {
+                        difference = asNumber(a.dataset.harga) - asNumber(b.dataset.harga);
+                    } else if (sortValue === 'discount_desc') {
+                        difference = asNumber(b.dataset.diskon) - asNumber(a.dataset.diskon);
+                    } else if (sortValue === 'rating_desc') {
+                        difference = asNumber(b.dataset.rating) - asNumber(a.dataset.rating);
+                    }
+                    return difference || originalIndex.get(a) - originalIndex.get(b);
+                });
+
+                const matchedSet = new Set(filtered);
+                const fragment = document.createDocumentFragment();
+                filtered.forEach((card) => {
+                    card.hidden = false;
+                    fragment.appendChild(card);
+                });
+                cards.forEach((card) => {
+                    if (!matchedSet.has(card)) {
+                        card.hidden = true;
+                        fragment.appendChild(card);
+                    }
+                });
+                grid.appendChild(fragment);
+
+                count.textContent = `${filtered.length} Produk`;
+                empty.hidden = filtered.length !== 0;
+                grid.hidden = filtered.length === 0;
+            }
+
+            search.addEventListener('input', applyBreadFilter);
+            sort.addEventListener('change', applyBreadFilter);
+            reset.addEventListener('click', () => {
+                search.value = '';
+                sort.value = 'default';
+                applyBreadFilter();
+                search.focus();
+            });
+            applyBreadFilter();
+        })();
+    </script>
+
+@include('components.notifikasi-panel')
+
+
+@include('components.wishlist-buttons')
 </body>
 </html>
