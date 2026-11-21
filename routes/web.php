@@ -600,3 +600,11 @@ Route::middleware(['auth'])->group(function () {
     require __DIR__ . '/notifikasi.php';
     
 });
+
+// Fitur tambahan BreadSaver (tanpa mengubah route lama)
+require __DIR__ . '/breadsaver-ekstra.php';
+
+// Enam fitur lanjutan BreadSaver
+require __DIR__ . '/breadsaver-lanjutan.php';
+
+require __DIR__ . '/wishlist.php';

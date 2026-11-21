@@ -618,5 +618,7 @@
     </main>
 
 @include('components.notifikasi-panel')
+@include('components.breadsaver-extra-menu')
+@include('components.breadsaver-advanced-menu')
 </body>
 </html>

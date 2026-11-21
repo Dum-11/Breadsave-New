@@ -665,7 +665,17 @@
 
 
             <!-- Pesanan -->
-            <a href="{{ route('pembeli.pesanan') }}"
+                                    <a href="{{ route('pembeli.wishlist') }}"
+               class="nav-link {{ request()->routeIs('pembeli.wishlist*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-wishlist.svg') }}" class="nav-icon" alt="">
+                <span>Wishlist Saya</span>
+            </a>
+<a href="{{ route('pembeli.rescue-box') }}"
+               class="nav-link {{ request()->routeIs('pembeli.rescue-box*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-rescue-box.png') }}" class="nav-icon" alt="">
+                <span>Bread Rescue Box</span>
+            </a>
+<a href="{{ route('pembeli.pesanan') }}"
                class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
 
                 <img src="{{ asset('images/icon-orders.png') }}"
@@ -688,6 +698,12 @@
                 <span>Keranjang</span>
 
             </a>
+            <a href="{{ route('pembeli.loyalty') }}"
+               class="nav-link {{ request()->routeIs('pembeli.loyalty*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-poin-voucher.png') }}" class="nav-icon" alt="">
+                <span>Poin &amp; Voucher</span>
+            </a>
+
 
         </nav>
 
@@ -905,7 +921,7 @@
                                 : 0;
                         @endphp
 
-                        <article class="product-card"
+                        <article class="product-card" data-wishlist-id="{{ $produk->id_produk ?? $produk->id }}"
                                  data-nama="{{ $produk->nama_produk }}"
                                  data-harga="{{ $hargaDiskon }}"
                                  data-diskon="{{ $persenSortDiskon }}"
@@ -1171,5 +1187,7 @@
 
 
 @include('components.notifikasi-panel')
+
+@include('components.wishlist-buttons')
 </body>
 </html>

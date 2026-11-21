@@ -950,7 +950,17 @@
                 <span>Katalog Produk</span>
             </a>
 
-            <a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
+                                    <a href="{{ route('pembeli.wishlist') }}"
+               class="nav-link {{ request()->routeIs('pembeli.wishlist*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-wishlist.svg') }}" class="nav-icon" alt="">
+                <span>Wishlist Saya</span>
+            </a>
+<a href="{{ route('pembeli.rescue-box') }}"
+               class="nav-link {{ request()->routeIs('pembeli.rescue-box*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-rescue-box.png') }}" class="nav-icon" alt="">
+                <span>Bread Rescue Box</span>
+            </a>
+<a href="{{ route('pembeli.pesanan') }}" class="nav-link {{ request()->routeIs('pembeli.pesanan', 'pesanan') ? 'active' : '' }}">
                 <img src="{{ asset('images/icon-orders.png') }}" class="nav-icon" alt="">
                 <span>Pesanan</span>
             </a>
@@ -959,6 +969,12 @@
                 <img src="{{ asset('images/icon-keranjang.png') }}" class="nav-icon" alt="">
                 <span>Keranjang</span>
             </a>
+            <a href="{{ route('pembeli.loyalty') }}"
+               class="nav-link {{ request()->routeIs('pembeli.loyalty*') ? 'active' : '' }}">
+                <img src="{{ asset('images/icon-poin-voucher.png') }}" class="nav-icon" alt="">
+                <span>Poin &amp; Voucher</span>
+            </a>
+
         </nav>
 
         <div class="sidebar-bottom">
@@ -1670,5 +1686,6 @@
 
 
 @include('components.notifikasi-panel')
+
 </body>
 </html>
