@@ -230,34 +230,6 @@
             border-color: #f4b4b4;
         }
 
-        /* SUMMARY */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin-bottom: 26px;
-        }
-
-        .summary-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .summary-label {
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .summary-number {
-            color: var(--navy);
-            font-size: 28px;
-            font-weight: bold;
-        }
-
         /* LIST WRAPPER */
         .orders-wrapper {
             display: flex;
@@ -456,6 +428,143 @@
             line-height: 1.5;
         }
 
+        /* COUNTDOWN PEMBAYARAN: tampil hanya untuk pesanan belum lunas */
+        .order-payment-timer {
+            margin: 0 24px 18px;
+            padding: 17px 20px;
+            background: #f7faff;
+            border: 1px solid #d9e5f7;
+            border-radius: 15px;
+        }
+        .order-payment-timer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+        .order-payment-timer-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--navy);
+            margin-bottom: 6px;
+        }
+        .order-payment-timer-hint {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--muted);
+        }
+        .order-payment-timer-clock {
+            color: var(--navy);
+            font-weight: 800;
+            font-size: 25px;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        .order-payment-timer-track {
+            height: 8px;
+            overflow: hidden;
+            background: #e5eaf3;
+            border-radius: 999px;
+        }
+        .order-payment-timer-progress {
+            height: 100%;
+            width: 100%;
+            border-radius: inherit;
+            background: var(--pink);
+            transition: width 0.75s linear;
+        }
+        .order-payment-timer.urgent {
+            background: #fffaf0;
+            border-color: #f5d799;
+        }
+        .order-payment-timer.urgent .order-payment-timer-clock {
+            color: #a16207;
+        }
+        .order-payment-timer.expired {
+            background: #fff6f6;
+            border-color: #ffcaca;
+        }
+        .order-payment-timer.expired .order-payment-timer-clock {
+            color: var(--red);
+        }
+        .order-payment-timer.expired .order-payment-timer-progress {
+            width: 0;
+        }
+        @media (max-width: 600px) {
+            .order-payment-timer {
+                margin: 0 16px 16px;
+                padding: 15px;
+            }
+            .order-payment-timer-clock { font-size: 22px; }
+        }
+
+        /* QR Code untuk pengambilan pesanan yang sudah dibayar */
+        .pickup-qr-box {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin: 0 24px 20px;
+            padding: 18px;
+            border: 1px solid #cbdcf5;
+            border-radius: 16px;
+            background: #f7faff;
+        }
+
+        .pickup-qr-image {
+            flex: 0 0 auto;
+            width: 186px;
+            height: 186px;
+            display: grid;
+            place-items: center;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 6px;
+        }
+
+        .pickup-qr-image svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .pickup-qr-info h3 {
+            color: var(--navy);
+            font-size: 16px;
+            margin-bottom: 9px;
+        }
+
+        .pickup-qr-info p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .pickup-qr-code {
+            display: inline-block;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--navy);
+            font-family: Consolas, monospace;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 600px) {
+            .pickup-qr-box {
+                margin-left: 16px;
+                margin-right: 16px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
         .actions {
             display: flex;
             flex-wrap: wrap;
@@ -484,6 +593,11 @@
         .btn-pay {
             background: var(--navy);
             color: white;
+        }
+        .btn-pay.payment-expired {
+            opacity: 0.55;
+            cursor: not-allowed;
+            pointer-events: none;
         }
 
         .btn-detail {
@@ -898,32 +1012,36 @@
                 <div class="alert alert-error">{{ session('error') }}</div>
             @endif
 
-            <section class="summary-grid">
-                <article class="summary-card">
-                    <p class="summary-label">Total Pesanan</p>
-                    <p class="summary-number">{{ $totalPesanan ?? 0 }}</p>
-                </article>
+            @php
+                // Status yang ditampilkan kepada pembeli mengikuti status pembayaran.
+                // Pesanan yang belum lunas tidak dihitung sebagai Menunggu Konfirmasi.
+                $kategoriUntukPesanan = static function ($item) {
+                    $pembayaran = $item->status_pembayaran ?? null;
 
-                <article class="summary-card">
-                    <p class="summary-label">Menunggu Konfirmasi</p>
-                    <p class="summary-number">{{ $menungguKonfirmasi ?? 0 }}</p>
-                </article>
+                    if ($item->status === 'Dibatalkan' || $pembayaran === 'Dibatalkan') {
+                        return 'dibatalkan';
+                    }
 
-                <article class="summary-card">
-                    <p class="summary-label">Sedang Diproses</p>
-                    <p class="summary-number">{{ $diproses ?? 0 }}</p>
-                </article>
+                    if ($pembayaran !== 'Berhasil') {
+                        return 'belum-bayar';
+                    }
 
-                <article class="summary-card">
-                    <p class="summary-label">Pesanan Selesai</p>
-                    <p class="summary-number">{{ $selesai ?? 0 }}</p>
-                </article>
+                    if (!empty($item->picked_up_at)) {
+                        return 'selesai';
+                    }
 
-                <article class="summary-card">
-                    <p class="summary-label">Pesanan Dibatalkan</p>
-                    <p class="summary-number">{{ $dibatalkan ?? 0 }}</p>
-                </article>
-            </section>
+                    if (in_array($item->status, ['Selesai', 'Siap Diambil'], true)) {
+                        return 'siap';
+                    }
+
+                    if ($item->status === 'Diproses') {
+                        return 'diproses';
+                    }
+
+                    return 'menunggu';
+                };
+
+            @endphp
 
             @if(($pesanans ?? collect())->count())
                 @php
@@ -1022,46 +1140,25 @@
                                 ->count();
                             $masihBisaMenilai = $jumlahProdukPesanan > $jumlahProdukDinilai;
 
-                            $statusOrderClass = match($pesanan->status) {
-                                'Diproses' => 'badge-order-process',
-                                'Selesai' => 'badge-order-finished',
-                                'Dibatalkan' => 'badge-order-cancelled',
-                                default => 'badge-order-waiting',
+                            $statusPembayaran = $pesanan->status_pembayaran ?? null;
+                            $kategoriPesanan = $kategoriUntukPesanan($pesanan);
+
+                            // Satu status utama; status konfirmasi baru terlihat sesudah lunas.
+                            $statusLabel = match ($kategoriPesanan) {
+                                'belum-bayar' => 'Menunggu Pembayaran',
+                                'menunggu' => 'Menunggu Konfirmasi',
+                                'diproses' => 'Diproses',
+                                'siap' => 'Siap Diambil',
+                                'selesai' => 'Sudah Diambil',
+                                'dibatalkan' => 'Dibatalkan',
+                                default => 'Menunggu Pembayaran',
                             };
 
-                            $statusPembayaran = $pesanan->status_pembayaran ?? null;
-
-                            // Tentukan kategori filter pesanan
-                            if ($pesanan->status === 'Dibatalkan' ||
-                                $statusPembayaran === 'Dibatalkan') {
-
-                                $kategoriPesanan = 'dibatalkan';
-
-                            } elseif ($pesanan->status === 'Selesai') {
-
-                                $kategoriPesanan = 'selesai';
-
-                            } elseif ($statusPembayaran === 'Menunggu Pembayaran') {
-
-                                $kategoriPesanan = 'belum-bayar';
-
-                            } elseif ($pesanan->status === 'Siap Diambil') {
-
-                                $kategoriPesanan = 'siap';
-
-                            } elseif ($pesanan->status === 'Diproses') {
-
-                                $kategoriPesanan = 'diproses';
-
-                            } else {
-
-                                $kategoriPesanan = 'menunggu';
-                            }
-
-                            $statusPaymentClass = match($statusPembayaran) {
-                                'Berhasil' => 'badge-pay-success',
-                                'Dibatalkan' => 'badge-pay-cancelled',
-                                default => 'badge-pay-pending',
+                            $statusOrderClass = match ($kategoriPesanan) {
+                                'diproses' => 'badge-order-process',
+                                'siap', 'selesai' => 'badge-order-finished',
+                                'dibatalkan' => 'badge-order-cancelled',
+                                default => 'badge-order-waiting',
                             };
 
                             $fotoUtama = null;
@@ -1079,6 +1176,8 @@
                         @endphp
 
                         <article class="order-card"
+                                 data-order-id="{{ $pesananId }}"
+                                 data-order-state="{{ ($pesanan->status ?? '') . '|' . ($statusPembayaran ?? '') . '|' . ($pesanan->picked_up_at ?? '') }}"
                                  data-category="{{ $kategoriPesanan }}">
                             <div class="order-top">
                                 <div>
@@ -1093,13 +1192,11 @@
 
                                 <div class="badge-group">
                                     <span class="badge {{ $statusOrderClass }}">
-                                        {{ $pesanan->status ?? 'Menunggu Konfirmasi' }}
+                                        {{ $statusLabel }}
                                     </span>
 
-                                    @if($statusPembayaran)
-                                        <span class="badge {{ $statusPaymentClass }}">
-                                            {{ $statusPembayaran }}
-                                        </span>
+                                    @if($statusPembayaran === 'Berhasil')
+                                        <span class="badge badge-pay-success">Pembayaran Berhasil</span>
                                     @endif
                                 </div>
                             </div>
@@ -1176,6 +1273,59 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- COUNTDOWN: sama persis dengan batas waktu pembayaran saat checkout. --}}
+                            @if(
+                                $statusPembayaran === 'Menunggu Pembayaran' &&
+                                $pesanan->status !== 'Dibatalkan' &&
+                                !empty($pesanan->payment_expires_at)
+                            )
+                                <section class="order-payment-timer"
+                                         data-payment-deadline="{{ \Carbon\Carbon::parse($pesanan->payment_expires_at)->timestamp }}"
+                                         data-server-time="{{ now()->timestamp }}"
+                                         aria-label="Sisa waktu pembayaran pesanan {{ $pesananId }}">
+                                    <div class="order-payment-timer-top">
+                                        <div>
+                                            <p class="order-payment-timer-label">Sisa Waktu Pembayaran</p>
+                                            <p class="order-payment-timer-hint" data-timer-hint>
+                                                Selesaikan pembayaran sebelum batas waktu habis.
+                                            </p>
+                                        </div>
+                                        <span class="order-payment-timer-clock" data-timer-clock role="timer">--:--</span>
+                                    </div>
+                                    <div class="order-payment-timer-track" aria-hidden="true">
+                                        <div class="order-payment-timer-progress" data-timer-progress></div>
+                                    </div>
+                                </section>
+                            @endif
+
+                            @if(
+                                $statusPembayaran === 'Berhasil' &&
+                                filled($pesanan->kode_pickup) &&
+                                $pesanan->status !== 'Dibatalkan' &&
+                                empty($pesanan->picked_up_at)
+                            )
+                                <section class="pickup-qr-box" aria-label="QR Code Pengambilan Pesanan">
+                                    <div class="pickup-qr-image">
+                                        {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(170)->margin(1)->generate($pesanan->kode_pickup) !!}
+                                    </div>
+                                    <div class="pickup-qr-info">
+                                        <h3>QR Code Pengambilan</h3>
+                                        <p>QR ini dapat digunakan setelah status pesanan berubah menjadi <strong>Siap Diambil</strong>.</p>
+                                        <p>Kode pengambilan:</p>
+                                        <span class="pickup-qr-code">{{ $pesanan->kode_pickup }}</span>
+                                        <p style="margin-top: 10px;">Jaga kode ini. Pegawai akan memverifikasi pembayaran dan status pengambilan sebelum menyerahkan pesanan.</p>
+                                    </div>
+                                </section>
+                            @elseif(!empty($pesanan->picked_up_at))
+                                <section class="pickup-qr-box" aria-label="Status pengambilan">
+                                    <div class="pickup-qr-info">
+                                        <h3>Pesanan Sudah Diambil</h3>
+                                        <p>Pengambilan berhasil diverifikasi pada {{ \Carbon\Carbon::parse($pesanan->picked_up_at)->format('d M Y, H:i') }}.</p>
+                                        <p>QR Code pengambilan sudah tidak berlaku.</p>
+                                    </div>
+                                </section>
+                            @endif
 
                             @if($ulasanPesanan->isNotEmpty())
                                 <section class="reviews-list" aria-label="Ulasan pesanan">
@@ -1342,5 +1492,183 @@
     });
     </script>
 
+
+    {{-- Auto-sync Midtrans: hanya polling transaksi pembeli yang belum lunas. --}}
+    @auth
+        @php
+            $paymentAutoSyncUrls = \Illuminate\Support\Facades\Route::has('pembeli.pembayaran.auto-sync')
+                ? collect($pesanans ?? [])
+                    ->filter(fn ($p) =>
+                        ($p->status_pembayaran ?? null) === 'Menunggu Pembayaran' &&
+                        $p->status !== 'Dibatalkan'
+                    )
+                    ->map(fn ($p) => route('pembeli.pembayaran.auto-sync', $p->id_pesanan))
+                    ->values()
+                : collect();
+        @endphp
+
+        @if($paymentAutoSyncUrls->isNotEmpty())
+            <script>
+            (function () {
+                const urls = @json($paymentAutoSyncUrls);
+                const csrf = @json(csrf_token());
+                let sedangMengecek = false;
+
+                async function cekPembayaranOtomatis() {
+                    if (sedangMengecek || document.hidden) return;
+                    sedangMengecek = true;
+
+                    try {
+                        for (const url of urls) {
+                            const response = await fetch(url, {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': csrf
+                                }
+                            });
+
+                            if (!response.ok) continue;
+                            const hasil = await response.json();
+
+                            if (hasil.status === 'Berhasil' || hasil.status === 'Dibatalkan') {
+                                // Refresh otomatis setelah backend memperbarui database.
+                                window.location.reload();
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.warn('Auto-sync Midtrans belum berhasil:', error);
+                    } finally {
+                        sedangMengecek = false;
+                    }
+                }
+
+                // Langsung cek dan ulangi tiap 10 detik selama halaman dibuka.
+                setTimeout(cekPembayaranOtomatis, 1500);
+                setInterval(cekPembayaranOtomatis, 10000);
+                document.addEventListener('visibilitychange', function () {
+                    if (!document.hidden) cekPembayaranOtomatis();
+                });
+            })();
+            </script>
+        @endif
+    @endauth
+
+    {{-- Countdown pembayaran 10 menit, mengikuti jam server dan batas waktu di database. --}}
+    <script>
+    (function () {
+        const timers = Array.from(document.querySelectorAll('.order-payment-timer[data-payment-deadline]'));
+        if (!timers.length) return;
+
+        const monotonicStartMs = performance.now();
+        const paymentDurationSeconds = 10 * 60;
+
+        function updateTimers() {
+            const elapsedMs = performance.now() - monotonicStartMs;
+
+            timers.forEach(function (timer) {
+                const deadlineMs = Number(timer.dataset.paymentDeadline) * 1000;
+                const serverStartMs = Number(timer.dataset.serverTime) * 1000;
+                const nowMs = serverStartMs + elapsedMs;
+                const secondsLeft = Math.max(0, Math.ceil((deadlineMs - nowMs) / 1000));
+
+                const clock = timer.querySelector('[data-timer-clock]');
+                const hint = timer.querySelector('[data-timer-hint]');
+                const progress = timer.querySelector('[data-timer-progress]');
+
+                const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+                const seconds = String(secondsLeft % 60).padStart(2, '0');
+                clock.textContent = minutes + ':' + seconds;
+                progress.style.width = Math.min(100, secondsLeft / paymentDurationSeconds * 100) + '%';
+
+                timer.classList.toggle('urgent', secondsLeft > 0 && secondsLeft <= 120);
+                timer.classList.toggle('expired', secondsLeft === 0);
+
+                // Setelah tenggat lewat, jangan arahkan pembeli membuat pembayaran baru.
+                const payLink = timer.closest('.order-card')?.querySelector('.btn-pay');
+                if (payLink) {
+                    payLink.classList.toggle('payment-expired', secondsLeft === 0);
+                    if (secondsLeft === 0) {
+                        payLink.setAttribute('aria-disabled', 'true');
+                        payLink.setAttribute('tabindex', '-1');
+                    } else {
+                        payLink.removeAttribute('aria-disabled');
+                        payLink.removeAttribute('tabindex');
+                    }
+                }
+
+                if (secondsLeft === 0) {
+                    hint.textContent = 'Batas waktu habis. Sistem sedang memverifikasi pembayaran dan memproses pembatalan.';
+                } else if (secondsLeft <= 120) {
+                    hint.textContent = 'Waktu hampir habis. Segera selesaikan pembayaran.';
+                } else {
+                    hint.textContent = 'Selesaikan pembayaran sebelum batas waktu habis.';
+                }
+            });
+        }
+
+        updateTimers();
+        setInterval(updateTimers, 1000);
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) updateTimers();
+        });
+    })();
+    </script>
+
+    {{-- Pembaruan status read-only, termasuk pembatalan oleh Laravel Scheduler. --}}
+    @auth
+        @if(collect($pesanans ?? [])->contains(fn ($p) =>
+            ($p->status_pembayaran ?? null) === 'Menunggu Pembayaran' &&
+            $p->status !== 'Dibatalkan'
+        ))
+            <script>
+            (function () {
+                const getState = function (doc) {
+                    return Array.from(doc.querySelectorAll('.order-card[data-order-id]'))
+                        .map(function (card) {
+                            return card.dataset.orderId + ':' + (card.dataset.orderState || '');
+                        }).join(';');
+                };
+                const initialState = getState(document);
+                let checking = false;
+
+                async function checkStatusChanges() {
+                    if (checking || document.hidden) return;
+                    checking = true;
+                    try {
+                        const response = await fetch(window.location.pathname, {
+                            credentials: 'same-origin',
+                            headers: { 'Accept': 'text/html' },
+                            cache: 'no-store'
+                        });
+                        if (!response.ok) return;
+                        const html = await response.text();
+                        const remote = new DOMParser().parseFromString(html, 'text/html');
+                        const updatedState = getState(remote);
+                        if (updatedState !== initialState) {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        console.warn('Belum bisa memeriksa pembaruan status pesanan:', error);
+                    } finally {
+                        checking = false;
+                    }
+                }
+
+                setInterval(checkStatusChanges, 12000);
+                document.addEventListener('visibilitychange', function () {
+                    if (!document.hidden) checkStatusChanges();
+                });
+            })();
+            </script>
+        @endif
+    @endauth
+
+
+@include('components.notifikasi-panel')
 </body>
 </html>

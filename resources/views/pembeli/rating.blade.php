@@ -348,5 +348,7 @@
 
 </div>
 
+
+@include('components.notifikasi-panel')
 </body>
 </html>

@@ -552,5 +552,7 @@
             © {{ date('Y') }} BreadSaver. Administrator Panel.
         </footer>
     </main>
+
+@include('components.notifikasi-panel')
 </body>
 </html>
